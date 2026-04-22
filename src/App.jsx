@@ -126,8 +126,8 @@ function App() {
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
         <div className="bg-slate-900/50 p-10 rounded-[2.5rem] border border-slate-800 w-full max-w-md shadow-2xl backdrop-blur-xl">
           <div className="text-center mb-10">
-            <h2 className="text-4xl font-black text-white tracking-tighter italic uppercase mb-2">Auth_Gate</h2>
-            <p className="text-slate-500 text-[10px] font-bold tracking-[0.3em] uppercase">Beyza Öztaşkın // Milestone 1</p>
+            <h2 className="text-4xl font-black text-white tracking-tighter italic uppercase mb-2">Movie Explorer</h2>
+            <p className="text-slate-500 text-[10px] font-bold tracking-[0.3em] uppercase">Milestone 1</p>
           </div>
           
           <div className="space-y-4">
@@ -155,8 +155,8 @@ function App() {
       <nav className="border-b border-slate-900 bg-slate-950/60 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex flex-col">
-            <h1 className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 uppercase italic">Movie Explorer</h1>
-            <div className="flex gap-4 mt-1 uppercase font-bold text-[9px] tracking-widest text-slate-500">
+            <h1 className="text-4xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 uppercase italic">Movie Explorer</h1>
+            <div className="flex gap-4 mt-1 uppercase font-bold text-[14px] tracking-widest text-slate-500">
               <button onClick={() => setView('browse')} className={view === 'browse' ? 'text-blue-400' : 'hover:text-slate-300 transition-colors'}>Discovery</button>
               <button onClick={() => setView('watchlist')} className={view === 'watchlist' ? 'text-blue-400' : 'hover:text-slate-300 transition-colors'}>Watchlist ({watchlist.length})</button>
             </div>
@@ -166,7 +166,7 @@ function App() {
             {view === 'browse' && (
               <input type="text" placeholder="Search database..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="hidden md:block w-64 bg-slate-900 border border-slate-800 p-3 rounded-xl focus:border-blue-500 outline-none text-xs font-medium transition-all" />
             )}
-            <button onClick={() => supabase.auth.signOut()} className="text-[10px] font-black uppercase text-red-500 hover:text-red-400 transition-colors tracking-widest bg-red-500/5 px-4 py-2 rounded-lg border border-red-500/10">Exit_Session</button>
+            <button onClick={() => supabase.auth.signOut()} className="text-[10px] font-black uppercase text-red-500 hover:text-red-400 transition-colors tracking-widest bg-red-500/5 px-4 py-2 rounded-lg border border-red-500/10">Exit</button>
           </div>
         </div>
       </nav>
@@ -174,7 +174,7 @@ function App() {
       {/* Movie Grid */}
       <main className="max-w-7xl mx-auto px-6 mt-12 pb-20">
         <div className="mb-10">
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 mb-2 block">System_Online</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 mb-2 block">System Online</span>
           <h2 className="text-4xl font-bold tracking-tight">{view === 'browse' ? 'Trending Discovery' : 'Personal Library'}</h2>
         </div>
 
