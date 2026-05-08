@@ -26,6 +26,32 @@
     inset-inline: 0;
     margin: 0 auto;
   }
+.site-title {
+  font-size: clamp(2rem, 5vw, 3.5rem); 
+  font-weight: 900;
+  letter-spacing: -2px; 
+  text-transform: uppercase;
+  font-style: italic;
+  
+  background: linear-gradient(135deg, var(--accent) 0%, #a855f7 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  filter: drop-shadow(0 0 10px rgba(100, 108, 255, 0.3));
+  
+  animation: titleFadeIn 1s ease-out;
+}
+
+.site-title span {
+  font-weight: 300; 
+  opacity: 0.8;
+  letter-spacing: 2px;
+}
+
+@keyframes titleFadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
   .base {
     width: 170px;
@@ -67,6 +93,26 @@
   @media (max-width: 1024px) {
     padding: 32px 20px 24px;
     gap: 18px;
+  }
+}
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  width: 100%;
+  padding: 20px;
+}
+
+.movie-card {
+  background: var(--social-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  border: 1px solid var(--border);
+
+  &:hover {
+    transform: translateY(-5-px);
+    box-shadow: var(--shadow);
   }
 }
 
@@ -181,4 +227,122 @@
     right: 0;
     border-right-color: var(--border);
   }
+}
+/* --- STEP 1: AUTH FORM STYLES --- */
+.auth-container {
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+              url('./assets/background.jpg.jpg') no-repeat center center fixed !important;
+  background-size: cover !important;
+  
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: none !important; /* Önceki 400px kısıtlamasını kaldırır */
+  
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+/* Formun kendisine (kartına) cam efekti ver */
+.auth-container form {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px);
+  padding: 40px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  max-width: 400px; /* Sadece form kutusu 400px kalsın */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+}
+
+
+.auth-container h2 {
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.auth-container h2 {
+  margin-bottom: 24px;
+  color: var(--text-h);
+  text-align: center;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.form-group input {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--accent-bg);
+  color: var(--text-h);
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.2); /* var(--accent) rengine göre */
+}
+
+.error-message {
+  color: #ff4d4d;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.auth-button {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.3s;
+  margin-top: 10px;
+}
+
+.auth-button:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    margin: 20px;
+    padding: 24px;
+  }
+}
+@keyframes scrollVertical {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+.animate-infinite-scroll {
+  animation: scrollVertical 40s linear infinite;
+}
+
+.skew-y-12 {
+  transform: skewY(-12deg);
 }

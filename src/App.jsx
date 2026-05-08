@@ -2,17 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import { useAuth } from './AuthContext';
 
-// --- ROLE-BASED DASHBOARDS (MODERNIZED) ---
+// --- ROLE-BASED DASHBOARDS ---
 
-const AdminDashboard = () => (
-  <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6 font-mono">
-    <div className="bg-slate-900 p-10 border border-red-500/30 rounded-[2.5rem] w-full max-w-md shadow-2xl text-center backdrop-blur-xl">
-      <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500 mx-auto mb-6 border border-red-500/20">
-        <span className="text-2xl font-black">!</span>
+const AdminDashboard = ({ stats, profile }) => (
+  <div className="min-h-screen bg-slate-950 p-8 font-mono text-slate-300">
+    <div className="max-w-6xl mx-auto">
+      <div className="flex justify-between items-end mb-12 border-b border-red-500/20 pb-8">
+        <div>
+          <h2 className="text-4xl font-black text-red-500 tracking-tighter uppercase italic">Admin_Root_Terminal</h2>
+          <p className="text-slate-500 text-[10px] uppercase tracking-[0.4em] mt-2">Active_Session: {profile?.email}</p>
+        </div>
+        <button onClick={() => supabase.auth.signOut()} className="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20 px-6 py-2 rounded-xl text-[10px] font-black uppercase transition-all">Terminate_Session</button>
       </div>
-      <h2 className="text-2xl font-black text-red-500 mb-2 tracking-tighter uppercase italic">Admin_Root</h2>
-      <p className="text-slate-500 mb-8 text-xs font-medium uppercase tracking-widest">System Architecture Control</p>
-      <button onClick={() => supabase.auth.signOut()} className="w-full bg-red-600 hover:bg-red-500 text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-[10px] transition-all shadow-lg shadow-red-600/20">Terminate_Session</button>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {[
+          { label: 'Total_Users', value: stats.users, icon: 'USER_ID' },
+          { label: 'Total_Reviews', value: stats.reviews, icon: 'DATA_STREAM' },
+          { label: 'Global_Watchlist', value: stats.watchlist, icon: 'STORAGE_UNIT' }
+        ].map((item, idx) => (
+          <div key={idx} className="bg-slate-900 border border-slate-800 p-8 rounded-[2rem] relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <span className="text-4xl font-black italic">{item.icon}</span>
+            </div>
+            <h4 className="text-[10px] font-black text-red-500/50 uppercase tracking-[0.3em] mb-4">{item.label}</h4>
+            <div className="text-5xl font-black text-white tracking-tighter">{item.value}</div>
+            <div className="mt-4 h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-red-600 w-1/3 animate-pulse"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-8 bg-black/40 border border-slate-900 p-6 rounded-3xl">
+        <p className="text-[9px] text-slate-600 uppercase tracking-widest font-bold">System_Log: Fetching_Realtime_Metrics... OK</p>
+      </div>
     </div>
   </div>
 );
@@ -30,50 +53,125 @@ const StaffDashboard = () => (
   </div>
 );
 
+const ProfileView = ({ user, profile, watchlist }) => (
+  <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-10 mb-8 relative overflow-hidden">
+      <div className="absolute top-0 right-0 p-8 opacity-5">
+        <span className="text-8xl font-black italic">CORE</span>
+      </div>
+      <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
+        <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-indigo-900 rounded-3xl flex items-center justify-center text-3xl font-black text-white shadow-2xl shadow-blue-500/20">
+          {profile?.email?.[0].toUpperCase() || 'U'}
+        </div>
+        <div className="text-center md:text-left">
+          <h2 className="text-3xl font-black tracking-tighter uppercase italic text-white mb-1">
+            {profile?.email?.split('@')[0]}
+          </h2>
+          <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.3em]">
+            Access_Level: <span className="text-blue-500">{profile?.role || 'User'}</span>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {[
+        { label: 'Watchlist_Load', value: watchlist.length, unit: 'Items' },
+        { label: 'Completed_Files', value: watchlist.filter(i => i.status === 'completed').length, unit: 'Media' },
+        { label: 'System_Status', value: 'Stable', unit: 'Verified' }
+      ].map((stat, idx) => (
+        <div key={idx} className="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl hover:border-blue-500/30 transition-all">
+          <h4 className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">{stat.label}</h4>
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-black text-white tracking-tighter">{stat.value}</span>
+            <span className="text-[10px] font-bold text-blue-500/50 uppercase">{stat.unit}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+    <div className="mt-8 p-6 border border-slate-800/50 rounded-3xl bg-black/20 font-mono text-[9px] uppercase tracking-tighter text-slate-600">
+      IDENTIFIER: {user?.id}<br />
+      LAST_SYNC: {new Date().toLocaleString()}<br />
+      ENCRYPTION: AES_256_ACTIVE
+    </div>
+  </div>
+);
+
 // --- MAIN APPLICATION ---
 
 function App() {
   const { user, profile, loading: authLoading } = useAuth();
   
-  const [movies, setMovies] = useState([]);
+  const [mediaList, setMediaList] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('browse'); 
-  const [selectedMovie, setSelectedMovie] = useState(null);
+  const [selectedMedia, setSelectedMedia] = useState(null);
   const [review, setReview] = useState('');
-  const [movieReviews, setMovieReviews] = useState([]);
+  const [mediaReviews, setMediaReviews] = useState([]);
+  const [rating, setRating] = useState(5);
+  const [watchlistFilter, setWatchlistFilter] = useState('all');
+  const [toast, setToast] = useState({ message: '', type: null });
+  const [stats, setStats] = useState({ users: 0, reviews: 0, watchlist: 0 });
+  const [page, setPage] = useState(1);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [trailerKey, setTrailerKey] = useState(null);
 
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
-  // Handlers (Keeping your logic)
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast({ message: '', type: null }), 3000);
+  };
+
   const handleSignUp = async () => {
     const { error } = await supabase.auth.signUp({ email, password });
-    if (error) alert(error.message); else alert('Account created. Please proceed to login.');
+    if (error) showToast(error.message, 'error');
+    else showToast('System_Notice: Account_Created_Success');
   };
 
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) alert(error.message);
+    if (error) showToast('Auth_Failure: Invalid_Credentials', 'error');
+    else showToast('Access_Granted: Welcome_to_VibeFlow');
   };
 
-  const fetchMovies = async (query = '') => {
+  const fetchMedia = async (query = '', isNextPage = false) => {
     if (!API_KEY) return;
     setLoading(true);
+    const currentPage = isNextPage ? page + 1 : 1;
+    
     const endpoint = query 
-      ? `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=en-US`
-      : `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=1`;
+      ? `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=en-US&page=${currentPage}`
+      : `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=${currentPage}`;
 
     try {
       const response = await fetch(endpoint);
       const data = await response.json();
-      setMovies(data.results || []);
+      if (isNextPage) {
+        setMediaList(prev => [...prev, ...(data.results || [])]);
+        setPage(currentPage);
+      } else {
+        setMediaList(data.results || []);
+        setPage(1);
+      }
     } catch (error) {
-      console.error("Fetch failed:", error.message);
+      showToast("Fetch_Error: Data_Stream_Interrupted", "error");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchTrailer = async (movieId) => {
+    try {
+      const response = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${API_KEY}&language=en-US`);
+      const data = await response.json();
+      const trailer = data.results?.find(vid => vid.type === "Trailer" && vid.site === "YouTube");
+      setTrailerKey(trailer ? trailer.key : null);
+    } catch (error) {
+      console.error("Trailer_Fetch_Error:", error);
     }
   };
 
@@ -82,16 +180,25 @@ function App() {
     if (!error) setWatchlist(data || []);
   };
 
-  const fetchReviews = async (movieId) => {
-    const { data } = await supabase.from('reviews').select('*').eq('movie_id', movieId).order('created_at', { ascending: false });
-    setMovieReviews(data || []);
+  const fetchStats = async () => {
+    const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
+    const { count: reviewCount } = await supabase.from('reviews').select('*', { count: 'exact', head: true });
+    const { count: watchlistCount } = await supabase.from('watchlists').select('*', { count: 'exact', head: true });
+    setStats({ users: userCount || 0, reviews: reviewCount || 0, watchlist: watchlistCount || 0 });
   };
 
-  const addToWatchlist = async (movie) => {
+  const fetchReviews = async (mediaId) => {
+    const { data } = await supabase.from('reviews').select('*').eq('media_id', mediaId).order('created_at', { ascending: false });
+    setMediaReviews(data || []);
+  };
+
+  const addToWatchlist = async (mediaItem) => {
     const { error } = await supabase.from('watchlists').insert([{ 
-      movie_id: movie.id, title: movie.title, poster_path: movie.poster_path, vote_average: movie.vote_average 
+      media_id: mediaItem.id, title: mediaItem.title, poster_path: mediaItem.poster_path, 
+      vote_average: mediaItem.vote_average, user_id: user?.id, status: 'to_watch'
     }]);
-    if (!error) fetchWatchlist();
+    if (!error) { fetchWatchlist(); showToast(`Sync_Complete: ${mediaItem.title}_Added`); }
+    else showToast('Database_Error: Write_Failed', 'error');
   };
 
   const removeFromWatchlist = async (id) => {
@@ -99,20 +206,51 @@ function App() {
     if (!error) fetchWatchlist();
   };
 
-  const submitReview = async (movieId) => {
-    if (!review) return;
-    const { error } = await supabase.from('reviews').insert([
-      { movie_id: movieId, content: review, rating: 5, user_id: user.id }
-    ]);
-    if (!error) { setReview(''); fetchReviews(movieId); }
+  const toggleWatchlistStatus = async (id, currentStatus) => {
+    const newStatus = currentStatus === 'to_watch' ? 'completed' : 'to_watch';
+    const { error } = await supabase.from('watchlists').update({ status: newStatus }).eq('id', id);
+    if (!error) fetchWatchlist();
+  };
+
+  const submitReview = async (mediaId) => {
+    if (!review) { showToast('Validation_Error: Review_Field_Empty', 'error'); return; }
+    const { error } = await supabase.from('reviews').insert([{ media_id: mediaId, review_text: review, user_rating: rating, user_id: user.id }]);
+    if (!error) { setReview(''); setRating(5); fetchReviews(mediaId); showToast('Data_Injected: Review_Published'); }
+    else showToast('Transmission_Error: Post_Failed', 'error');
   };
 
   useEffect(() => {
-    if (user && view === 'browse') fetchMovies(searchQuery);
-  }, [user, view, searchQuery]);
+    if (user) {
+      const channel = supabase.channel('realtime_notifications').on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'notifications', 
+        filter: `user_id=eq.${user.id}` 
+      }, (payload) => {
+        setNotificationCount(prev => prev + 1);
+        showToast(`New Notification: ${payload.new.message}`);
+      }).subscribe();
+      return () => { supabase.removeChannel(channel); };
+    }
+  }, [user]);
 
-  useEffect(() => { if (user) fetchWatchlist(); }, [user]);
-  useEffect(() => { if (selectedMovie) fetchReviews(selectedMovie.id); }, [selectedMovie]);
+  useEffect(() => { fetchMedia(searchQuery); }, [searchQuery]);
+  
+  useEffect(() => { 
+    if (user) {
+      fetchWatchlist();
+      if (profile?.role === 'Admin') fetchStats();
+    } 
+  }, [user, profile]);
+
+  useEffect(() => { 
+    if (selectedMedia) {
+      fetchReviews(selectedMedia.id);
+      fetchTrailer(selectedMedia.id);
+    } else {
+      setTrailerKey(null);
+    }
+  }, [selectedMedia]);
 
   if (authLoading) return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -120,138 +258,170 @@ function App() {
     </div>
   );
 
-  // --- LOGIN / SIGNUP INTERFACE ---
+  const filteredWatchlist = watchlist.filter(item => watchlistFilter === 'all' ? true : item.status === watchlistFilter);
+
   if (!user) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
-        <div className="bg-slate-900/50 p-10 rounded-[2.5rem] border border-slate-800 w-full max-w-md shadow-2xl backdrop-blur-xl">
-          <div className="text-center mb-10">
-            <h2 className="text-4xl font-black text-white tracking-tighter italic uppercase mb-2">Movie Explorer</h2>
-            <p className="text-slate-500 text-[10px] font-bold tracking-[0.3em] uppercase">Milestone 1</p>
-          </div>
-          
-          <div className="space-y-4">
-            <input type="email" placeholder="EMAIL_ADDRESS" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-slate-800/50 border border-slate-700/50 p-4 rounded-2xl text-white focus:border-blue-500 outline-none text-xs transition-all" />
-            <input type="password" placeholder="PASSWORD" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-slate-800/50 border border-slate-700/50 p-4 rounded-2xl text-white focus:border-blue-500 outline-none text-xs transition-all" />
-            
-            <div className="flex gap-3 pt-4">
-              <button onClick={handleLogin} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-blue-600/20 transition-all">Login</button>
-              <button onClick={handleSignUp} className="flex-1 border border-slate-700 hover:bg-slate-800 text-slate-400 py-4 rounded-2xl font-bold text-[10px] uppercase tracking-widest transition-all">Signup</button>
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6 overflow-hidden relative">
+        {toast.message && (
+          <div className="fixed top-24 right-8 z-[200] animate-in fade-in slide-in-from-right-8 duration-300">
+            <div className={`px-6 py-4 rounded-2xl border backdrop-blur-xl shadow-2xl flex items-center gap-4 ${toast.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-blue-500/10 border-blue-500/20 text-blue-400'}`}>
+              <div className={`w-2 h-2 rounded-full animate-pulse ${toast.type === 'error' ? 'bg-red-500' : 'bg-blue-500'}`}></div>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] font-mono">{toast.message}</span>
             </div>
+          </div>
+        )}
+        <div className="absolute inset-0 z-0 flex gap-4 opacity-10 pointer-events-none skew-y-12 scale-110">
+          {[1, 2, 3, 4, 5, 6].map((col) => (
+            <div key={col} className="flex-1 flex flex-col gap-4 animate-infinite-scroll">
+              {[...mediaList, ...mediaList].slice(0, 40).map((movie, idx) => (
+                <img key={idx} src={movie.poster_path ? `https://image.tmdb.org/t/p/w200${movie.poster_path}` : 'https://via.placeholder.com/200x300'} className="w-full rounded-xl grayscale brightness-50" alt="" />
+              ))}
+            </div>
+          ))}
+        </div>
+        <div className="relative z-10 bg-slate-900/90 p-12 rounded-[2rem] border border-slate-800/60 w-full max-w-md shadow-2xl backdrop-blur-3xl">
+          <div className="text-center mb-12">
+            <h2 className="text-5xl font-black tracking-tighter italic uppercase mb-2 bg-clip-text text-transparent bg-gradient-to-br from-white via-slate-400 to-slate-600">Vibe<span className="text-blue-500">Flow</span></h2>
+            <p className="text-slate-500 text-[10px] font-black tracking-[0.5em] uppercase">Core_System_v1</p>
+          </div>
+          <div className="space-y-5">
+            <input type="email" placeholder="root@vibeflow.sys" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-4 rounded-xl text-white outline-none text-xs font-mono" />
+            <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-4 rounded-xl text-white outline-none text-xs font-mono" />
+            <button onClick={handleLogin} className="w-full bg-blue-600 text-white py-4 rounded-xl font-black text-[11px] uppercase tracking-[0.2em]">Execute_Auth</button>
+            <button onClick={handleSignUp} className="w-full bg-transparent text-slate-500 py-4 border border-slate-800 rounded-xl font-bold text-[10px] uppercase">New_System_Request</button>
           </div>
         </div>
       </div>
     );
   }
 
-  // --- RBAC REDIRECTS ---
-  if (profile?.role === 'Admin') return <AdminDashboard />;
+  if (profile?.role === 'Admin') return <AdminDashboard stats={stats} profile={profile} />;
   if (profile?.role === 'Staff') return <StaffDashboard />;
 
-  // --- MAIN STANDARD UI ---
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans">
-      {/* Header / Navbar */}
-      <nav className="border-b border-slate-900 bg-slate-950/60 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex flex-col">
-            <h1 className="text-4xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 uppercase italic">Movie Explorer</h1>
-            <div className="flex gap-4 mt-1 uppercase font-bold text-[14px] tracking-widest text-slate-500">
-              <button onClick={() => setView('browse')} className={view === 'browse' ? 'text-blue-400' : 'hover:text-slate-300 transition-colors'}>Discovery</button>
-              <button onClick={() => setView('watchlist')} className={view === 'watchlist' ? 'text-blue-400' : 'hover:text-slate-300 transition-colors'}>Watchlist ({watchlist.length})</button>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-6">
-            {view === 'browse' && (
-              <input type="text" placeholder="Search database..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="hidden md:block w-64 bg-slate-900 border border-slate-800 p-3 rounded-xl focus:border-blue-500 outline-none text-xs font-medium transition-all" />
-            )}
-            <button onClick={() => supabase.auth.signOut()} className="text-[10px] font-black uppercase text-red-500 hover:text-red-400 transition-colors tracking-widest bg-red-500/5 px-4 py-2 rounded-lg border border-red-500/10">Exit</button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Movie Grid */}
-      <main className="max-w-7xl mx-auto px-6 mt-12 pb-20">
-        <div className="mb-10">
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 mb-2 block">System Online</span>
-          <h2 className="text-4xl font-bold tracking-tight">{view === 'browse' ? 'Trending Discovery' : 'Personal Library'}</h2>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
-          {(view === 'browse' ? movies : watchlist).map((movie) => (
-            <div key={movie.id} className="group relative bg-slate-900 rounded-[2rem] border border-slate-800 overflow-hidden hover:border-blue-500/50 transition-all duration-500 shadow-xl">
-               <div className="aspect-[2/3] overflow-hidden relative">
-                <img 
-                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
-                  alt={movie.title} 
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 cursor-pointer scale-105 group-hover:scale-100" 
-                  onClick={() => setSelectedMovie(movie)} 
-                />
-                
-                {/* Actions Overlay */}
-                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {view === 'browse' ? (
-                    <button onClick={() => addToWatchlist(movie)} className="bg-blue-600 text-white p-2 rounded-xl text-[9px] font-bold uppercase shadow-lg">+ Add</button>
-                  ) : (
-                    <button onClick={() => removeFromWatchlist(movie.id)} className="bg-red-600 text-white p-2 rounded-xl text-[9px] font-bold uppercase shadow-lg">- Drop</button>
-                  )}
-                </div>
-              </div>
-              <div className="p-5">
-                <h3 className="text-[12px] font-bold truncate uppercase tracking-tight mb-1">{movie.title}</h3>
-                <div className="flex items-center gap-2">
-                  <div className="h-1 w-1 bg-blue-500 rounded-full animate-pulse"></div>
-                  <p className="text-slate-500 text-[10px] font-bold">Rating: {movie.vote_average}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </main>
-
-      {/* Modal / Detail View (Modernized) */}
-      {selectedMovie && (
-        <div className="fixed inset-0 bg-slate-950/90 flex items-center justify-center p-4 z-50 backdrop-blur-xl" onClick={() => setSelectedMovie(null)}>
-          <div className="bg-slate-900 border border-slate-800 max-w-5xl w-full flex flex-col md:flex-row rounded-[3rem] overflow-hidden shadow-[0_0_100px_rgba(37,99,235,0.1)]" onClick={e => e.stopPropagation()}>
-            <img src={`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`} className="w-full md:w-[400px] object-cover" alt="poster" />
-            <div className="p-10 flex flex-col justify-between w-full overflow-y-auto max-h-[90vh]">
-              <div>
-                <div className="flex items-center gap-3 mb-4">
-                   <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black rounded-full uppercase tracking-widest italic">Movie_Profile</span>
-                </div>
-                <h2 className="text-4xl font-black mb-6 uppercase italic tracking-tighter text-white leading-none">{selectedMovie.title}</h2>
-                <p className="text-slate-400 text-sm leading-relaxed mb-10 font-medium italic opacity-80">{selectedMovie.overview}</p>
-                
-                <div className="border-t border-slate-800 pt-8">
-                  <h4 className="text-[11px] font-black text-blue-500 mb-6 uppercase tracking-[0.3em]">System_Reviews</h4>
-                  <div className="space-y-4 mb-10">
-                    {movieReviews.length === 0 ? <p className="text-slate-600 text-[10px] font-bold italic uppercase tracking-widest">// No data entries found.</p> : 
-                      movieReviews.map((rev) => (
-                        <div key={rev.id} className="bg-slate-800/30 p-5 rounded-2xl border-l-4 border-blue-600">
-                          <p className="text-slate-300 text-[11px] font-medium leading-relaxed">{rev.content}</p>
-                        </div>
-                      ))}
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <textarea 
-                      value={review} 
-                      onChange={(e) => setReview(e.target.value)} 
-                      placeholder="Add system review..." 
-                      className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-xs focus:border-blue-500 outline-none h-24 transition-all text-slate-300 placeholder:text-slate-700" 
-                    />
-                    <button onClick={() => submitReview(selectedMovie.id)} className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-600/20 transition-all active:scale-95">Post_Data</button>
-                  </div>
-                </div>
-              </div>
-              <button onClick={() => setSelectedMovie(null)} className="mt-12 text-slate-600 text-[10px] font-black hover:text-white uppercase tracking-widest transition-colors flex items-center gap-2">
-                <span className="text-lg">×</span> Terminate_Interface
-              </button>
-            </div>
+    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans pb-20">
+      {toast.message && (
+        <div className="fixed top-24 right-8 z-[200] animate-in fade-in slide-in-from-right-8 duration-300">
+          <div className={`px-6 py-4 rounded-2xl border backdrop-blur-xl shadow-2xl flex items-center gap-4 ${toast.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-blue-500/10 border-blue-500/20 text-blue-400'}`}>
+            <div className={`w-2 h-2 rounded-full animate-pulse ${toast.type === 'error' ? 'bg-red-500' : 'bg-blue-500'}`}></div>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] font-mono">{toast.message}</span>
           </div>
         </div>
       )}
+      <nav className="p-6 flex justify-between items-center border-b border-slate-900 bg-slate-950/50 backdrop-blur-md sticky top-0 z-50">
+        <h1 className="text-2xl font-black italic tracking-tighter leading-none">Vibe<span className="text-blue-500">Flow</span></h1>
+        <div className="flex items-center gap-6">
+          <input type="text" placeholder="Search database..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-slate-900 border border-slate-800 px-4 py-2 rounded-full text-xs outline-none focus:border-blue-500 w-64 transition-all" />
+          <button onClick={() => setView('browse')} className={`text-[10px] font-bold uppercase tracking-widest ${view === 'browse' ? 'text-blue-500' : 'text-slate-500'}`}>Browse</button>
+          <button onClick={() => setView('watchlist')} className={`text-[10px] font-bold uppercase tracking-widest ${view === 'watchlist' ? 'text-blue-500' : 'text-slate-500'}`}>Watchlist ({watchlist.length})</button>
+          <button onClick={() => { setView('profile'); setNotificationCount(0); }} className={`relative text-[10px] font-bold uppercase tracking-widest ${view === 'profile' ? 'text-blue-500' : 'text-slate-500'}`}>
+            Profile_System
+            {notificationCount > 0 && <span className="absolute -top-2 -right-3 bg-red-600 text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full animate-bounce">{notificationCount}</span>}
+          </button>
+          <button onClick={() => supabase.auth.signOut()} className="bg-slate-900 p-2 rounded-lg hover:bg-red-500/10 hover:text-red-500 transition-all text-[10px] font-bold uppercase tracking-widest border border-slate-800">Exit</button>
+        </div>
+      </nav>
+
+      <main className="p-8">
+        {view === 'browse' ? (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
+              {mediaList.map((movie) => (
+                <div key={movie.id} className="group relative bg-slate-900 rounded-3xl overflow-hidden border border-slate-800/50 hover:border-blue-500/50 transition-all">
+                  <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} className="w-full aspect-[2/3] object-cover cursor-pointer grayscale group-hover:grayscale-0 transition-all duration-500" onClick={() => setSelectedMedia(movie)} alt="" />
+                  <div className="p-4 flex justify-between items-center bg-slate-900/50">
+                    <h3 className="font-bold text-sm truncate uppercase font-mono">{movie.title}</h3>
+                    <button onClick={() => addToWatchlist(movie)} className="bg-white/5 hover:bg-blue-600 p-2 rounded-xl transition-all font-bold text-white">+</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {mediaList.length > 0 && (
+              <div className="flex justify-center mt-16">
+                <button onClick={() => fetchMedia(searchQuery, true)} disabled={loading} className="px-12 py-4 bg-slate-900 border border-slate-800 rounded-2xl text-[10px] font-black uppercase text-slate-400 hover:text-white transition-all disabled:opacity-50">
+                  {loading ? 'Requesting_Data...' : 'Load_More'}
+                </button>
+              </div>
+            )}
+          </>
+        ) : view === 'watchlist' ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
+            <div className="col-span-full flex gap-4 mb-8 bg-slate-900/50 p-2 rounded-2xl w-fit border border-slate-800">
+              {['all', 'to_watch', 'completed'].map((f) => (
+                <button key={f} onClick={() => setWatchlistFilter(f)} className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${watchlistFilter === f ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'}`}>{f.replace('_', ' ')}</button>
+              ))}
+            </div>
+            {filteredWatchlist.map((item) => (
+              <div key={item.id} className="relative group bg-slate-900 rounded-3xl overflow-hidden border border-slate-800">
+                <img src={`https://image.tmdb.org/t/p/w500${item.poster_path}`} className="w-full aspect-[2/3] object-cover" alt="" />
+                <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                  <button onClick={() => toggleWatchlistStatus(item.id, item.status)} className={`p-2 rounded-xl text-white shadow-xl ${item.status === 'completed' ? 'bg-green-600' : 'bg-indigo-600'}`}>{item.status === 'completed' ? '✓' : '○'}</button>
+                  <button onClick={() => removeFromWatchlist(item.id)} className="bg-red-600 p-2 rounded-xl text-white shadow-xl font-bold">X</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <ProfileView user={user} profile={profile} watchlist={watchlist} />
+        )}
+      </main>
+
+      {selectedMedia && (
+        <div className="fixed inset-0 bg-slate-950/90 flex items-center justify-center p-4 z-[100] backdrop-blur-xl" onClick={() => setSelectedMedia(null)}>
+          <div className="bg-slate-900 border border-slate-800 max-w-6xl w-full flex flex-col md:flex-row rounded-[2rem] overflow-hidden h-[90vh] shadow-2xl relative" onClick={e => e.stopPropagation()}>
+            <div className="w-full md:w-2/5 relative border-r border-slate-800 bg-black flex flex-col">
+              <div className="flex-1 relative">
+                {trailerKey ? (
+                  <iframe src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&modestbranding=1`} className="w-full h-full object-cover" title="Trailer" allowFullScreen></iframe>
+                ) : (
+                  <img src={`https://image.tmdb.org/t/p/w500${selectedMedia.poster_path}`} className="w-full h-full object-cover opacity-60" alt="" />
+                )}
+              </div>
+              <div className="p-8 bg-gradient-to-t from-slate-950 to-transparent text-white">
+                <h2 className="text-3xl font-black mb-2 uppercase italic tracking-tighter leading-none">{selectedMedia.title}</h2>
+                <p className="text-slate-400 text-[10px] leading-relaxed uppercase font-mono mt-4 line-clamp-6">{selectedMedia.overview}</p>
+              </div>
+            </div>
+            <div className="flex-1 flex flex-col bg-slate-900/50 overflow-hidden">
+              <div className="flex-1 overflow-y-auto p-8 space-y-6">
+                <h4 className="text-[9px] font-black text-slate-500 mb-4 uppercase tracking-[0.3em]">Community_Feed</h4>
+                {mediaReviews.map((rev, idx) => (
+                  <div key={idx} className="bg-black/20 border border-slate-800/50 p-4 rounded-2xl animate-in fade-in duration-300">
+                    <span className="text-[9px] font-bold text-blue-400 font-mono italic uppercase">USER_{rev.user_id?.slice(0, 8)}</span>
+                    <p className="text-slate-300 text-xs italic mt-2 leading-relaxed">"{rev.review_text}"</p>
+                  </div>
+                ))}
+              </div>
+              <div className="p-8 bg-slate-950/50 border-t border-slate-800">
+                <div className="flex gap-2 mb-4">
+                  {[1, 2, 3, 4, 5].map((num) => (
+                    <button key={num} onClick={() => setRating(num)} className={`w-8 h-8 border transition-all text-[10px] font-black ${rating >= num ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/20' : 'bg-black/40 border-slate-800 text-slate-500'}`}>{num}</button>
+                  ))}
+                </div>
+                <div className="flex gap-3">
+                  <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="Inject_Review_Data..." className="flex-1 bg-black/40 border border-slate-800 px-4 py-3 rounded-xl text-xs text-white outline-none focus:border-blue-500 transition-all font-mono" />
+                  <button onClick={() => submitReview(selectedMedia.id)} className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Post</button>
+                </div>
+              </div>
+            </div>
+            <button onClick={() => setSelectedMedia(null)} className="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors z-10 font-bold p-2">X</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;
+import React from 'react';
+import Login from './login'; // Soldaki menüde 'login.jsx' olduğu için küçük harf
+import './index.css';
+
+function App() {
+  return (
+    <div className="App" style={{border: '5px solid red'}}> {/* Kırmızı kenarlık ekledik, en azından bunu görmeliyiz */}
+      <Login />
     </div>
   );
 }

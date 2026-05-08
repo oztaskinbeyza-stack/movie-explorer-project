@@ -1,13 +1,16 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
-import './index.css'
-import { AuthProvider } from './AuthContext'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App.jsx';
+import './index.css';
+import { AuthProvider } from './AuthContext';
+import { WatchlistProvider } from './context/WatchlistContext.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider> 
-      <App />
+      <WatchlistProvider>
+        <App />
+      </WatchlistProvider>
     </AuthProvider>
   </React.StrictMode>,
-)
+);
