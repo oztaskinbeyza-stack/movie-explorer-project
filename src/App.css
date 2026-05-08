@@ -346,3 +346,11 @@
 .skew-y-12 {
   transform: skewY(-12deg);
 }
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Dosya ismin tam olarak neyse onu yazdık */
+  background: url('./assets/background.jpg.jpg') no-repeat center center/cover;
+}
