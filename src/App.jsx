@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import { useAuth } from './AuthContext';
+import { fallbackMedia } from './fallbackData';
+import MovieCard from './MovieCard';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // --- ROLE-BASED DASHBOARDS ---
 
@@ -73,6 +76,7 @@ const ProfileView = ({ user, profile, watchlist }) => (
         </div>
       </div>
     </div>
+
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {[
         { label: 'Watchlist_Load', value: watchlist.length, unit: 'Items' },
@@ -100,7 +104,6 @@ const ProfileView = ({ user, profile, watchlist }) => (
 
 function App() {
   const { user, profile, loading: authLoading } = useAuth();
-  
   const [mediaList, setMediaList] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
   const [email, setEmail] = useState('');
@@ -126,6 +129,11 @@ function App() {
     setTimeout(() => setToast({ message: '', type: null }), 3000);
   };
 
+  const sendAutoNotification = async (msg) => {
+    if (!user) return;
+    await supabase.from('notifications').insert([{ user_id: user.id, message: msg }]);
+  };
+
   const handleSignUp = async () => {
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) showToast(error.message, 'error');
@@ -142,23 +150,19 @@ function App() {
     if (!API_KEY) return;
     setLoading(true);
     const currentPage = isNextPage ? page + 1 : 1;
-    
     const endpoint = query 
       ? `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=en-US&page=${currentPage}`
       : `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=${currentPage}`;
 
     try {
       const response = await fetch(endpoint);
+      if (!response.ok) throw new Error();
       const data = await response.json();
-      if (isNextPage) {
-        setMediaList(prev => [...prev, ...(data.results || [])]);
-        setPage(currentPage);
-      } else {
-        setMediaList(data.results || []);
-        setPage(1);
-      }
+      setMediaList(isNextPage ? [...mediaList, ...(data.results || [])] : (data.results || []));
+      setPage(currentPage);
     } catch (error) {
-      showToast("Fetch_Error: Data_Stream_Interrupted", "error");
+      if (!isNextPage) setMediaList(fallbackMedia);
+      showToast("Data_Stream_Interrupted: Loading Fallback", "error");
     } finally {
       setLoading(false);
     }
@@ -170,9 +174,7 @@ function App() {
       const data = await response.json();
       const trailer = data.results?.find(vid => vid.type === "Trailer" && vid.site === "YouTube");
       setTrailerKey(trailer ? trailer.key : null);
-    } catch (error) {
-      console.error("Trailer_Fetch_Error:", error);
-    }
+    } catch (error) { console.error(error); }
   };
 
   const fetchWatchlist = async () => {
@@ -181,10 +183,10 @@ function App() {
   };
 
   const fetchStats = async () => {
-    const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
-    const { count: reviewCount } = await supabase.from('reviews').select('*', { count: 'exact', head: true });
-    const { count: watchlistCount } = await supabase.from('watchlists').select('*', { count: 'exact', head: true });
-    setStats({ users: userCount || 0, reviews: reviewCount || 0, watchlist: watchlistCount || 0 });
+    const { count: u } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
+    const { count: r } = await supabase.from('reviews').select('*', { count: 'exact', head: true });
+    const { count: w } = await supabase.from('watchlists').select('*', { count: 'exact', head: true });
+    setStats({ users: u || 0, reviews: r || 0, watchlist: w || 0 });
   };
 
   const fetchReviews = async (mediaId) => {
@@ -213,20 +215,19 @@ function App() {
   };
 
   const submitReview = async (mediaId) => {
-    if (!review) { showToast('Validation_Error: Review_Field_Empty', 'error'); return; }
+    if (!review) return;
     const { error } = await supabase.from('reviews').insert([{ media_id: mediaId, review_text: review, user_rating: rating, user_id: user.id }]);
-    if (!error) { setReview(''); setRating(5); fetchReviews(mediaId); showToast('Data_Injected: Review_Published'); }
-    else showToast('Transmission_Error: Post_Failed', 'error');
+    if (!error) { 
+      setReview(''); 
+      fetchReviews(mediaId); 
+      showToast('Data_Injected: Review_Published'); 
+      sendAutoNotification(`You successfully posted a review for this movie!`);
+    }
   };
 
   useEffect(() => {
     if (user) {
-      const channel = supabase.channel('realtime_notifications').on('postgres_changes', { 
-        event: 'INSERT', 
-        schema: 'public', 
-        table: 'notifications', 
-        filter: `user_id=eq.${user.id}` 
-      }, (payload) => {
+      const channel = supabase.channel('realtime_notifications').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` }, (payload) => {
         setNotificationCount(prev => prev + 1);
         showToast(`New Notification: ${payload.new.message}`);
       }).subscribe();
@@ -235,46 +236,20 @@ function App() {
   }, [user]);
 
   useEffect(() => { fetchMedia(searchQuery); }, [searchQuery]);
-  
-  useEffect(() => { 
-    if (user) {
-      fetchWatchlist();
-      if (profile?.role === 'Admin') fetchStats();
-    } 
-  }, [user, profile]);
+  useEffect(() => { if (user) { fetchWatchlist(); if (profile?.role === 'Admin') fetchStats(); } }, [user, profile]);
+  useEffect(() => { if (selectedMedia) { fetchReviews(selectedMedia.id); fetchTrailer(selectedMedia.id); } }, [selectedMedia]);
 
-  useEffect(() => { 
-    if (selectedMedia) {
-      fetchReviews(selectedMedia.id);
-      fetchTrailer(selectedMedia.id);
-    } else {
-      setTrailerKey(null);
-    }
-  }, [selectedMedia]);
-
-  if (authLoading) return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-      <div className="w-12 h-12 border-4 border-blue-500/10 border-t-blue-500 rounded-full animate-spin"></div>
-    </div>
-  );
+  if (authLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center"><div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div></div>;
 
   const filteredWatchlist = watchlist.filter(item => watchlistFilter === 'all' ? true : item.status === watchlistFilter);
 
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6 overflow-hidden relative">
-        {toast.message && (
-          <div className="fixed top-24 right-8 z-[200] animate-in fade-in slide-in-from-right-8 duration-300">
-            <div className={`px-6 py-4 rounded-2xl border backdrop-blur-xl shadow-2xl flex items-center gap-4 ${toast.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-blue-500/10 border-blue-500/20 text-blue-400'}`}>
-              <div className={`w-2 h-2 rounded-full animate-pulse ${toast.type === 'error' ? 'bg-red-500' : 'bg-blue-500'}`}></div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] font-mono">{toast.message}</span>
-            </div>
-          </div>
-        )}
         <div className="absolute inset-0 z-0 flex gap-4 opacity-10 pointer-events-none skew-y-12 scale-110">
           {[1, 2, 3, 4, 5, 6].map((col) => (
             <div key={col} className="flex-1 flex flex-col gap-4 animate-infinite-scroll">
-              {[...mediaList, ...mediaList].slice(0, 40).map((movie, idx) => (
+              {[...mediaList, ...mediaList].slice(0, 20).map((movie, idx) => (
                 <img key={idx} src={movie.poster_path ? `https://image.tmdb.org/t/p/w200${movie.poster_path}` : 'https://via.placeholder.com/200x300'} className="w-full rounded-xl grayscale brightness-50" alt="" />
               ))}
             </div>
@@ -282,14 +257,14 @@ function App() {
         </div>
         <div className="relative z-10 bg-slate-900/90 p-12 rounded-[2rem] border border-slate-800/60 w-full max-w-md shadow-2xl backdrop-blur-3xl">
           <div className="text-center mb-12">
-            <h2 className="text-5xl font-black tracking-tighter italic uppercase mb-2 bg-clip-text text-transparent bg-gradient-to-br from-white via-slate-400 to-slate-600">Vibe<span className="text-blue-500">Flow</span></h2>
+            <h2 className="text-5xl font-black tracking-tighter italic uppercase mb-2 text-white">Vibe<span className="text-blue-500">Flow</span></h2>
             <p className="text-slate-500 text-[10px] font-black tracking-[0.5em] uppercase">Core_System_v1</p>
           </div>
           <div className="space-y-5">
-            <input type="email" placeholder="root@vibeflow.sys" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-4 rounded-xl text-white outline-none text-xs font-mono" />
-            <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-4 rounded-xl text-white outline-none text-xs font-mono" />
-            <button onClick={handleLogin} className="w-full bg-blue-600 text-white py-4 rounded-xl font-black text-[11px] uppercase tracking-[0.2em]">Execute_Auth</button>
-            <button onClick={handleSignUp} className="w-full bg-transparent text-slate-500 py-4 border border-slate-800 rounded-xl font-bold text-[10px] uppercase">New_System_Request</button>
+            <input type="email" placeholder="root@vibeflow.sys" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-4 rounded-xl text-white outline-none font-mono text-xs" />
+            <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-4 rounded-xl text-white outline-none font-mono text-xs" />
+            <button onClick={handleLogin} className="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-black uppercase tracking-widest text-[11px] transition-all">Execute_Auth</button>
+            <button onClick={handleSignUp} className="w-full bg-transparent hover:bg-slate-800 text-slate-500 py-4 rounded-xl font-bold uppercase border border-slate-800/50 text-[10px]">New_System_Request</button>
           </div>
         </div>
       </div>
@@ -300,46 +275,48 @@ function App() {
   if (profile?.role === 'Staff') return <StaffDashboard />;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans pb-20">
+    <div className="min-h-screen bg-slate-950 text-slate-200 pb-20">
       {toast.message && (
         <div className="fixed top-24 right-8 z-[200] animate-in fade-in slide-in-from-right-8 duration-300">
           <div className={`px-6 py-4 rounded-2xl border backdrop-blur-xl shadow-2xl flex items-center gap-4 ${toast.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-blue-500/10 border-blue-500/20 text-blue-400'}`}>
-            <div className={`w-2 h-2 rounded-full animate-pulse ${toast.type === 'error' ? 'bg-red-500' : 'bg-blue-500'}`}></div>
             <span className="text-[10px] font-black uppercase tracking-[0.2em] font-mono">{toast.message}</span>
           </div>
         </div>
       )}
+      
       <nav className="p-6 flex justify-between items-center border-b border-slate-900 bg-slate-950/50 backdrop-blur-md sticky top-0 z-50">
         <h1 className="text-2xl font-black italic tracking-tighter leading-none">Vibe<span className="text-blue-500">Flow</span></h1>
         <div className="flex items-center gap-6">
           <input type="text" placeholder="Search database..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-slate-900 border border-slate-800 px-4 py-2 rounded-full text-xs outline-none focus:border-blue-500 w-64 transition-all" />
           <button onClick={() => setView('browse')} className={`text-[10px] font-bold uppercase tracking-widest ${view === 'browse' ? 'text-blue-500' : 'text-slate-500'}`}>Browse</button>
           <button onClick={() => setView('watchlist')} className={`text-[10px] font-bold uppercase tracking-widest ${view === 'watchlist' ? 'text-blue-500' : 'text-slate-500'}`}>Watchlist ({watchlist.length})</button>
-          <button onClick={() => { setView('profile'); setNotificationCount(0); }} className={`relative text-[10px] font-bold uppercase tracking-widest ${view === 'profile' ? 'text-blue-500' : 'text-slate-500'}`}>
+          <button onClick={() => { setView('profile'); setNotificationCount(0); }} className="relative text-[10px] font-bold uppercase text-slate-500">
             Profile_System
             {notificationCount > 0 && <span className="absolute -top-2 -right-3 bg-red-600 text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full animate-bounce">{notificationCount}</span>}
           </button>
-          <button onClick={() => supabase.auth.signOut()} className="bg-slate-900 p-2 rounded-lg hover:bg-red-500/10 hover:text-red-500 transition-all text-[10px] font-bold uppercase tracking-widest border border-slate-800">Exit</button>
+          <button onClick={() => supabase.auth.signOut()} className="bg-slate-900 p-2 rounded-lg hover:text-red-500 transition-all text-[10px] font-bold uppercase border border-slate-800">Exit</button>
         </div>
       </nav>
 
       <main className="p-8">
         {view === 'browse' ? (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
-              {mediaList.map((movie) => (
-                <div key={movie.id} className="group relative bg-slate-900 rounded-3xl overflow-hidden border border-slate-800/50 hover:border-blue-500/50 transition-all">
-                  <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} className="w-full aspect-[2/3] object-cover cursor-pointer grayscale group-hover:grayscale-0 transition-all duration-500" onClick={() => setSelectedMedia(movie)} alt="" />
-                  <div className="p-4 flex justify-between items-center bg-slate-900/50">
-                    <h3 className="font-bold text-sm truncate uppercase font-mono">{movie.title}</h3>
-                    <button onClick={() => addToWatchlist(movie)} className="bg-white/5 hover:bg-blue-600 p-2 rounded-xl transition-all font-bold text-white">+</button>
-                  </div>
-                </div>
-              ))}
+<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
+  <AnimatePresence>
+    {mediaList.map((movie) => (
+      <MovieCard 
+        key={movie.id} 
+        movie={movie} 
+        onSelect={setSelectedMedia} 
+        onAdd={addToWatchlist} 
+      />
+    ))}
+  </AnimatePresence>
+</div>
             </div>
             {mediaList.length > 0 && (
               <div className="flex justify-center mt-16">
-                <button onClick={() => fetchMedia(searchQuery, true)} disabled={loading} className="px-12 py-4 bg-slate-900 border border-slate-800 rounded-2xl text-[10px] font-black uppercase text-slate-400 hover:text-white transition-all disabled:opacity-50">
+                <button onClick={() => fetchMedia(searchQuery, true)} disabled={loading} className="px-12 py-4 bg-slate-900 border border-slate-800 rounded-2xl text-[10px] font-black uppercase text-slate-400 hover:text-white transition-all">
                   {loading ? 'Requesting_Data...' : 'Load_More'}
                 </button>
               </div>
@@ -349,22 +326,20 @@ function App() {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
             <div className="col-span-full flex gap-4 mb-8 bg-slate-900/50 p-2 rounded-2xl w-fit border border-slate-800">
               {['all', 'to_watch', 'completed'].map((f) => (
-                <button key={f} onClick={() => setWatchlistFilter(f)} className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${watchlistFilter === f ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'}`}>{f.replace('_', ' ')}</button>
+                <button key={f} onClick={() => setWatchlistFilter(f)} className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${watchlistFilter === f ? 'bg-blue-600 text-white' : 'text-slate-500 hover:text-slate-300'}`}>{f.replace('_', ' ')}</button>
               ))}
             </div>
             {filteredWatchlist.map((item) => (
               <div key={item.id} className="relative group bg-slate-900 rounded-3xl overflow-hidden border border-slate-800">
                 <img src={`https://image.tmdb.org/t/p/w500${item.poster_path}`} className="w-full aspect-[2/3] object-cover" alt="" />
                 <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                  <button onClick={() => toggleWatchlistStatus(item.id, item.status)} className={`p-2 rounded-xl text-white shadow-xl ${item.status === 'completed' ? 'bg-green-600' : 'bg-indigo-600'}`}>{item.status === 'completed' ? '✓' : '○'}</button>
-                  <button onClick={() => removeFromWatchlist(item.id)} className="bg-red-600 p-2 rounded-xl text-white shadow-xl font-bold">X</button>
+                  <button onClick={() => toggleWatchlistStatus(item.id, item.status)} className={`p-2 rounded-xl text-white ${item.status === 'completed' ? 'bg-green-600' : 'bg-indigo-600'}`}>{item.status === 'completed' ? '✓' : '○'}</button>
+                  <button onClick={() => removeFromWatchlist(item.id)} className="bg-red-600 p-2 rounded-xl text-white font-bold">X</button>
                 </div>
               </div>
             ))}
           </div>
-        ) : (
-          <ProfileView user={user} profile={profile} watchlist={watchlist} />
-        )}
+        ) : <ProfileView user={user} profile={profile} watchlist={watchlist} />}
       </main>
 
       {selectedMedia && (
@@ -372,11 +347,7 @@ function App() {
           <div className="bg-slate-900 border border-slate-800 max-w-6xl w-full flex flex-col md:flex-row rounded-[2rem] overflow-hidden h-[90vh] shadow-2xl relative" onClick={e => e.stopPropagation()}>
             <div className="w-full md:w-2/5 relative border-r border-slate-800 bg-black flex flex-col">
               <div className="flex-1 relative">
-                {trailerKey ? (
-                  <iframe src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&modestbranding=1`} className="w-full h-full object-cover" title="Trailer" allowFullScreen></iframe>
-                ) : (
-                  <img src={`https://image.tmdb.org/t/p/w500${selectedMedia.poster_path}`} className="w-full h-full object-cover opacity-60" alt="" />
-                )}
+                {trailerKey ? <iframe src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&modestbranding=1`} className="w-full h-full object-cover" title="Trailer" allowFullScreen></iframe> : <img src={`https://image.tmdb.org/t/p/w500${selectedMedia.poster_path}`} className="w-full h-full object-cover opacity-60" alt="" />}
               </div>
               <div className="p-8 bg-gradient-to-t from-slate-950 to-transparent text-white">
                 <h2 className="text-3xl font-black mb-2 uppercase italic tracking-tighter leading-none">{selectedMedia.title}</h2>
@@ -385,7 +356,7 @@ function App() {
             </div>
             <div className="flex-1 flex flex-col bg-slate-900/50 overflow-hidden">
               <div className="flex-1 overflow-y-auto p-8 space-y-6">
-                <h4 className="text-[9px] font-black text-slate-500 mb-4 uppercase tracking-[0.3em]">Community_Feed</h4>
+                <h4 className="text-[9px] font-black text-slate-500 mb-4 uppercase tracking-widest">Community_Feed</h4>
                 {mediaReviews.map((rev, idx) => (
                   <div key={idx} className="bg-black/20 border border-slate-800/50 p-4 rounded-2xl animate-in fade-in duration-300">
                     <span className="text-[9px] font-bold text-blue-400 font-mono italic uppercase">USER_{rev.user_id?.slice(0, 8)}</span>
@@ -396,7 +367,7 @@ function App() {
               <div className="p-8 bg-slate-950/50 border-t border-slate-800">
                 <div className="flex gap-2 mb-4">
                   {[1, 2, 3, 4, 5].map((num) => (
-                    <button key={num} onClick={() => setRating(num)} className={`w-8 h-8 border transition-all text-[10px] font-black ${rating >= num ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/20' : 'bg-black/40 border-slate-800 text-slate-500'}`}>{num}</button>
+                    <button key={num} onClick={() => setRating(num)} className={`w-8 h-8 border transition-all text-[10px] font-black ${rating >= num ? 'bg-blue-600 border-blue-500 text-white' : 'bg-black/40 border-slate-800 text-slate-500'}`}>{num}</button>
                   ))}
                 </div>
                 <div className="flex gap-3">
@@ -405,23 +376,10 @@ function App() {
                 </div>
               </div>
             </div>
-            <button onClick={() => setSelectedMedia(null)} className="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors z-10 font-bold p-2">X</button>
+            <button onClick={() => setSelectedMedia(null)} className="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors z-10 font-bold p-2 text-xl">X</button>
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-export default App;
-import React from 'react';
-import Login from './login'; // Soldaki menüde 'login.jsx' olduğu için küçük harf
-import './index.css';
-
-function App() {
-  return (
-    <div className="App" style={{border: '5px solid red'}}> {/* Kırmızı kenarlık ekledik, en azından bunu görmeliyiz */}
-      <Login />
     </div>
   );
 }
