@@ -194,13 +194,29 @@ function App() {
     setMediaReviews(data || []);
   };
 
-  const addToWatchlist = async (mediaItem) => {
+const addToWatchlist = async (mediaItem) => {
+    const isDuplicate = watchlist.some(item => item.media_id === mediaItem.id);
+
+    if (isDuplicate) {
+      showToast('Validation_Error: Media_Already_In_Watchlist', 'error');
+      return;
+    }
+
     const { error } = await supabase.from('watchlists').insert([{ 
-      media_id: mediaItem.id, title: mediaItem.title, poster_path: mediaItem.poster_path, 
-      vote_average: mediaItem.vote_average, user_id: user?.id, status: 'to_watch'
+      media_id: mediaItem.id, 
+      title: mediaItem.title, 
+      poster_path: mediaItem.poster_path, 
+      vote_average: mediaItem.vote_average, 
+      user_id: user?.id, 
+      status: 'to_watch'
     }]);
-    if (!error) { fetchWatchlist(); showToast(`Sync_Complete: ${mediaItem.title}_Added`); }
-    else showToast('Database_Error: Write_Failed', 'error');
+
+    if (!error) { 
+      fetchWatchlist(); 
+      showToast(`Sync_Complete: ${mediaItem.title}_Added`); 
+    } else {
+      showToast('Database_Error: Write_Failed', 'error');
+    }
   };
 
   const removeFromWatchlist = async (id) => {
@@ -301,18 +317,17 @@ function App() {
       <main className="p-8">
         {view === 'browse' ? (
           <>
-<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
-  <AnimatePresence>
-    {mediaList.map((movie) => (
-      <MovieCard 
-        key={movie.id} 
-        movie={movie} 
-        onSelect={setSelectedMedia} 
-        onAdd={addToWatchlist} 
-      />
-    ))}
-  </AnimatePresence>
-</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
+              <AnimatePresence>
+                {mediaList.map((movie) => (
+                  <MovieCard 
+                    key={movie.id} 
+                    movie={movie} 
+                    onSelect={setSelectedMedia} 
+                    onAdd={addToWatchlist} 
+                  />
+                ))}
+              </AnimatePresence>
             </div>
             {mediaList.length > 0 && (
               <div className="flex justify-center mt-16">
