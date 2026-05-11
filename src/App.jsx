@@ -194,7 +194,7 @@ function App() {
     setMediaReviews(data || []);
   };
 
-const addToWatchlist = async (mediaItem) => {
+  const addToWatchlist = async (mediaItem) => {
     const isDuplicate = watchlist.some(item => String(item.media_id) === String(mediaItem.id));
 
     if (isDuplicate) {
@@ -357,56 +357,79 @@ const addToWatchlist = async (mediaItem) => {
         ) : <ProfileView user={user} profile={profile} watchlist={watchlist} />}
       </main>
 
-<div className="flex-1 relative bg-black flex items-center justify-center group">
-  {trailerKey ? (
-    <>
-    <div className="flex-1 relative bg-black flex items-center justify-center">
-  {trailerKey ? (
-    <iframe 
-      src={`https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3&enablejsapi=1`} 
-      className="w-full h-full object-cover z-10 border-0" 
-      title="Movie Trailer" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-      allowFullScreen
-    ></iframe>
-  ) : (
-    <div className="relative w-full h-full flex items-center justify-center bg-slate-900">
-       <img 
-          src={`https://images.weserv.nl/?url=https://image.tmdb.org/t/p/w500${selectedMedia.poster_path}`} 
-          className="absolute inset-0 w-full h-full object-cover opacity-20 blur-md" 
-          alt="" 
-       />
-       <span className="relative z-10 text-[10px] font-black text-purple-500 uppercase tracking-widest px-4 py-2 border border-purple-500/20 bg-black/50">
-          No_Trailer_Source_Found
-       </span>
-    </div>
-  )}
-</div>
-      
-      <a 
-        href={`https://www.youtube.com/watch?v=${trailerKey}`} 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="absolute bottom-4 right-4 z-20 bg-red-600/80 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all opacity-0 group-hover:opacity-100"
-      >
-        Watch_On_YouTube
-      </a>
-    </>
-  ) : (
-    <div className="relative w-full h-full">
-      <img 
-        src={`https://images.weserv.nl/?url=https://image.tmdb.org/t/p/w500${selectedMedia.poster_path}`} 
-        className="w-full h-full object-cover opacity-40 blur-sm" 
-        alt="" 
-      />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-slate-900/80 px-4 py-2 rounded-full border border-slate-800">
-          Trailer_Not_Available_In_Sector
-        </span>
-      </div>
-    </div>
-  )}
-</div>
+      {/* --- MODAL (Selected Media) --- */}
+      {selectedMedia && (
+        <div className="fixed inset-0 bg-slate-950/90 flex items-center justify-center p-4 z-[100] backdrop-blur-xl" onClick={() => setSelectedMedia(null)}>
+          <div className="bg-slate-900 border border-slate-800 max-w-6xl w-full flex flex-col md:flex-row rounded-[2rem] overflow-hidden h-[90vh] shadow-2xl relative" onClick={e => e.stopPropagation()}>
+            
+            {/* Left Side: Trailer / Image */}
+            <div className="w-full md:w-2/5 relative border-r border-slate-800 bg-black flex flex-col group">
+              <div className="flex-1 relative bg-black flex items-center justify-center">
+                {trailerKey ? (
+                  <>
+                    <iframe 
+                      src={`https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3&enablejsapi=1`} 
+                      className="w-full h-full object-cover z-10 border-0" 
+                      title="Movie Trailer" 
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                      allowFullScreen
+                    ></iframe>
+                    <a 
+                      href={`https://www.youtube.com/watch?v=${trailerKey}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="absolute bottom-4 right-4 z-20 bg-red-600/80 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      Watch_On_YouTube
+                    </a>
+                  </>
+                ) : (
+                  <div className="relative w-full h-full flex items-center justify-center bg-slate-900">
+                     <img 
+                        src={`https://images.weserv.nl/?url=https://image.tmdb.org/t/p/w500${selectedMedia.poster_path}`} 
+                        className="absolute inset-0 w-full h-full object-cover opacity-20 blur-md" 
+                        alt="" 
+                     />
+                     <span className="relative z-10 text-[10px] font-black text-purple-500 uppercase tracking-widest px-4 py-2 border border-purple-500/20 bg-black/50">
+                        No_Trailer_Source_Found
+                     </span>
+                  </div>
+                )}
+              </div>
+              <div className="p-8 bg-gradient-to-t from-slate-950 to-transparent text-white">
+                <h2 className="text-3xl font-black mb-2 uppercase italic tracking-tighter leading-none">{selectedMedia.title}</h2>
+                <p className="text-slate-400 text-[10px] leading-relaxed uppercase font-mono mt-4 line-clamp-6">{selectedMedia.overview}</p>
+              </div>
+            </div>
+
+            {/* Right Side: Reviews */}
+            <div className="flex-1 flex flex-col bg-slate-900/50 overflow-hidden">
+              <div className="flex-1 overflow-y-auto p-8 space-y-6">
+                <h4 className="text-[9px] font-black text-slate-500 mb-4 uppercase tracking-widest">Community_Feed</h4>
+                {mediaReviews.map((rev, idx) => (
+                  <div key={idx} className="bg-black/20 border border-slate-800/50 p-4 rounded-2xl animate-in fade-in duration-300">
+                    <span className="text-[9px] font-bold text-blue-400 font-mono italic uppercase">USER_{rev.user_id?.slice(0, 8)}</span>
+                    <p className="text-slate-300 text-xs italic mt-2 leading-relaxed">"{rev.review_text}"</p>
+                  </div>
+                ))}
+              </div>
+              <div className="p-8 bg-slate-950/50 border-t border-slate-800">
+                <div className="flex gap-2 mb-4">
+                  {[1, 2, 3, 4, 5].map((num) => (
+                    <button key={num} onClick={() => setRating(num)} className={`w-8 h-8 border transition-all text-[10px] font-black ${rating >= num ? 'bg-blue-600 border-blue-500 text-white' : 'bg-black/40 border-slate-800 text-slate-500'}`}>{num}</button>
+                  ))}
+                </div>
+                <div className="flex gap-3">
+                  <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="Inject_Review_Data..." className="flex-1 bg-black/40 border border-slate-800 px-4 py-3 rounded-xl text-xs text-white outline-none focus:border-blue-500 transition-all font-mono" />
+                  <button onClick={() => submitReview(selectedMedia.id)} className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Post</button>
+                </div>
+              </div>
+            </div>
+            
+            <button onClick={() => setSelectedMedia(null)} className="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors z-10 font-bold p-2 text-xl">X</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

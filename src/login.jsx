@@ -1,31 +1,33 @@
-import React from 'react';
-import bgImage from './assets/background.jpg.jpg';
+import React from "react";
+import "./Login.css";
 
 const Login = () => {
   return (
-    <div
-      className="login-page"
-      style={{
-        backgroundImage: `url(${bgImage})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        height: "100vh"
-      }}
-    >
+    <div className="login-page">
+      <div className="overlay"></div>
+
       <div className="glass-card">
-        <h1 className="logo-text">NOVASTREAM</h1>
-        <p className="subtitle">STREAMING PLATFORM - MILESTONE 1</p>
+        <div className="card-glow"></div>
 
-        <div className="input-container">
-          <input type="email" placeholder="EMAIL_ADDRESS" className="login-input" />
-          <input type="password" placeholder="PASSWORD" className="login-input" />
+        <h1 className="logo-text">
+          VIBE<span>FLOW</span>
+        </h1>
+
+        <p className="subtitle">CORE_SYSTEM_V1</p>
+
+        <div className="input-group">
+          <input type="text" placeholder="root@vibeflow.sys" />
         </div>
 
-        <div className="button-group">
-          <button className="btn-login">LOGIN</button>
-          <button className="btn-signup">SIGNUP</button>
+        <div className="input-group">
+          <input type="password" placeholder="••••••••" />
         </div>
+
+        <button className="login-btn">EXECUTE_AUTH</button>
+
+        <button className="secondary-btn">
+          NEW_SYSTEM_REQUEST
+        </button>
       </div>
     </div>
   );
