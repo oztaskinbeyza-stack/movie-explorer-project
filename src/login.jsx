@@ -1,6 +1,6 @@
 import React from "react";
 import "./Login.css";
-import bgImage from './assets/background.jpg.jpg';
+import bgImage from './assets/background.jpg';
 
 const Login = () => {
   return (
