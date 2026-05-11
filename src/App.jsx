@@ -296,7 +296,10 @@ const fetchReviews = async (mediaId) => {
   if (authLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center"><div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div></div>;
 
   const filteredWatchlist = watchlist.filter(item => watchlistFilter === 'all' ? true : item.status === watchlistFilter);
-
+const userAverage = mediaReviews.length > 0 
+  ? (mediaReviews.reduce((acc, rev) => acc + rev.user_rating, 0) / mediaReviews.length).toFixed(1)
+  : "0.0";
+  
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6 overflow-hidden relative">
