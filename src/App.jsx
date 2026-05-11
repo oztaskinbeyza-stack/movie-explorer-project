@@ -360,12 +360,28 @@ const addToWatchlist = async (mediaItem) => {
 <div className="flex-1 relative bg-black flex items-center justify-center group">
   {trailerKey ? (
     <>
-      <iframe 
-        src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1&modestbranding=1&rel=0`} 
-        className="w-full h-full object-cover z-10" 
-        title="Trailer" 
-        allowFullScreen
-      ></iframe>
+    <div className="flex-1 relative bg-black flex items-center justify-center">
+  {trailerKey ? (
+    <iframe 
+      src={`https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3&enablejsapi=1`} 
+      className="w-full h-full object-cover z-10 border-0" 
+      title="Movie Trailer" 
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      allowFullScreen
+    ></iframe>
+  ) : (
+    <div className="relative w-full h-full flex items-center justify-center bg-slate-900">
+       <img 
+          src={`https://images.weserv.nl/?url=https://image.tmdb.org/t/p/w500${selectedMedia.poster_path}`} 
+          className="absolute inset-0 w-full h-full object-cover opacity-20 blur-md" 
+          alt="" 
+       />
+       <span className="relative z-10 text-[10px] font-black text-purple-500 uppercase tracking-widest px-4 py-2 border border-purple-500/20 bg-black/50">
+          No_Trailer_Source_Found
+       </span>
+    </div>
+  )}
+</div>
       
       <a 
         href={`https://www.youtube.com/watch?v=${trailerKey}`} 
