@@ -151,7 +151,7 @@ const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) showToast('Auth_Failure: Invalid_Credentials', 'error');
-    else showToast('Access_Granted: Welcome_to_VibeFlow');
+    else showToast('Access_Granted: Welcome_to_NovaStream');
   };
 
   const fetchMedia = async (query = '', isNextPage = false) => {
@@ -204,18 +204,24 @@ const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
   };
 
 const fetchReviews = async (mediaId) => {
+    if (!mediaId) return;
+    
+    console.log("Sistem_Araması: ID =", mediaId, "Type =", typeof mediaId);
+
     const { data, error } = await supabase
       .from('reviews')
       .select('*')
       .eq('media_id', String(mediaId)) 
       .order('created_at', { ascending: false });
 
-    if (!error) {
-      setMediaReviews(data || []);
+    if (error) {
+      console.error("Yol_Hatası:", error.message);
     } else {
-      console.error("Yorum çekme hatası:", error.message);
+      console.log("Gelen_Veri_Paketi:", data); 
+      setMediaReviews(data || []);
     }
   };
+
   const submitReview = async (mediaId) => {
     if (!review || !user) return;
     
@@ -305,11 +311,11 @@ const fetchReviews = async (mediaId) => {
         </div>
         <div className="relative z-10 bg-slate-900/90 p-12 rounded-[2rem] border border-slate-800/60 w-full max-w-md shadow-2xl backdrop-blur-3xl">
           <div className="text-center mb-12">
-            <h2 className="text-5xl font-black tracking-tighter italic uppercase mb-2 text-white">Vibe<span className="text-blue-500">Flow</span></h2>
+            <h2 className="text-5xl font-black tracking-tighter italic uppercase mb-2 text-white">Nova<span className="text-blue-500">Stream</span></h2>
             <p className="text-slate-500 text-[10px] font-black tracking-[0.5em] uppercase">Core_System_v1</p>
           </div>
           <div className="space-y-5">
-            <input type="email" placeholder="root@vibeflow.sys" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-4 rounded-xl text-white outline-none font-mono text-xs" />
+            <input type="email" placeholder="root@novastream.sys" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-4 rounded-xl text-white outline-none font-mono text-xs" />
             <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-4 rounded-xl text-white outline-none font-mono text-xs" />
             <button onClick={handleLogin} className="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-black uppercase tracking-widest text-[11px] transition-all">Execute_Auth</button>
             <button onClick={handleSignUp} className="w-full bg-transparent hover:bg-slate-800 text-slate-500 py-4 rounded-xl font-bold uppercase border border-slate-800/50 text-[10px]">New_System_Request</button>
@@ -333,7 +339,7 @@ const fetchReviews = async (mediaId) => {
       )}
       
       <nav className="p-6 flex justify-between items-center border-b border-slate-900 bg-slate-950/50 backdrop-blur-md sticky top-0 z-50">
-        <h1 className="text-2xl font-black italic tracking-tighter leading-none">Vibe<span className="text-blue-500">Flow</span></h1>
+        <h1 className="text-2xl font-black italic tracking-tighter leading-none">Nova<span className="text-blue-500">Stream</span></h1>
         <div className="flex items-center gap-6">
           <input type="text" placeholder="Search database..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-slate-900 border border-slate-800 px-4 py-2 rounded-full text-xs outline-none focus:border-blue-500 w-64 transition-all" />
           <button onClick={() => setView('browse')} className={`text-[10px] font-bold uppercase tracking-widest ${view === 'browse' ? 'text-blue-500' : 'text-slate-500'}`}>Browse</button>
@@ -453,29 +459,33 @@ const fetchReviews = async (mediaId) => {
               </div>
             </div>
 
-            {/* Right Side: Reviews */}
-            <div className="flex-1 flex flex-col bg-slate-900/50 overflow-hidden">
-              <div className="flex-1 overflow-y-auto p-8 space-y-6">
-                <h4 className="text-[9px] font-black text-slate-500 mb-4 uppercase tracking-widest">Community_Feed</h4>
-                {mediaReviews.map((rev, idx) => (
-                  <div key={idx} className="bg-black/20 border border-slate-800/50 p-4 rounded-2xl animate-in fade-in duration-300">
-                    <span className="text-[9px] font-bold text-blue-400 font-mono italic uppercase">USER_{rev.user_id?.slice(0, 8)}</span>
-                    <p className="text-slate-300 text-xs italic mt-2 leading-relaxed">"{rev.review_text}"</p>
-                  </div>
-                ))}
-              </div>
-              <div className="p-8 bg-slate-950/50 border-t border-slate-800">
-                <div className="flex gap-2 mb-4">
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <button key={num} onClick={() => setRating(num)} className={`w-8 h-8 border transition-all text-[10px] font-black ${rating >= num ? 'bg-blue-600 border-blue-500 text-white' : 'bg-black/40 border-slate-800 text-slate-500'}`}>{num}</button>
-                  ))}
-                </div>
-                <div className="flex gap-3">
-                  <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="Inject_Review_Data..." className="flex-1 bg-black/40 border border-slate-800 px-4 py-3 rounded-xl text-xs text-white outline-none focus:border-blue-500 transition-all font-mono" />
-                  <button onClick={() => submitReview(selectedMedia.id)} className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Post</button>
-                </div>
-              </div>
-            </div>
+<div className="flex-1 overflow-y-auto p-8 space-y-6">
+  <h4 className="text-[9px] font-black text-slate-500 mb-4 uppercase tracking-widest border-b border-slate-800 pb-2">
+    Community_Feed
+  </h4>
+  
+  {mediaReviews.length > 0 ? (
+    mediaReviews.map((rev, idx) => (
+      <div key={idx} className="bg-black/40 border border-slate-800/50 p-4 rounded-2xl animate-in fade-in duration-300">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-[9px] font-bold text-blue-400 font-mono italic uppercase">
+            USER_{rev.user_id?.slice(0, 8)}
+          </span>
+          <span className="text-[9px] text-slate-600 font-mono">
+            Rating: {rev.user_rating}/5
+          </span>
+        </div>
+        <p className="text-slate-300 text-xs italic leading-relaxed">
+          "{rev.review_text}"
+        </p>
+      </div>
+    ))
+  ) : (
+    <div className="text-[10px] text-slate-700 uppercase italic font-bold text-center mt-10">
+      // No_Active_Data_Streams_Found
+    </div>
+  )}
+</div>
             
             <button onClick={() => setSelectedMedia(null)} className="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors z-10 font-bold p-2 text-xl">X</button>
           </div>
