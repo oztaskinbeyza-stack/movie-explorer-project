@@ -13,12 +13,18 @@ const MovieCard = ({ movie, onSelect, onAdd }) => {
     >
       <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90 z-10" />
       
-      <img 
-        src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
-        className="w-full aspect-[2/3] object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
-        alt={movie.title}
-        onClick={() => onSelect(movie)}
-      />
+<img 
+  src={`https://images.weserv.nl/?url=https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
+  onError={(e) => { 
+    e.target.src = 'https://via.placeholder.com/500x750?text=Data_Stream_Offline'; 
+  }}
+  className="..." 
+  alt={movie.title}
+/>
+  src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Image'} 
+  onError={(e) => { e.target.src = 'https://via.placeholder.com/500x750?text=Stream_Error'; }}
+  className="..." 
+/>
 
       <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
         <div className="flex items-center gap-2 mb-2">
