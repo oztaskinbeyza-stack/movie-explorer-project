@@ -286,10 +286,14 @@ function App() {
           ))}
         </div>
         <div className="relative z-10 bg-slate-900/90 p-12 rounded-[3rem] border border-slate-800/60 w-full max-w-md shadow-2xl backdrop-blur-3xl">
-          <div className="text-center mb-12">
-            <h2 className="text-6xl font-black tracking-tighter italic uppercase mb-2 text-white">Nova<span className="text-blue-500">Stream</span></h2>
-            <p className="text-slate-500 text-[10px] font-black tracking-[0.5em] uppercase">Neural_Network_v1.0.4</p>
-          </div>
+<div className="text-center mb-12">
+  <h2 className="text-6xl font-black tracking-tighter italic uppercase mb-2 text-white">
+    Nova<span className="text-blue-500">Stream</span>
+  </h2>
+  <p className="text-slate-500 text-[10px] font-black tracking-[0.5em] uppercase">
+    Neural_Network_v1.0.4
+  </p>
+</div>
           <div className="space-y-6">
             <input type="email" placeholder="root@novastream.sys" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-5 rounded-2xl text-white outline-none font-mono text-xs focus:border-blue-500 transition-all" />
             <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-5 rounded-2xl text-white outline-none font-mono text-xs focus:border-blue-500 transition-all" />
@@ -319,8 +323,11 @@ function App() {
       </AnimatePresence>
       
       {/* Navigation */}
-      <nav className="p-8 flex justify-between items-center border-b border-slate-900 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50">
-        <h1 className="text-3xl font-black italic tracking-tighter leading-none hover:scale-105 transition-transform cursor-default">Nova<span className="text-blue-500">Stream</span></h1>
+<nav className="p-8 flex justify-between items-center border-b border-slate-900 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50">
+  <h1 className="text-3xl font-black italic tracking-tighter leading-none hover:scale-105 transition-transform cursor-default">
+    Nova<span className="text-blue-500">Stream</span>
+  </h1>
+          <h1 className="text-3xl font-black italic tracking-tighter leading-none hover:scale-105 transition-transform cursor-default">Nova<span className="text-blue-500">Stream</span></h1>
         <div className="flex items-center gap-8">
           <div className="relative group hidden md:block">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-500 transition-colors" size={16} />
