@@ -101,7 +101,14 @@ const ProfileView = ({ user, profile, watchlist }) => (
 );
 
 // --- MAIN APPLICATION ---
-
+const genres = [
+  { id: 0, name: "All" },
+  { id: 28, name: "Action" },
+  { id: 35, name: "Comedy" },
+  { id: 18, name: "Drama" },
+  { id: 27, name: "Horror" },
+  { id: 878, name: "Sci-Fi" },
+];
 function App() {
   const { user, profile, loading: authLoading } = useAuth();
   const [mediaList, setMediaList] = useState([]);
@@ -121,8 +128,9 @@ function App() {
   const [page, setPage] = useState(1);
   const [notificationCount, setNotificationCount] = useState(0);
   const [trailerKey, setTrailerKey] = useState(null);
+  const [selectedGenre, setSelectedGenre] = useState(0);
 
-  const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -150,9 +158,15 @@ function App() {
     if (!API_KEY) return;
     setLoading(true);
     const currentPage = isNextPage ? page + 1 : 1;
-    const endpoint = query 
-      ? `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=en-US&page=${currentPage}`
-      : `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=${currentPage}`;
+    
+    let endpoint;
+    if (query) {
+      endpoint = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=en-US&page=${currentPage}`;
+    } else if (selectedGenre !== 0) {
+      endpoint = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${selectedGenre}&language=en-US&page=${currentPage}`;
+    } else {
+      endpoint = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=${currentPage}`;
+    }
 
     try {
       const response = await fetch(endpoint);
@@ -162,7 +176,7 @@ function App() {
       setPage(currentPage);
     } catch (error) {
       if (!isNextPage) setMediaList(fallbackMedia);
-      showToast("Data_Stream_Interrupted: Loading Fallback", "error");
+      showToast("Data_Stream_Interrupted", "error");
     } finally {
       setLoading(false);
     }
@@ -189,19 +203,46 @@ function App() {
     setStats({ users: u || 0, reviews: r || 0, watchlist: w || 0 });
   };
 
-  const fetchReviews = async (mediaId) => {
-    const { data } = await supabase.from('reviews').select('*').eq('media_id', mediaId).order('created_at', { ascending: false });
-    setMediaReviews(data || []);
+const fetchReviews = async (mediaId) => {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('media_id', String(mediaId)) 
+      .order('created_at', { ascending: false });
+
+    if (!error) {
+      setMediaReviews(data || []);
+    } else {
+      console.error("Yorum çekme hatası:", error.message);
+    }
+  };
+  const submitReview = async (mediaId) => {
+    if (!review || !user) return;
+    
+    const { error } = await supabase
+      .from('reviews')
+      .insert([{ 
+        media_id: String(mediaId), 
+        review_text: review, 
+        user_rating: rating, 
+        user_id: user.id 
+      }]);
+
+    if (!error) { 
+      setReview(''); 
+      await fetchReviews(mediaId); 
+      showToast('Data_Injected: Review_Published'); 
+    } else {
+      showToast(`Access_Denied: ${error.message}`, 'error');
+    }
   };
 
   const addToWatchlist = async (mediaItem) => {
     const isDuplicate = watchlist.some(item => String(item.media_id) === String(mediaItem.id));
-
     if (isDuplicate) {
       showToast('Validation_Error: Media_Already_Registered', 'error');
       return;
     }
-
     const { error } = await supabase.from('watchlists').insert([{ 
       media_id: mediaItem.id, 
       title: mediaItem.title, 
@@ -210,7 +251,6 @@ function App() {
       user_id: user?.id, 
       status: 'to_watch'
     }]);
-
     if (!error) { 
       fetchWatchlist(); 
       showToast(`Sync_Complete: ${mediaItem.title}_Added`); 
@@ -230,16 +270,9 @@ function App() {
     if (!error) fetchWatchlist();
   };
 
-  const submitReview = async (mediaId) => {
-    if (!review) return;
-    const { error } = await supabase.from('reviews').insert([{ media_id: mediaId, review_text: review, user_rating: rating, user_id: user.id }]);
-    if (!error) { 
-      setReview(''); 
-      fetchReviews(mediaId); 
-      showToast('Data_Injected: Review_Published'); 
-      sendAutoNotification(`You successfully posted a review for this movie!`);
-    }
-  };
+  useEffect(() => {
+    fetchMedia(searchQuery);
+  }, [searchQuery, selectedGenre]);
 
   useEffect(() => {
     if (user) {
@@ -251,7 +284,6 @@ function App() {
     }
   }, [user]);
 
-  useEffect(() => { fetchMedia(searchQuery); }, [searchQuery]);
   useEffect(() => { if (user) { fetchWatchlist(); if (profile?.role === 'Admin') fetchStats(); } }, [user, profile]);
   useEffect(() => { if (selectedMedia) { fetchReviews(selectedMedia.id); fetchTrailer(selectedMedia.id); } }, [selectedMedia]);
 
