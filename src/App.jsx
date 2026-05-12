@@ -439,23 +439,15 @@ function App() {
               </section>
             ))}
 
-{/* DEEP_DATABASE_EXPLORATION GRID Architecture */}
-<section className="px-6 mt-10">
-  <div className="flex items-center gap-4 mb-10 group/head cursor-default">
-    <div className="h-6 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)]" />
-    <h3 className="text-xl font-semibold tracking-tight text-white/90 transition-colors group-hover/head:text-cyan-400">
-      Deep Global Exploration
-    </h3>
-  </div>
-  
-  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-6 gap-y-12 place-items-center">
-    {mediaList.slice(15).map((movie) => (
-      <div key={movie.id} className="transition-transform duration-700 hover:z-50 hover:-translate-y-2">
-        <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
-      </div>
-    ))}
-  </div>
-</section>
+            {/* DEEP_DATABASE_EXPLORATION GRID Architecture */}
+            <section className="px-6">
+              <div className="flex items-center gap-8 mb-16"><div className="h-12 w-[2px] bg-cyan-500 shadow-[0_0_20px_rgba(6,182,212,0.8)]" /><h3 className="text-[15px] font-black uppercase tracking-[0.7em] text-white/50 italic leading-none">Deep_Global_Exploration</h3></div>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-8 gap-16">
+                {mediaList.slice(15).map((movie) => (
+                  <div key={movie.id} className="flex justify-center transition-transform duration-700 hover:z-50"><MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} /></div>
+                ))}
+              </div>
+            </section>
             
             {/* SENTRY_DISCOVERY LOADER Architecture */}
             <div ref={loaderRef} className="h-80 flex flex-col items-center justify-center gap-12 opacity-30">
@@ -477,7 +469,7 @@ function App() {
               <div className="h-[2px] flex-1 bg-gradient-to-r from-slate-900 via-slate-800 to-transparent" />
             </div>
             {watchlist.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-16">
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-16">
                 {watchlist.map((item) => (
                   <div key={item.id} className="relative group bg-slate-900/40 rounded-[3rem] overflow-hidden border border-slate-800 hover:border-cyan-500/50 transition-all shadow-3xl">
                     <img src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://via.placeholder.com/500x750'} className="w-full aspect-[2/3] object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-[1.1] group-hover:scale-100" alt="" />
