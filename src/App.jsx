@@ -294,6 +294,7 @@ function App() {
     Neural_Network_v1.0.4
   </p>
 </div>
+
           <div className="space-y-6">
             <input type="email" placeholder="root@novastream.sys" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-5 rounded-2xl text-white outline-none font-mono text-xs focus:border-blue-500 transition-all" />
             <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-5 rounded-2xl text-white outline-none font-mono text-xs focus:border-blue-500 transition-all" />
