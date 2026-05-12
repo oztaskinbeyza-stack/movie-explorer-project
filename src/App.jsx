@@ -9,6 +9,7 @@ import {
   Database, LogOut, Search, User, LayoutGrid, 
   Bookmark, Globe, Calendar, RefreshCw 
 } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
 
 // --- ROLE-BASED DASHBOARDS (UNABRIDGED) ---
 
@@ -154,6 +155,7 @@ function App() {
   const [page, setPage] = useState(1);
   const [trailerKey, setTrailerKey] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState(0);
+  const loaderRef = useRef(null);
 
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
@@ -298,6 +300,25 @@ const addToWatchlist = async (mediaItem) => {
       <div className="w-16 h-16 border-8 border-cyan-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
   );
+  // --- INFINITE SCROLL OBSERVER ---
+useEffect(() => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0].isIntersecting && !loading) {
+        fetchMedia(searchQuery, true);
+      }
+    },
+    { threshold: 1.0 }
+  );
+
+  if (loaderRef.current) {
+    observer.observe(loaderRef.current);
+  }
+
+  return () => {
+    if (loaderRef.current) observer.unobserve(loaderRef.current);
+  };
+}, [loading, searchQuery]);
 
   const userAverage = mediaReviews.length > 0 
     ? (mediaReviews.reduce((acc, rev) => acc + rev.user_rating, 0) / mediaReviews.length).toFixed(1)
@@ -438,74 +459,66 @@ const addToWatchlist = async (mediaItem) => {
       {/* Main Content Area */}
       <main className="p-8 max-w-[1600px] mx-auto">
 {view === 'browse' ? (
-  <div className="space-y-20 animate-in fade-in duration-1000 pb-20">
+  <div className="space-y-24 animate-in fade-in duration-1000 pb-20">
     
-    {/* CATEGORY 01: TRENDING_SIGNALS */}
-    <section className="relative">
-      <div className="flex items-center gap-4 mb-8 px-4">
-        <div className="h-8 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
-        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-white/90 italic">
+    {/* ROW_01: TRENDING_SIGNALS */}
+    <section>
+      <div className="flex items-center gap-4 mb-8 px-2">
+        <div className="h-8 w-[1px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
+        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/90 italic">
           Trending_Signals
         </h3>
       </div>
-      
-      <div className="flex gap-8 overflow-x-auto pb-10 no-scrollbar scroll-smooth snap-x px-4">
+      <div className="flex gap-8 overflow-x-auto pb-10 no-scrollbar scroll-smooth snap-x px-2">
         {mediaList.slice(0, 10).map((movie) => (
-          <div key={movie.id} className="min-w-[300px] md:min-w-[340px] snap-start transition-transform duration-500 hover:z-50">
+          <div key={movie.id} className="min-w-[280px] md:min-w-[320px] snap-start">
             <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
           </div>
         ))}
       </div>
     </section>
 
-    {/* CATEGORY 02: NEURAL_TOP_RATED */}
-    <section className="relative">
-      <div className="flex items-center gap-4 mb-8 px-4">
-        <div className="h-8 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
-        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-white/90 italic">
+    {/* ROW_02: NEURAL_TOP_RATED */}
+    <section>
+      <div className="flex items-center gap-4 mb-8 px-2">
+        <div className="h-8 w-[1px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
+        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/90 italic">
           Neural_Top_Rated
         </h3>
       </div>
-      
-      <div className="flex gap-8 overflow-x-auto pb-10 no-scrollbar scroll-smooth snap-x px-4">
+      <div className="flex gap-8 overflow-x-auto pb-10 no-scrollbar scroll-smooth snap-x px-2">
         {mediaList.slice(10, 20).map((movie) => (
-          <div key={movie.id} className="min-w-[300px] md:min-w-[340px] snap-start">
+          <div key={movie.id} className="min-w-[280px] md:min-w-[320px] snap-start">
             <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
           </div>
         ))}
       </div>
     </section>
 
-    {/* CATEGORY 03: ARCHIVE_DISCOVER */}
-    <section className="relative">
-      <div className="flex items-center gap-4 mb-8 px-4">
-        <div className="h-8 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
-        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-white/90 italic">
+    {/* ROW_03: ARCHIVE_DISCOVER (Infinite List) */}
+    <section>
+      <div className="flex items-center gap-4 mb-8 px-2">
+        <div className="h-8 w-[1px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
+        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/90 italic">
           Archive_Discover
         </h3>
       </div>
-      
-      <div className="flex gap-8 overflow-x-auto pb-10 no-scrollbar scroll-smooth snap-x px-4">
-        {mediaList.slice(20, 30).map((movie) => (
-          <div key={movie.id} className="min-w-[300px] md:min-w-[340px] snap-start">
-            <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
-          </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-8 px-2">
+        {mediaList.slice(20).map((movie) => (
+          <MovieCard key={movie.id} movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
         ))}
       </div>
     </section>
 
-    {/* SYSTEM_DATA_FETCH_ACTION: LOAD MORE */}
-    <div className="flex justify-center pt-10 border-t border-white/5">
-      <button 
-        onClick={() => fetchMedia(searchQuery, true)} 
-        disabled={loading} 
-        className="group relative px-20 py-5 bg-transparent overflow-hidden rounded-2xl transition-all"
-      >
-        <div className="absolute inset-0 bg-white/5 group-hover:bg-cyan-600 transition-colors duration-500" />
-        <span className="relative z-10 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 group-hover:text-white transition-colors">
-          {loading ? 'Decrypting_Signals...' : 'Request_Database_Expansion'}
-        </span>
-      </button>
+    {/* --- AUTOMATIC TRIGGER POINT --- */}
+    <div ref={loaderRef} className="h-20 flex items-center justify-center">
+      {loading && (
+        <div className="flex gap-2">
+          <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce" />
+          <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce [animation-delay:-.3s]" />
+          <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce [animation-delay:-.5s]" />
+        </div>
+      )}
     </div>
   </div>
 ) : view === 'watchlist' ? (
