@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { supabase } from './supabaseClient';
+import { supabase } from '../supabaseClient';
 import { useAuth } from './AuthContext';
-import { fallbackMedia } from './fallbackData';
+import { fallbackMedia } from '../fallbackData';
 import MovieCard from './MovieCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
