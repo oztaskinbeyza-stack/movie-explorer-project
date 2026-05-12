@@ -1,4 +1,4 @@
-export const sallbackMedia = [
+export const fallbackMedia = [ 
   {
     id: 101,
     title: "Inception",
