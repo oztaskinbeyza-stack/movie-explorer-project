@@ -162,8 +162,10 @@ function App() {
     setTimeout(() => setToast({ message: '', type: null }), 3000);
   };
 
-  const fetchMedia = async (query = '', isNextPage = false) => {
-    if (!API_KEY) return;
+const fetchMedia = async (query = '', isNextPage = false) => {
+  console.log("TMDB_Key_Status:", API_KEY ? "ACTIVE_SIGNAL" : "MISSING_SIGNAL");
+  
+  if (!API_KEY) return;
     setLoading(true);
     const currentPage = isNextPage ? page + 1 : 1;
     
@@ -435,53 +437,79 @@ const addToWatchlist = async (mediaItem) => {
 
       {/* Main Content Area */}
       <main className="p-8 max-w-[1600px] mx-auto">
-        {view === 'browse' ? (
-          <>
-            {/* Genre Filter Bar */}
-            <div className="flex flex-wrap gap-4 mb-12 overflow-x-auto pb-4 no-scrollbar">
-              {genres.map((genre) => (
-                <button
-                  key={genre.id}
-                  onClick={() => { setSelectedGenre(genre.id); setSearchQuery(''); }}
-                  className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${
-                    selectedGenre === genre.id 
-                    ? 'bg-cyan-600 border-cyan-500 text-white shadow-xl shadow-cyan-600/30 -translate-y-1' 
-                    : 'bg-slate-900 border-slate-800 text-slate-500 hover:border-slate-600'
-                  }`}
-                >
-                  {genre.name}
-                </button>
-              ))}
-            </div>
+        {/* --- BROWSE VIEW: HORIZONTAL NEURAL LAYOUT --- */}
+{view === 'browse' ? (
+  <div className="space-y-24 animate-in fade-in duration-1000 pb-20">
+    
+    {/* ROW_01: TRENDING_SIGNALS */}
+    <section>
+      <div className="flex items-center gap-4 mb-8 px-2">
+        <div className="h-8 w-[1px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
+        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/90 italic">
+          Trending_Signals
+        </h3>
+      </div>
+      
+      <div className="flex gap-8 overflow-x-auto pb-10 no-scrollbar scroll-smooth snap-x px-2">
+        {mediaList.slice(0, 10).map((movie) => (
+          <div key={movie.id} className="min-w-[300px] md:min-w-[350px] snap-start transition-all duration-500 hover:scale-[1.02]">
+            <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
+          </div>
+        ))}
+      </div>
+    </section>
 
-            {/* Movie Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-8">
-              <AnimatePresence mode='popLayout'>
-                {mediaList.map((movie) => (
-                  <MovieCard 
-                    key={movie.id} 
-                    movie={movie} 
-                    onSelect={setSelectedMedia} 
-                    onAdd={addToWatchlist} 
-                  />
-                ))}
-              </AnimatePresence>
-            </div>
+    {/* ROW_02: NEURAL_TOP_RATED */}
+    <section>
+      <div className="flex items-center gap-4 mb-8 px-2">
+        <div className="h-8 w-[1px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
+        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/90 italic">
+          Neural_Top_Rated
+        </h3>
+      </div>
+      
+      <div className="flex gap-8 overflow-x-auto pb-10 no-scrollbar scroll-smooth snap-x px-2">
+        {mediaList.slice(10, 20).map((movie) => (
+          <div key={movie.id} className="min-w-[300px] md:min-w-[350px] snap-start transition-all duration-500 hover:scale-[1.02]">
+            <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
+          </div>
+        ))}
+      </div>
+    </section>
 
-            {/* Load More Button */}
-            {mediaList.length > 0 && (
-              <div className="flex justify-center mt-20">
-                <button 
-                  onClick={() => fetchMedia(searchQuery, true)} 
-                  disabled={loading} 
-                  className="px-16 py-5 bg-slate-900 border border-slate-800 rounded-3xl text-[11px] font-black uppercase text-slate-500 hover:text-white hover:border-cyan-500 transition-all shadow-lg hover:shadow-cyan-600/10 active:scale-95"
-                >
-                  {loading ? 'Decrypting_New_Signals...' : 'Request_More_Data'}
-                </button>
-              </div>
-            )}
-          </>
-        ) : view === 'watchlist' ? (
+    {/* ROW_03: ARCHIVE_DISCOVER */}
+    <section>
+      <div className="flex items-center gap-4 mb-8 px-2">
+        <div className="h-8 w-[1px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
+        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/90 italic">
+          Archive_Discover
+        </h3>
+      </div>
+      
+      <div className="flex gap-8 overflow-x-auto pb-10 no-scrollbar scroll-smooth snap-x px-2">
+        {mediaList.slice(20, 30).map((movie) => (
+          <div key={movie.id} className="min-w-[300px] md:min-w-[350px] snap-start transition-all duration-500 hover:scale-[1.02]">
+            <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* SYSTEM_DATA_FETCH */}
+    <div className="flex justify-center pt-16 border-t border-white/5">
+      <button 
+        onClick={() => fetchMedia(searchQuery, true)} 
+        disabled={loading} 
+        className="group relative px-24 py-6 bg-transparent overflow-hidden rounded-[2.5rem] transition-all border border-white/5"
+      >
+        <div className="absolute inset-0 bg-white/[0.02] group-hover:bg-cyan-600 transition-colors duration-500" />
+        <span className="relative z-10 text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 group-hover:text-white transition-colors">
+          {loading ? 'Decrypting_Signals...' : 'Request_Database_Expansion'}
+        </span>
+      </button>
+    </div>
+  </div>
+) : view === 'watchlist' ? (
           <div className="animate-in fade-in duration-500">
             {/* Watchlist Filter Header */}
             <div className="flex justify-between items-center mb-12">
