@@ -10,27 +10,29 @@ body{
   font-family:'Orbitron', sans-serif;
 }
 
-.login-page{
-  width:100%;
-  height:100vh;
-  background:
-    linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)),
-    url("/src/assets/bg.jpg");
-  background-size:cover;
-  background-position:center;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  overflow:hidden;
-  position:relative;
+.login-page {
+    width: 100%;
+    height: 100vh;
+    /* Eski background satırını tamamen silip bunu yapıştır */
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
 }
 
-.overlay{
-  position:absolute;
-  width:100%;
-  height:100%;
-  backdrop-filter: blur(3px);
-  background: radial-gradient(circle at center, rgba(37,99,235,0.15), transparent 60%);
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(3px); /* Bulanıklık kalsın, güzel durur */
+  /* Arka planı biraz daha şeffaf bir siyah yapalım ki resim seçilsin */
+  background: rgba(0, 0, 0, 0.4); 
+  z-index: 1;
 }
 
 .glass-card{
@@ -157,5 +159,8 @@ body{
     font-size: 32px; /* Mobilde yazının taşmaması için */
   }
 }
-
+.login-page {
+    background-image: inherit !important; /* JSX'ten gelen resmi zorla kullanır */
+    background-color: transparent !important; /* Tailwind'in siyahlığını siler */
+}
 

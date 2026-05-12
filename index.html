@@ -1,13 +1,24 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-   <title>NovaStream</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>NOVA STREAM Login</title>
+</head>
+<body>
+    <div class="login-container">
+        <h1>NOVA STREAM</h1>
+        <h2>NEURAL_CORE_V1.5.0</h2>
+        <form>
+            <label for="node-identifier">NODE IDENTIFIER:</label>
+            <input type="text" id="node-identifier" name="node-identifier" value="root@novastream.sys" required>
+            <br>
+            <label for="encrypted-passkey">ENCRYPTED PASSKEY:</label>
+            <input type="password" id="encrypted-passkey" name="encrypted-passkey" required>
+            <br>
+            <button type="submit">ESTABLISH SESSION</button>
+        </form>
+    </div>
+</body>
 </html>
