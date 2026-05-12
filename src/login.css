@@ -156,3 +156,8 @@ body{
     font-size:42px;
   }
 }
+.logo-text {
+    text-indent: -1px; /* letter-spacing ne kadarsa o kadar negatif indent ver */
+    text-align: center;
+    display: block;
+}
