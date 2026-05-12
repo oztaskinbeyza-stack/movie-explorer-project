@@ -228,18 +228,32 @@ function App() {
     }
   };
 
-  const addToWatchlist = async (mediaItem) => {
-    const isDuplicate = watchlist.some(item => String(item.media_id) === String(mediaItem.id));
-    if (isDuplicate) {
-      showToast('Validation_Error: Already_In_Vault', 'error');
-      return;
-    }
-    const { error } = await supabase.from('watchlists').insert([{ 
-      media_id: mediaItem.id, title: mediaItem.title, poster_path: mediaItem.poster_path, 
-      vote_average: mediaItem.vote_average, user_id: user?.id, status: 'to_watch'
-    }]);
-    if (!error) { fetchWatchlist(); showToast(`Object_Synced: Success`); }
-  };
+const addToWatchlist = async (mediaItem) => {
+  // 1. Daha önce eklenmiş mi kontrol et
+  const isDuplicate = watchlist.some(item => String(item.media_id) === String(mediaItem.id));
+  
+  if (isDuplicate) {
+    showToast('Already_In_Vault', 'error');
+    return;
+  }
+
+  const { error } = await supabase.from('watchlists').insert([{ 
+    media_id: mediaItem.id, 
+    title: mediaItem.title, 
+    poster_path: mediaItem.poster_path, 
+    vote_average: mediaItem.vote_average, 
+    user_id: user?.id, 
+    status: 'to_watch'
+  }]);
+
+  if (!error) { 
+    fetchWatchlist(); 
+    showToast(`Object_Synced: Success`); 
+  } else {
+    console.error("Supabase Hatası:", error);
+    showToast(`Sync_Error: ${error.message}`, 'error');
+  }
+};
 
   const removeFromWatchlist = async (id) => {
     const { error } = await supabase.from('watchlists').delete().eq('id', id);
@@ -535,161 +549,135 @@ function App() {
         ) : <ProfileView user={user} profile={profile} watchlist={watchlist} />}
       </main>
 
-      {/* --- NEURAL MODAL (Selected Media) --- */}
-      <AnimatePresence>
-        {selectedMedia && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }} 
-            className="fixed inset-0 bg-slate-950/95 flex items-center justify-center p-4 z-[100] backdrop-blur-2xl" 
-            onClick={() => setSelectedMedia(null)}
-          >
-            <motion.div 
-              initial={{ scale: 0.9, y: 20 }} 
-              animate={{ scale: 1, y: 0 }} 
-              exit={{ scale: 0.9, y: 20 }} 
-              className="bg-slate-900 border border-slate-800 max-w-7xl w-full flex flex-col md:flex-row rounded-[3.5rem] overflow-hidden h-[90vh] shadow-[0_0_100px_rgba(6,182,212,0.15)] relative" 
-              onClick={e => e.stopPropagation()}
-            >
-              
-              {/* Left Side: Trailer / Media Focus */}
-              <div className="w-full md:w-[45%] relative border-r border-slate-800 bg-black flex flex-col group">
-                <div className="flex-1 relative bg-black flex items-center justify-center">
-                  {trailerKey ? (
-                    <>
-                      <iframe 
-                        src={`https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3&enablejsapi=1`} 
-                        className="w-full h-full object-cover z-10 border-0" 
-                        title="Neural Trailer" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                        allowFullScreen
-                      ></iframe>
-                      <a 
-                        href={`https://www.youtube.com/watch?v=${trailerKey}`} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="absolute bottom-8 right-8 z-20 bg-cyan-600/90 hover:bg-cyan-600 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase transition-all opacity-0 group-hover:opacity-100 flex items-center gap-2 shadow-2xl"
-                      >
-                        <Play size={14} fill="white" /> External_Stream
-                      </a>
-                    </>
-                  ) : (
-                    <div className="relative w-full h-full flex items-center justify-center bg-slate-900 overflow-hidden">
-                       <img src={`https://images.weserv.nl/?url=https://image.tmdb.org/t/p/w500${selectedMedia.poster_path}`} className="absolute inset-0 w-full h-full object-cover opacity-20 blur-xl scale-110" alt="" />
-                       <div className="relative z-10 text-center">
-                         <div className="text-cyan-500/20 mb-4 flex justify-center"><Database size={80} /></div>
-                         <span className="text-[10px] font-black text-cyan-500 uppercase tracking-widest px-6 py-3 border border-cyan-500/20 bg-black/50 rounded-full">Source_Signal_Unavailable</span>
-                       </div>
-                    </div>
-                  )}
-                </div>
-                <div className="p-10 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent text-white">
-                  <div className="flex items-center gap-4 mb-4 font-mono text-[9px] font-black uppercase">
-                    <span className="bg-cyan-600 text-[10px] px-3 py-1 rounded-lg italic tracking-tighter">SCORE_{selectedMedia.vote_average?.toFixed(1)}</span>
-                    <span className="text-slate-500 flex items-center gap-1"><Calendar size={10} /> {selectedMedia.release_date?.split('-')[0]} // RELEASE_TAG</span>
-                    <span className="text-slate-500 flex items-center gap-1"><Globe size={10} /> {selectedMedia.original_language?.toUpperCase()}</span>
-                  </div>
-                  <h2 className="text-4xl font-black mb-6 uppercase italic tracking-tighter leading-none">{selectedMedia.title}</h2>
-                  <p className="text-slate-400 text-[11px] leading-relaxed uppercase font-mono line-clamp-6 tracking-tight border-l-2 border-cyan-600/30 pl-6">{selectedMedia.overview}</p>
-                </div>
+{/* --- PROFESSIONAL NEURAL MODAL --- */}
+<AnimatePresence>
+  {selectedMedia && (
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      exit={{ opacity: 0 }} 
+      className="fixed inset-0 bg-black/90 flex items-center justify-center p-4 md:p-8 z-[100] backdrop-blur-md" 
+      onClick={() => setSelectedMedia(null)}
+    >
+      <motion.div 
+        initial={{ scale: 0.98, y: 10 }} 
+        animate={{ scale: 1, y: 0 }} 
+        exit={{ scale: 0.98, y: 10 }} 
+        className="bg-[#0a0a0a] border border-white/5 max-w-6xl w-full flex flex-col md:flex-row rounded-[2.5rem] overflow-hidden h-[85vh] shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] relative" 
+        onClick={e => e.stopPropagation()}
+      >
+        
+        <div className="w-full md:w-[40%] relative bg-[#111] flex flex-col">
+          <div className="absolute inset-0 pointer-events-none z-10 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-80" />
+          
+          <img 
+            src={`https://images.weserv.nl/?url=https://image.tmdb.org/t/p/w500${selectedMedia.poster_path}`} 
+            className="w-full h-full object-cover" 
+            alt={selectedMedia.title}
+          />
+
+          <div className="absolute bottom-0 left-0 right-0 p-10 z-20">
+            <div className="flex gap-2 mb-6">
+              <span className="bg-cyan-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg shadow-cyan-500/20">
+                {selectedMedia.vote_average?.toFixed(1)}
+              </span>
+              <span className="bg-white/10 backdrop-blur-md text-white/70 text-[10px] font-bold px-3 py-1 rounded-full border border-white/5">
+                {selectedMedia.release_date?.split('-')[0]}
+              </span>
+            </div>
+            <h2 className="text-4xl font-bold text-white mb-4 tracking-tight leading-none uppercase italic">
+              {selectedMedia.title}
+            </h2>
+            <p className="text-white/40 text-[12px] leading-relaxed font-medium uppercase tracking-tight line-clamp-3">
+              {selectedMedia.overview}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex-1 flex flex-col bg-[#0a0a0a] overflow-hidden">
+          
+          {/* Header */}
+          <div className="px-10 py-8 border-b border-white/5 flex justify-between items-center">
+            <div>
+              <h4 className="text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Neural_Community_Database</h4>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <span className="text-3xl font-bold text-white tabular-nums tracking-tighter">{userAverage}</span>
+                <span className="text-[10px] font-bold text-cyan-500/50 block -mt-1 uppercase tracking-widest">Global_Avg</span>
               </div>
+            </div>
+          </div>
 
-              {/* Right Side: Community Feed & Neural Rating */}
-              <div className="flex-1 flex flex-col bg-slate-900/50 overflow-hidden relative">
-                {/* Community Header with Stats */}
-                <div className="p-8 border-b border-slate-800 flex justify-between items-center bg-slate-950/30 backdrop-blur-md">
-                  <div>
-                    <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Neural_Community_Feed</h4>
-                    <p className="text-[9px] text-cyan-500 font-mono mt-1 uppercase tracking-tighter">Analyzing_User_Input... [OK]</p>
-                  </div>
-                  <div className="text-right flex items-center gap-6">
-                    <div className="h-10 w-[1px] bg-slate-800" />
-                    <div className="flex items-center gap-3">
-                      <span className="text-4xl font-black text-white tracking-tighter tabular-nums">{userAverage}</span>
-                      <div className="flex flex-col text-[8px] font-bold uppercase leading-none">
-                        <span className="text-slate-500">User_Avg</span>
-                        <span className="text-cyan-500">/ 5.0</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Reviews Feed */}
-                <div className="flex-1 overflow-y-auto p-10 space-y-8 no-scrollbar">
-                  {mediaReviews.length > 0 ? (
-                    mediaReviews.map((rev, idx) => (
-                      <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.1 }} key={idx} className="bg-black/30 border border-slate-800/50 p-6 rounded-[2.5rem] hover:border-cyan-500/20 transition-all group">
-                        <div className="flex justify-between items-center mb-4">
-                          <span className="text-[10px] font-bold text-cyan-400 font-mono italic uppercase flex items-center gap-2">
-                             <div className="w-1.5 h-1.5 rounded-full bg-cyan-500" /> USER_{rev.user_id?.slice(0, 8)}
-                          </span>
-                          <div className="flex items-center gap-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} size={8} className={i < rev.user_rating ? "fill-cyan-500 text-cyan-500" : "text-slate-800"} />
-                            ))}
-                          </div>
-                        </div>
-                        <p className="text-slate-300 text-[11px] italic leading-relaxed font-medium">"{rev.review_text}"</p>
-                        <div className="mt-4 pt-4 border-t border-slate-800/50 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <span className="text-[8px] text-slate-600 font-mono uppercase">{new Date(rev.created_at).toLocaleDateString()}</span>
-                        </div>
-                      </motion.div>
-                    ))
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-center py-20">
-                      <div className="text-slate-800 mb-4 animate-pulse"><Activity size={60} /></div>
-                      <div className="text-[10px] text-slate-700 uppercase italic font-black tracking-[0.3em]">
-                        // No_Signals_Detected_In_Sector_Area
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Feedback Input Area */}
-                <div className="p-10 bg-slate-950/80 border-t border-slate-800 backdrop-blur-xl">
-                  <div className="flex items-center justify-between mb-6">
-                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Assign_Neural_Score:</span>
-                    <div className="flex gap-3">
-                      {[1, 2, 3, 4, 5].map((num) => (
-                        <button 
-                          key={num} 
-                          onClick={() => setRating(num)} 
-                          className={`w-10 h-10 rounded-xl border transition-all text-[11px] font-black flex items-center justify-center ${rating >= num ? 'bg-cyan-600 border-cyan-500 text-white shadow-lg shadow-cyan-600/30' : 'bg-black/40 border-slate-800 text-slate-500 hover:border-slate-700'}`}
-                        >
-                          {num}
-                        </button>
+          {/* Reviews List */}
+          <div className="flex-1 overflow-y-auto p-10 space-y-6 no-scrollbar">
+            {mediaReviews.length > 0 ? (
+              mediaReviews.map((rev, idx) => (
+                <div key={idx} className="bg-[#111] border border-white/[0.03] p-6 rounded-[1.5rem] hover:border-cyan-500/10 transition-all duration-500 group">
+                  <div className="flex justify-between items-start mb-3">
+                    <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                      ID_{rev.user_id?.slice(0, 8)}
+                    </span>
+                    <div className="flex gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={8} className={i < rev.user_rating ? "fill-cyan-500 text-cyan-500" : "text-white/5"} />
                       ))}
                     </div>
                   </div>
-                  <div className="flex gap-4">
-                    <input 
-                      value={review} 
-                      onChange={(e) => setReview(e.target.value)} 
-                      placeholder="Inject_User_Perception_Data..." 
-                      className="flex-1 bg-black/60 border border-slate-800 px-6 py-4 rounded-2xl text-[11px] text-white outline-none focus:border-cyan-500 transition-all font-mono" 
-                    />
-                    <button 
-                      onClick={() => submitReview(selectedMedia.id)} 
-                      className="bg-cyan-600 hover:bg-cyan-500 text-white px-10 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-xl shadow-cyan-600/20 active:scale-95"
-                    >
-                      Transmit
-                    </button>
-                  </div>
+                  <p className="text-white/70 text-[12px] leading-relaxed font-medium">"{rev.review_text}"</p>
                 </div>
+              ))
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center opacity-20">
+                <Database size={40} className="mb-4" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">No_Community_Data</span>
               </div>
-              
-              {/* Close Button */}
+            )}
+          </div>
+
+          {/* Input Area */}
+          <div className="p-10 bg-[#0c0c0c] border-t border-white/5">
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Neural_Scoring:</span>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((num) => (
+                  <button 
+                    key={num} 
+                    onClick={() => setRating(num)} 
+                    className={`w-10 h-10 rounded-xl border text-[11px] font-bold transition-all duration-300 ${rating >= num ? 'bg-cyan-600 border-cyan-500 text-white shadow-lg shadow-cyan-600/20' : 'bg-transparent border-white/5 text-white/20 hover:border-white/10'}`}
+                  >
+                    {num}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <input 
+                value={review} 
+                onChange={(e) => setReview(e.target.value)} 
+                placeholder="Transmit perception..." 
+                className="flex-1 bg-white/[0.03] border border-white/[0.05] px-6 py-4 rounded-2xl text-[12px] text-white outline-none focus:border-cyan-500/30 transition-all font-medium" 
+              />
               <button 
-                onClick={() => setSelectedMedia(null)} 
-                className="absolute top-8 right-8 text-slate-600 hover:text-white transition-all z-[110] bg-slate-950/50 p-2 rounded-2xl border border-slate-800 hover:border-cyan-500 group"
+                onClick={() => submitReview(selectedMedia.id)} 
+                className="bg-white text-black hover:bg-cyan-500 hover:text-white px-8 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all shadow-xl active:scale-95"
               >
-                <X size={24} className="group-hover:rotate-90 transition-transform" />
+                Transmit
               </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </div>
+          </div>
+        </div>
+        
+        <button 
+          onClick={() => setSelectedMedia(null)} 
+          className="absolute top-8 right-8 text-white/20 hover:text-white transition-all z-[110] p-2 hover:rotate-90 duration-300"
+        >
+          <X size={24} />
+        </button>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
     </div>
   );
 }

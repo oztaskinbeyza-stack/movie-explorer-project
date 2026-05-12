@@ -190,3 +190,20 @@ body {
   color: #fff;
   border-color: rgba(255, 255, 255, 0.1);
 }
+/* --- NOVASTREAM UI POLISH --- */
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.15) !important;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
