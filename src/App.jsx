@@ -437,73 +437,72 @@ const addToWatchlist = async (mediaItem) => {
 
       {/* Main Content Area */}
       <main className="p-8 max-w-[1600px] mx-auto">
-        {/* --- BROWSE VIEW: HORIZONTAL NEURAL LAYOUT --- */}
 {view === 'browse' ? (
-  <div className="space-y-24 animate-in fade-in duration-1000 pb-20">
+  <div className="space-y-20 animate-in fade-in duration-1000 pb-20">
     
-    {/* ROW_01: TRENDING_SIGNALS */}
-    <section>
-      <div className="flex items-center gap-4 mb-8 px-2">
-        <div className="h-8 w-[1px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
-        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/90 italic">
+    {/* CATEGORY 01: TRENDING_SIGNALS */}
+    <section className="relative">
+      <div className="flex items-center gap-4 mb-8 px-4">
+        <div className="h-8 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
+        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-white/90 italic">
           Trending_Signals
         </h3>
       </div>
       
-      <div className="flex gap-8 overflow-x-auto pb-10 no-scrollbar scroll-smooth snap-x px-2">
+      <div className="flex gap-8 overflow-x-auto pb-10 no-scrollbar scroll-smooth snap-x px-4">
         {mediaList.slice(0, 10).map((movie) => (
-          <div key={movie.id} className="min-w-[300px] md:min-w-[350px] snap-start transition-all duration-500 hover:scale-[1.02]">
+          <div key={movie.id} className="min-w-[300px] md:min-w-[340px] snap-start transition-transform duration-500 hover:z-50">
             <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
           </div>
         ))}
       </div>
     </section>
 
-    {/* ROW_02: NEURAL_TOP_RATED */}
-    <section>
-      <div className="flex items-center gap-4 mb-8 px-2">
-        <div className="h-8 w-[1px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
-        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/90 italic">
+    {/* CATEGORY 02: NEURAL_TOP_RATED */}
+    <section className="relative">
+      <div className="flex items-center gap-4 mb-8 px-4">
+        <div className="h-8 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
+        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-white/90 italic">
           Neural_Top_Rated
         </h3>
       </div>
       
-      <div className="flex gap-8 overflow-x-auto pb-10 no-scrollbar scroll-smooth snap-x px-2">
+      <div className="flex gap-8 overflow-x-auto pb-10 no-scrollbar scroll-smooth snap-x px-4">
         {mediaList.slice(10, 20).map((movie) => (
-          <div key={movie.id} className="min-w-[300px] md:min-w-[350px] snap-start transition-all duration-500 hover:scale-[1.02]">
+          <div key={movie.id} className="min-w-[300px] md:min-w-[340px] snap-start">
             <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
           </div>
         ))}
       </div>
     </section>
 
-    {/* ROW_03: ARCHIVE_DISCOVER */}
-    <section>
-      <div className="flex items-center gap-4 mb-8 px-2">
-        <div className="h-8 w-[1px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
-        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/90 italic">
+    {/* CATEGORY 03: ARCHIVE_DISCOVER */}
+    <section className="relative">
+      <div className="flex items-center gap-4 mb-8 px-4">
+        <div className="h-8 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
+        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-white/90 italic">
           Archive_Discover
         </h3>
       </div>
       
-      <div className="flex gap-8 overflow-x-auto pb-10 no-scrollbar scroll-smooth snap-x px-2">
+      <div className="flex gap-8 overflow-x-auto pb-10 no-scrollbar scroll-smooth snap-x px-4">
         {mediaList.slice(20, 30).map((movie) => (
-          <div key={movie.id} className="min-w-[300px] md:min-w-[350px] snap-start transition-all duration-500 hover:scale-[1.02]">
+          <div key={movie.id} className="min-w-[300px] md:min-w-[340px] snap-start">
             <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
           </div>
         ))}
       </div>
     </section>
 
-    {/* SYSTEM_DATA_FETCH */}
-    <div className="flex justify-center pt-16 border-t border-white/5">
+    {/* SYSTEM_DATA_FETCH_ACTION: LOAD MORE */}
+    <div className="flex justify-center pt-10 border-t border-white/5">
       <button 
         onClick={() => fetchMedia(searchQuery, true)} 
         disabled={loading} 
-        className="group relative px-24 py-6 bg-transparent overflow-hidden rounded-[2.5rem] transition-all border border-white/5"
+        className="group relative px-20 py-5 bg-transparent overflow-hidden rounded-2xl transition-all"
       >
-        <div className="absolute inset-0 bg-white/[0.02] group-hover:bg-cyan-600 transition-colors duration-500" />
-        <span className="relative z-10 text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 group-hover:text-white transition-colors">
+        <div className="absolute inset-0 bg-white/5 group-hover:bg-cyan-600 transition-colors duration-500" />
+        <span className="relative z-10 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 group-hover:text-white transition-colors">
           {loading ? 'Decrypting_Signals...' : 'Request_Database_Expansion'}
         </span>
       </button>
