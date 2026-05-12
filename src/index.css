@@ -88,7 +88,38 @@ input::placeholder {
 .animate-infinite-scroll {
   animation: infinite-scroll 40s linear infinite;
 }
+/* --- 6. LOGIN PAGE & COMPONENTS --- */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-slate-950);
+  position: relative;
+}
 
+.glass-card {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 48px;
+  padding: 60px;
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  z-index: 10;
+}
+
+.logo-text {
+  color: #fff;
+  font-size: 3rem;
+  letter-spacing: -2px;
+  font-weight: 900;
+  margin-bottom: 8px;
+  font-style: italic;
+}
 
 
 .logo-accent {

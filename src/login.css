@@ -61,15 +61,16 @@ body{
 
 .logo-text {
     text-align: center;
-    font-size: 48px;
+    font-size: 36px; /* 48px'den 36px'e indirdik, hem küçülecek hem sığacak */
     font-weight: 700;
     color: white;
     margin-bottom: 10px;
     letter-spacing: -1px;
-    text-indent: -1px; /* EKLEDİĞİMİZ SATIR: Kaymayı engeller */
+    text-indent: -1px; /* Sağa kaymayı engelleyen matematiksel denge */
     font-style: italic;
-    display: block; 
+    display: block;
     width: 100%;
+    white-space: nowrap; /* Metnin alt satıra kırılmasını önler */
 }
 
 .logo-text span{
