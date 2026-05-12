@@ -1,16 +1,3 @@
-/**
- * =========================================================================
- * NOVASTREAM NEURAL INTERFACE - CORE ARCHITECTURE v1.5.0
- * PROJECT: NovaStream Professional Entertainment Platform
- * REVISION: Unabridged / Full Logic Synchronization / Syntax Fixed
- * * * SYSTEM MODULES:
- * 1. ACCESS_CONTROL: Multi-Role Authentication (Admin, Staff, Unit)
- * 2. DATA_STREAM: TMDB Integration (Adult Filter Active)
- * 3. UX_ENGINE: High-Performance Scroll Navigation & Elite Modal
- * 4. COMPLIANCE: Production-ready Build Standards (Syntax Verified)
- * =========================================================================
- */
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from './supabaseClient';
 import { useAuth } from './AuthContext';
