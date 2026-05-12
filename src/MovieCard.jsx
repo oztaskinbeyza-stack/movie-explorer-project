@@ -4,60 +4,58 @@ import { Star, Play, Plus, Calendar, Globe } from 'lucide-react';
 
 const MovieCard = ({ movie, onSelect, onAdd }) => {
   const posterUrl = movie.poster_path 
-    ? `https://images.weserv.nl/?url=https://image.tmdb.org/t/p/w500${movie.poster_path}`
-    : 'https://via.placeholder.com/500x750?text=Data_Offline';
+    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+    : 'https://via.placeholder.com/500x750?text=NO_SIGNAL';
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -6, transition: { duration: 0.2 } }}
-      className="group relative bg-slate-900/40 border border-slate-800/50 rounded-[2rem] overflow-hidden cursor-pointer shadow-xl hover:border-cyan-500/30 transition-all duration-500"
+      whileHover={{ y: -8 }}
+      className="group relative bg-[#0d0d0d] border border-white/5 rounded-[2.5rem] overflow-hidden cursor-pointer shadow-2xl flex flex-col h-full"
       onClick={() => onSelect(movie)}
     >
-      {/* Resim Katmanı */}
-      <div className="relative aspect-[2/3] overflow-hidden">
+      <div className="relative aspect-[2/3] w-full overflow-hidden bg-slate-900">
         <img 
           src={posterUrl} 
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" 
-          alt={movie.title}
+          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
+          alt="" 
         />
         
-        {/* Profesyonel Puan Rozeti */}
-        <div className="absolute top-4 left-4 z-30 bg-slate-950/80 backdrop-blur-md border border-white/5 px-3 py-1.5 rounded-2xl flex items-center gap-2">
+        <div className="absolute top-5 right-5 z-30 bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-2xl flex items-center gap-2">
           <Star size={12} className="text-cyan-400 fill-cyan-400" />
-          <span className="text-[11px] font-black text-white font-mono tabular-nums">
+          <span className="text-[11px] font-black text-white font-mono">
             {movie.vote_average ? movie.vote_average.toFixed(1) : "0.0"}
           </span>
         </div>
 
-        {/* Gradyan Katmanı */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent opacity-90 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d] via-transparent to-transparent opacity-80" />
       </div>
 
-      {/* İçerik Alanı */}
-      <div className="p-6 relative z-20">
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="text-sm font-bold text-slate-100 tracking-tight leading-tight line-clamp-1 group-hover:text-cyan-400 transition-colors">
-            {movie.title}
-          </h3>
-        </div>
+      {/* Alt Bilgiler */}
+      <div className="p-6 flex flex-col flex-1">
+        <h3 className="text-sm font-bold text-white tracking-tight leading-tight line-clamp-1 mb-3 group-hover:text-cyan-400 transition-colors uppercase italic">
+          {movie.title}
+        </h3>
 
-        <div className="flex items-center gap-4 text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-5">
-          <span className="flex items-center gap-1"><Calendar size={10} /> {movie.release_date?.split('-')[0]}</span>
-          <span className="flex items-center gap-1"><Globe size={10} /> {movie.original_language?.toUpperCase()}</span>
+        <div className="flex items-center gap-4 text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-6 mt-auto">
+          <span className="flex items-center gap-1.5">
+            <Calendar size={10} className="text-slate-600" /> 
+            {movie.release_date ? movie.release_date.split('-')[0] : "2026"}
+          </span>
+          <span className="flex items-center gap-1.5 border-l border-white/10 pl-4">
+            <Globe size={10} className="text-slate-600" /> 
+            {movie.original_language ? movie.original_language.toUpperCase() : "EN"}
+          </span>
         </div>
         
-        {/* Aksiyon Butonları */}
         <div className="flex gap-2">
-          <button 
-            className="flex-1 bg-cyan-600/10 hover:bg-cyan-600 text-cyan-400 hover:text-white py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 border border-cyan-500/20"
-          >
+          <button className="flex-1 bg-white text-black hover:bg-cyan-500 hover:text-white py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-xl shadow-black/20">
             <Play size={12} fill="currentColor" /> View_Data
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); onAdd(movie); }}
-            className="p-2.5 bg-slate-800/50 hover:bg-slate-800 text-slate-400 hover:text-white rounded-xl border border-slate-700/50 transition-all"
+            className="p-3 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-2xl border border-white/5 transition-all active:scale-90"
           >
             <Plus size={16} />
           </button>
