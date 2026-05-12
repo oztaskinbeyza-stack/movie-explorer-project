@@ -23,8 +23,14 @@
   color: #ffffff;
   font-size: 2rem;
   letter-spacing: 6px;
+  text-indent: 6px; /* Harf boşluğu kadar soldan iterek dengeyi sağlar */
   margin-bottom: 5px;
   font-weight: bold;
+  text-transform: uppercase; /* NovaStream isminin büyük görünmesi için */
+}
+.logo-text span {
+  color: #00d2ff; /* Mavi tonu */
+  /* veya senin buton renginle uyumlu bir renk */
 }
 
 .subtitle {

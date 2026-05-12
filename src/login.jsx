@@ -5,7 +5,7 @@ import bgImage from './assets/background.jpg';
 const Login = () => {
   return (
  
-<div classname="login page"> 
+<div className="login-page"> 
       <div className="overlay"></div>
 
       <div className="glass-card">
