@@ -1,11 +1,3 @@
-/**
- * NOVASTREAM NEURAL INTERFACE - VERSION 1.4.2
- * PROJECT: PaaS Startup "Metonium" Core
- * THEME: Tech-Noir / Cyan & Slate Aesthetic
- * FEATURES: Multi-Role Dashboards, Infinite Scroll, Row Navigation, 
- * Neural Data Injection (Reviews), Real-time Synchronization.
- */
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from './supabaseClient';
 import { useAuth } from './AuthContext';
