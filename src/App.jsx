@@ -1,15 +1,3 @@
-/**
- * NOVASTREAM NEURAL INTERFACE - CORE SYSTEM v1.4.2
- * PROJECT: NovaStream Entertainment Platform
- * REVISION: Unabridged Full-Stack Simulation
- * FEATURES:
- * - Multi-Role Access Control (Admin/Staff/User)
- * - Horizontal Prime-Style Row Navigation
- * - Neural Data Injection (Review System)
- * - Seamless Infinite Global Discovery
- * - Intersection Observer API Integration
- */
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from './supabaseClient';
 import { useAuth } from './AuthContext';
@@ -21,18 +9,18 @@ import {
   Database, LogOut, Search, User, LayoutGrid, 
   Bookmark, ChevronLeft, ChevronRight, Calendar, 
   Globe, Info, MessageSquare, Award, Terminal,
-  Cpu, Zap, HardDrive, Bell, Settings, Filter
+  Cpu, Zap, HardDrive, Bell, Settings, Filter, Clock
 } from 'lucide-react';
 
 // =========================================================================
-// --- 1. COMPONENT: ADMIN_ROOT_TERMINAL (FULL SYSTEM ANALYTICS) ---
+// --- 1. COMPONENT: ADMIN_ROOT_TERMINAL (SYSTEM ANALYTICS) ---
 // =========================================================================
 
 const AdminDashboard = ({ stats, profile }) => {
   return (
     <div className="min-h-screen bg-[#020617] p-12 font-mono text-slate-300 selection:bg-red-500/30">
       <div className="max-w-7xl mx-auto">
-        {/* Terminal Header Area */}
+        {/* Terminal Header Section */}
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-24 border-b border-red-500/20 pb-16 gap-10">
           <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
             <div className="flex items-center gap-4 text-red-500 mb-6">
@@ -49,7 +37,7 @@ const AdminDashboard = ({ stats, profile }) => {
               </div>
               <div className="flex flex-col gap-1 border-l border-slate-800 pl-10">
                 <span className="text-slate-600 text-[9px] uppercase tracking-widest">Uptime_Status</span>
-                <p className="text-green-500 text-[11px] uppercase tracking-[0.4em] animate-pulse">Neural_Stable</p>
+                <p className="text-green-500 text-[11px] uppercase tracking-[0.4em] animate-pulse">Running_Stable</p>
               </div>
             </div>
           </motion.div>
@@ -62,11 +50,11 @@ const AdminDashboard = ({ stats, profile }) => {
           </button>
         </header>
 
-        {/* Neural Metrics Grid (System-Wide) */}
+        {/* Global Neural Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {[
-            { label: 'Network_Participants', value: stats.users, icon: <User size={40} />, color: 'bg-red-600' },
-            { label: 'Global_Review_Nodes', value: stats.reviews, icon: <MessageSquare size={40} />, color: 'bg-orange-600' },
+            { label: 'Registered_Units', value: stats.users, icon: <User size={40} />, color: 'bg-red-600' },
+            { label: 'Neural_Data_Nodes', value: stats.reviews, icon: <MessageSquare size={40} />, color: 'bg-orange-600' },
             { label: 'Encrypted_Vault_Archive', value: stats.watchlist, icon: <Database size={40} />, color: 'bg-amber-600' }
           ].map((item, idx) => (
             <motion.div 
@@ -93,15 +81,15 @@ const AdminDashboard = ({ stats, profile }) => {
           ))}
         </div>
 
-        {/* System Activity Real-time Log */}
+        {/* Real-time System Log (BUILD FIX APPLIED) */}
         <div className="mt-20 bg-slate-900/20 border border-slate-800/50 p-10 rounded-[3rem] font-mono text-xs">
           <p className="text-[10px] text-slate-600 uppercase tracking-widest mb-4">Live_Neural_Interface_Log:</p>
           <div className="space-y-2 opacity-60">
-            {/* FIXED VERCEL BUILD ERROR: Escape sequence applied to >>> */}
-            <p className="text-[9px] text-red-500/80 uppercase">{" >> "} System_Handshake_Established... [OK]</p>
-            <p className="text-[9px] text-slate-500 uppercase">{" >> "} Memory_Allocation: 14.2GB / 64GB ... [STABLE]</p>
-            <p className="text-[9px] text-slate-500 uppercase">{" >> "} Routing_NovaStream_Encryption... [ACTIVE]</p>
-            <p className="text-[9px] text-slate-500 uppercase">{" >> "} All_Systems_Verified_Alpha_Node... [READY]</p>
+            {/* Escaping special characters for Vercel production build stability */}
+            <p className="text-[9px] text-red-500/80 uppercase">{" >> "} System_Handshake_Established_Through_NovaStream_Gateway... [OK]</p>
+            <p className="text-[9px] text-slate-500 uppercase">{" >> "} Memory_Allocation_Matrix: 14.2GB / 64GB ... [STABLE]</p>
+            <p className="text-[9px] text-slate-500 uppercase">{" >> "} Routing_Encryption_Table: RSA-4096_SHA256 ... [ACTIVE]</p>
+            <p className="text-[9px] text-slate-500 uppercase">{" >> "} Identity_Verified_By_Alpha_Node... [ACCESS_GRANTED]</p>
           </div>
         </div>
       </div>
@@ -110,7 +98,7 @@ const AdminDashboard = ({ stats, profile }) => {
 };
 
 // =========================================================================
-// --- 2. COMPONENT: STAFF_INTERFACE (RESTRICTED MONITORING) ---
+// --- 2. COMPONENT: STAFF_INTERFACE (MODERATION ACCESS) ---
 // =========================================================================
 
 const StaffDashboard = () => (
@@ -125,27 +113,28 @@ const StaffDashboard = () => (
       </div>
       <h2 className="text-5xl font-black text-blue-500 mb-6 tracking-tighter uppercase italic leading-none">Staff_Sector</h2>
       <p className="text-slate-500 mb-16 text-[13px] font-medium uppercase tracking-[0.5em] leading-relaxed">
-        Neural_Content_Moderation <br /> <span className="text-blue-500/40">Protocol: Nova_Staff_Active</span>
+        Neural_Content_Moderation_Interface <br /> <span className="text-blue-500/40">Active_Protocol: Blue_Cipher_v4.0</span>
       </p>
       <button 
         onClick={() => supabase.auth.signOut()} 
         className="w-full bg-blue-600 hover:bg-blue-500 text-white py-8 rounded-[2.5rem] font-black uppercase tracking-[0.4em] text-[14px] transition-all shadow-2xl shadow-blue-600/40 active:scale-95"
       >
-        Close_Encrypted_Link
+        Close_Secure_Link
       </button>
     </motion.div>
   </div>
 );
 
 // =========================================================================
-// --- 3. COMPONENT: PROFILE_VIEW (USER_IDENTITY_MANAGEMENT) ---
+// --- 3. COMPONENT: PROFILE_VIEW (CORE_DATA) ---
 // =========================================================================
 
 const ProfileView = ({ user, profile, watchlist }) => (
   <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-20 duration-1000">
+    {/* Identification Header */}
     <div className="bg-slate-900 border border-slate-800 rounded-[6rem] p-24 mb-20 relative overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)]">
       <div className="absolute top-0 right-0 p-24 opacity-[0.02] pointer-events-none select-none">
-        <span className="text-[25rem] font-black italic text-cyan-500 leading-none">NODE</span>
+        <span className="text-[25rem] font-black italic text-cyan-500 leading-none">UNIT</span>
       </div>
       <div className="flex flex-col lg:flex-row items-center gap-20 relative z-10">
         <div className="w-60 h-60 bg-gradient-to-br from-cyan-500 via-cyan-800 to-slate-950 rounded-[5rem] flex items-center justify-center text-7xl font-black text-white shadow-[0_40px_80px_rgba(6,182,212,0.4)] border-[6px] border-white/10">
@@ -154,7 +143,7 @@ const ProfileView = ({ user, profile, watchlist }) => (
         <div className="text-center lg:text-left">
           <div className="flex items-center justify-center lg:justify-start gap-5 mb-6">
             <div className="w-3 h-3 rounded-full bg-cyan-500 animate-ping" />
-            <span className="text-[11px] font-black text-cyan-500 uppercase tracking-[0.7em]">Neural_Unit_Verified</span>
+            <span className="text-[11px] font-black text-cyan-500 uppercase tracking-[0.7em]">Neural_Unit_Active</span>
           </div>
           <h2 className="text-7xl font-black tracking-tighter uppercase italic text-white mb-8 leading-none drop-shadow-lg">
             {profile?.email?.split('@')[0]}
@@ -164,18 +153,19 @@ const ProfileView = ({ user, profile, watchlist }) => (
               Level: {profile?.role || 'User'}
             </span>
             <span className="bg-slate-800/50 text-slate-400 border border-slate-700 px-10 py-4 rounded-[1.5rem] text-[12px] font-black uppercase tracking-[0.4em]">
-              Clearance: NOVA-4
+              Verification: Verified_Unit
             </span>
           </div>
         </div>
       </div>
     </div>
 
+    {/* Metric Blocks */}
     <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
       {[
-        { label: 'Synced_Objects', value: watchlist.length, unit: 'Nodes', desc: 'Objects stored in secure vault' },
-        { label: 'Neural_Uptime', value: '99.9%', unit: 'Sync', desc: 'Real-time database connectivity' },
-        { label: 'Integrity_Status', value: 'Prime', unit: 'Logic', desc: 'Metadata checksum validation' }
+        { label: 'Synced_Vault_Nodes', value: watchlist.length, unit: 'Objects', desc: 'Encrypted items in personal archive' },
+        { label: 'System_Uptime', value: '99.9%', unit: 'Signal', desc: 'Core NovaStream database connection' },
+        { label: 'Data_Integrity', value: 'Stable', unit: 'Sync', desc: 'Neural checksum verification status' }
       ].map((stat, idx) => (
         <motion.div 
           key={idx} 
@@ -198,13 +188,13 @@ const ProfileView = ({ user, profile, watchlist }) => (
 );
 
 // =========================================================================
-// --- 4. MASTER_APPLICATION_LOGIC (FULL_UNABRIDGED_CORE) ---
+// --- 4. MASTER_APPLICATION_LOGIC (FULL_UNABRIDGED) ---
 // =========================================================================
 
 function App() {
   const { user, profile, loading: authLoading } = useAuth();
   
-  // -- State Hooks (Full Synchronization) --
+  // -- State Hooks (Complete Set) --
   const [mediaList, setMediaList] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
   const [email, setEmail] = useState('');
@@ -224,7 +214,7 @@ function App() {
 
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
-  // -- Core Utility Functions --
+  // -- Core Utilities --
   
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -252,7 +242,7 @@ function App() {
       if (!isNextPage) setMediaList(fallbackMedia);
       showToast("Data_Stream_Interrupted_By_Core", "error");
     } finally {
-      // Simulate decryption processing time for aesthetic
+      // Simulate decryption processing time for aesthetic delay
       setTimeout(() => setLoading(false), 600);
     }
   };
@@ -291,7 +281,7 @@ function App() {
     setStats({ users: u || 0, reviews: r || 0, watchlist: w || 0 });
   }, []);
 
-  // -- Real-time Sync Actions --
+  // -- Interaction Actions --
 
   const submitReview = async (mediaId) => {
     if (!review || !user) return;
@@ -313,7 +303,7 @@ function App() {
 
   const addToWatchlist = async (mediaItem) => {
     const isDuplicate = watchlist.some(item => String(item.media_id) === String(mediaItem.id));
-    if (isDuplicate) return showToast('Duplicate_Object_Detected', 'error');
+    if (isDuplicate) return showToast('Object_Already_In_Vault', 'error');
     
     const { error } = await supabase.from('watchlists').insert([{ 
       media_id: mediaItem.id, 
@@ -344,7 +334,7 @@ function App() {
     if (!error) fetchWatchlist();
   };
 
-  // --- 5. LIFECYCLE_&_AUTOMATION ---
+  // --- 5. LIFECYCLE_&_OBSERVATION ---
 
   useEffect(() => { fetchMedia(searchQuery); }, [searchQuery]);
   
@@ -362,25 +352,25 @@ function App() {
     } 
   }, [selectedMedia]);
 
-  // Intersection Observer for Seamless Infinite Fetch
+  // Observer Logic for Seamless Automated Discovery
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && !loading && view === 'browse') {
         fetchMedia(searchQuery, true);
       }
-    }, { threshold: 0.1, rootMargin: '500px' });
+    }, { threshold: 0.1, rootMargin: '400px' });
     
     if (loaderRef.current) observer.observe(loaderRef.current);
     return () => { if (loaderRef.current) observer.unobserve(loaderRef.current); };
   }, [loading, searchQuery, view]);
 
-  // Initial Loader State
+  // Core System Loader View
   if (authLoading) return (
     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-10">
       <div className="w-24 h-24 border-[12px] border-cyan-950 border-t-cyan-500 rounded-full animate-spin"></div>
       <div className="flex flex-col items-center gap-2">
         <span className="text-[12px] font-black uppercase tracking-[1.2em] text-cyan-500 animate-pulse">Initializing_NovaStream</span>
-        <span className="text-slate-800 text-[9px] uppercase font-mono italic">Establishing_Handshake... [OK]</span>
+        <span className="text-slate-800 text-[9px] uppercase font-mono italic">Syncing_Neural_Handshake... [OK]</span>
       </div>
     </div>
   );
@@ -392,7 +382,7 @@ function App() {
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-8 relative overflow-hidden">
-        {/* Dynamic Animated Background Grid */}
+        {/* Dynamic Animated Grid Background */}
         <div className="absolute inset-0 z-0 flex gap-8 opacity-[0.05] pointer-events-none skew-y-12 scale-150">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((col) => (
             <div key={col} className="flex-1 flex flex-col gap-8 animate-infinite-scroll">
@@ -403,7 +393,7 @@ function App() {
           ))}
         </div>
 
-        {/* Security Login Card */}
+        {/* Access Gateway Card */}
         <motion.div 
           initial={{ opacity: 0, y: 50, scale: 0.95 }} 
           animate={{ opacity: 1, y: 0, scale: 1 }} 
@@ -426,13 +416,13 @@ function App() {
               <input type="email" placeholder="root@novastream.sys" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none font-mono text-xs focus:border-cyan-500 transition-all placeholder:text-slate-900" />
             </div>
             <div className="space-y-3 text-left">
-              <label className="text-[11px] font-black uppercase text-slate-700 tracking-[0.4em] ml-6">Encrypted_Passkey</label>
+              <label className="text-[11px] font-black uppercase text-slate-700 tracking-[0.4em] ml-6">Input_Passkey</label>
               <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none font-mono text-xs focus:border-cyan-500 transition-all placeholder:text-slate-900" />
             </div>
             <button 
               onClick={async () => { 
                 const {error} = await supabase.auth.signInWithPassword({email, password}); 
-                if(error) showToast("Identity_Check_Rejected", "error"); 
+                if(error) showToast("Identity_Handshake_Rejected", "error"); 
               }} 
               className="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-8 rounded-[2.5rem] font-black uppercase tracking-[0.3em] text-sm shadow-3xl shadow-cyan-600/30 transition-all active:scale-95 mt-6"
             >
@@ -445,7 +435,7 @@ function App() {
               }} 
               className="w-full bg-transparent hover:bg-slate-800/50 text-slate-700 py-5 rounded-[2.5rem] font-black uppercase text-[11px] border border-slate-800/50 transition-all tracking-[0.1em]"
             >
-              Request_New_Unit_Allocation
+              Request_Node_Allocation
             </button>
           </div>
         </motion.div>
@@ -458,7 +448,7 @@ function App() {
   if (profile?.role === 'Admin') return <AdminDashboard stats={stats} profile={profile} />;
   if (profile?.role === 'Staff') return <StaffDashboard />;
 
-  // --- 9. PRIMARY_USER_INTERFACE ---
+  // --- 9. PRIMARY_INTERFACE (Verified Unit) ---
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-200 pb-20 selection:bg-cyan-500/20 selection:text-cyan-200">
@@ -475,7 +465,7 @@ function App() {
         )}
       </AnimatePresence>
       
-      {/* NAVIGATION_ARCHITECTURE */}
+      {/* NAVIGATION_CORE_ARCHITECTURE */}
       <nav className="px-16 py-12 flex justify-between items-center border-b border-slate-900 bg-slate-950/80 backdrop-blur-3xl sticky top-0 z-[100]">
         <div className="flex items-center gap-20">
           <h1 className="text-5xl font-black italic tracking-tighter leading-none hover:scale-110 transition-all cursor-pointer select-none group" onClick={() => setView('browse')}>
@@ -485,7 +475,7 @@ function App() {
             <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-800 group-focus-within:text-cyan-500 transition-colors" size={20} />
             <input 
               type="text" 
-              placeholder="Query_Global_Database..." 
+              placeholder="Inject_Query_to_Database..." 
               value={searchQuery} 
               onChange={(e) => setSearchQuery(e.target.value)} 
               className="bg-slate-900/50 border border-slate-800/80 pl-16 pr-10 py-5 rounded-[2rem] text-[13px] outline-none focus:border-cyan-500 w-[450px] transition-all font-mono text-slate-300 placeholder:text-slate-900" 
@@ -503,51 +493,76 @@ function App() {
       </nav>
 
       {/* DYNAMIC_CORE_VIEWPORT */}
-      <main className="p-16 max-w-[1800px] mx-auto">
+      <main className="p-16 max-w-[1900px] mx-auto">
         {view === 'browse' ? (
-          <div className="space-y-32 animate-in fade-in duration-1000 pb-20 overflow-hidden">
+          <div className="space-y-40 animate-in fade-in duration-1000 pb-20 overflow-hidden">
             
-            {/* COMPACT_PRIME_ROWS: TRENDING & TOP RATED */}
-            {[
-              { title: "Neural_Trending_Signals", data: mediaList.slice(0, 15), id: "trending" },
-              { title: "Neural_Top_Rated_Nodes", data: mediaList.slice(15, 30), id: "top_rated" }
-            ].map((row) => (
-              <section key={row.id} className="relative group/row px-6">
-                <div className="flex items-center justify-between mb-12">
-                  <div className="flex items-center gap-8">
-                    <div className="h-12 w-[2px] bg-cyan-500 shadow-[0_0_25px_rgba(6,182,212,0.8)]" />
-                    <h3 className="text-[14px] font-black uppercase tracking-[0.6em] text-white/50 italic">{row.title}</h3>
-                  </div>
-                  <div className="flex gap-6 opacity-0 group-hover/row:opacity-100 transition-all translate-x-4 group-hover/row:translate-x-0 duration-500">
-                    <button onClick={(e) => e.currentTarget.parentElement.nextSibling.children[1].scrollBy({ left: -800, behavior: 'smooth' })} className="p-4 bg-slate-900 border border-slate-800 rounded-2xl hover:text-cyan-500 transition-all shadow-xl"><ChevronLeft size={24} /></button>
-                    <button onClick={(e) => e.currentTarget.parentElement.nextSibling.children[1].scrollBy({ left: 800, behavior: 'smooth' })} className="p-4 bg-slate-900 border border-slate-800 rounded-2xl hover:text-cyan-500 transition-all shadow-xl"><ChevronRight size={24} /></button>
-                  </div>
+            {/* ROW_0: RESUME_NEURAL_STREAM (Dynamic Context) */}
+            {watchlist.length > 0 && (
+              <section className="px-6 group/row">
+                <div className="flex items-center gap-8 mb-12">
+                  <Clock className="text-cyan-500 animate-pulse shadow-[0_0_10px_rgba(6,182,212,0.4)]" size={24} />
+                  <h3 className="text-[14px] font-black uppercase tracking-[0.6em] text-cyan-500 italic">Resume_Neural_Stream</h3>
                 </div>
-                
-                <div className="relative">
-                  <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#020617] to-transparent z-10 pointer-events-none opacity-0 group-hover/row:opacity-100 transition-opacity duration-700" />
-                  
-                  <div className="flex flex-nowrap gap-10 overflow-x-auto no-scrollbar scroll-smooth snap-x pb-12">
-                    {row.data.map((movie) => (
-                      <div key={movie.id} className="snap-start shrink-0">
-                        <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#020617] to-transparent z-10 pointer-events-none opacity-0 group-hover/row:opacity-100 transition-opacity duration-700" />
+                <div className="flex flex-nowrap gap-16 overflow-x-auto no-scrollbar scroll-smooth snap-x pb-8">
+                  {watchlist.slice(0, 6).map((movie) => (
+                    <div key={movie.id} className="snap-start shrink-0 relative">
+                       <MovieCard movie={{...movie, id: movie.media_id}} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
+                       <div className="absolute bottom-0 left-0 h-1 bg-cyan-600 w-2/3 shadow-[0_0_15px_rgba(6,182,212,1)] rounded-full z-50 animate-pulse" />
+                    </div>
+                  ))}
                 </div>
               </section>
-            ))}
+            )}
 
-            {/* GLOBAL_DISCOVERY_GRID */}
+            {/* ROW_1: TRENDING_SIGNALS (High Density Row) */}
+            <section className="relative group/row px-6">
+              <div className="flex items-center justify-between mb-12">
+                <div className="flex items-center gap-8">
+                  <div className="h-12 w-[2px] bg-cyan-500 shadow-[0_0_25px_rgba(6,182,212,0.8)]" />
+                  <h3 className="text-[14px] font-black uppercase tracking-[0.6em] text-white/50 italic">Trending_Neural_Signals</h3>
+                </div>
+                <div className="flex gap-6 opacity-0 group-hover/row:opacity-100 transition-all translate-x-4 group-hover/row:translate-x-0 duration-500">
+                  <button onClick={(e) => e.currentTarget.parentElement.nextSibling.children[1].scrollBy({ left: -800, behavior: 'smooth' })} className="p-4 bg-slate-900 border border-slate-800 rounded-2xl hover:text-cyan-500 transition-all shadow-xl"><ChevronLeft size={24} /></button>
+                  <button onClick={(e) => e.currentTarget.parentElement.nextSibling.children[1].scrollBy({ left: 800, behavior: 'smooth' })} className="p-4 bg-slate-900 border border-slate-800 rounded-2xl hover:text-cyan-500 transition-all shadow-xl"><ChevronRight size={24} /></button>
+                </div>
+              </div>
+              <div className="relative">
+                <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#020617] to-transparent z-10 pointer-events-none opacity-0 group-hover/row:opacity-100 transition-opacity duration-700" />
+                <div className="flex flex-nowrap gap-16 overflow-x-auto no-scrollbar scroll-smooth snap-x pb-12">
+                  {mediaList.slice(0, 15).map((movie) => (
+                    <div key={movie.id} className="snap-start shrink-0">
+                      <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
+                    </div>
+                  ))}
+                </div>
+                <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#020617] to-transparent z-10 pointer-events-none opacity-0 group-hover/row:opacity-100 transition-opacity duration-700" />
+              </div>
+            </section>
+
+            {/* ROW_2: HIGH_IMPACT_IMDb (Filtered Row) */}
+            <section className="px-6 group/row">
+              <div className="flex items-center gap-8 mb-12">
+                <Zap className="text-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.4)]" size={24} />
+                <h3 className="text-[14px] font-black uppercase tracking-[0.6em] text-amber-500 italic">High_Impact_IMDb_Archive</h3>
+              </div>
+              <div className="flex flex-nowrap gap-16 overflow-x-auto no-scrollbar scroll-smooth snap-x pb-8">
+                {mediaList.filter(m => m.vote_average > 7.4).map((movie) => (
+                  <div key={movie.id} className="snap-start shrink-0">
+                    <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* GRID: DEEP_DATABASE_EXPLORATION */}
             <section className="px-6">
               <div className="flex items-center gap-8 mb-16">
                 <div className="h-12 w-[2px] bg-cyan-500 shadow-[0_0_25px_rgba(6,182,212,0.8)]" />
-                <h3 className="text-[14px] font-black uppercase tracking-[0.6em] text-white/50 italic">Deep_Global_Exploration</h3>
+                <h3 className="text-[14px] font-black uppercase tracking-[0.6em] text-white/50 italic">Deep_Database_Exploration</h3>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-9 gap-12">
-                {mediaList.slice(30).map((movie) => (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-8 gap-16">
+                {mediaList.slice(15).map((movie) => (
                   <div key={movie.id} className="flex justify-center">
                     <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
                   </div>
@@ -555,7 +570,7 @@ function App() {
               </div>
             </section>
             
-            {/* DYNAMIC_LOADER_FOOTER */}
+            {/* LOADER_SENTRY */}
             <div ref={loaderRef} className="h-80 flex flex-col items-center justify-center gap-10 opacity-40">
               <div className="flex gap-6">
                 <div className="w-3 h-3 bg-cyan-500 rounded-full animate-ping" />
@@ -564,7 +579,7 @@ function App() {
               </div>
               <div className="flex flex-col items-center gap-3">
                 <span className="text-[11px] font-black uppercase tracking-[1.5em] text-cyan-500 italic">Expanding_Neural_Sectors</span>
-                <span className="text-slate-800 text-[9px] uppercase font-mono tracking-widest">Protocol: Active_Nova_Fetch</span>
+                <span className="text-slate-800 text-[9px] uppercase font-mono tracking-widest">Protocol: Active_Infinite_Fetch</span>
               </div>
             </div>
           </div>
@@ -575,7 +590,7 @@ function App() {
               <div className="h-[2px] flex-1 bg-gradient-to-r from-slate-900 via-slate-800 to-transparent" />
             </div>
             {watchlist.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-12">
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-16">
                 {watchlist.map((item) => (
                   <div key={item.id} className="relative group bg-slate-900/40 rounded-[3rem] overflow-hidden border border-slate-800 hover:border-cyan-500/50 transition-all shadow-3xl">
                     <img src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://via.placeholder.com/500x750'} className="w-full aspect-[2/3] object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-[1.1] group-hover:scale-100" alt="" />
@@ -604,13 +619,13 @@ function App() {
         ) : <ProfileView user={user} profile={profile} watchlist={watchlist} />}
       </main>
 
-      {/* --- NEURAL_INTERACTION_MODAL_SYSTEM (FULL_DEPTH) --- */}
+      {/* --- NEURAL_INTERACTION_MODAL_SYSTEM (FULL_DETAIL) --- */}
       <AnimatePresence>
         {selectedMedia && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/98 flex items-center justify-center p-10 md:p-24 z-[300] backdrop-blur-4xl" onClick={() => setSelectedMedia(null)}>
             <motion.div initial={{ scale: 0.95, y: 60 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 60 }} className="bg-[#050505] border border-white/5 max-w-[1600px] w-full flex flex-col md:flex-row rounded-[6rem] overflow-hidden h-[90vh] shadow-[0_0_200px_rgba(6,182,212,0.2)] relative" onClick={e => e.stopPropagation()}>
               
-              {/* Media_Focus_Interface (Left Panel) */}
+              {/* Media_Focus_Interface */}
               <div className="w-full md:w-[50%] relative bg-black flex flex-col border-r border-white/5">
                 <div className="flex-1 bg-black flex items-center justify-center relative overflow-hidden group/player">
                   {trailerKey ? (
@@ -640,7 +655,7 @@ function App() {
                 </div>
               </div>
 
-              {/* Interaction_Interface (Right Panel) */}
+              {/* Interaction_Hub */}
               <div className="flex-1 flex flex-col bg-[#050505] overflow-hidden relative">
                 <div className="p-16 border-b border-white/5 flex justify-between items-center bg-black/40 backdrop-blur-3xl z-10">
                   <div>
@@ -656,7 +671,7 @@ function App() {
                   </div>
                 </div>
 
-                {/* Neural_Feed_Scrollable_Area */}
+                {/* Neural_Feed_Scrollable */}
                 <div className="flex-1 overflow-y-auto p-20 space-y-12 no-scrollbar scroll-smooth">
                   {mediaReviews.length > 0 ? mediaReviews.map((rev, idx) => (
                     <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: idx * 0.1 }} key={idx} className="bg-white/[0.01] border border-white/[0.04] p-12 rounded-[4rem] relative group hover:border-cyan-500/20 transition-all duration-1000">
@@ -683,7 +698,7 @@ function App() {
                   )}
                 </div>
 
-                {/* Perception_Data_Injection_Console */}
+                {/* Perception_Data_Injection */}
                 <div className="p-20 bg-slate-950/90 border-t border-white/5 backdrop-blur-4xl">
                   <div className="flex items-center justify-between mb-12">
                     <div className="flex flex-col gap-2">
@@ -697,7 +712,7 @@ function App() {
                     </div>
                   </div>
                   <div className="flex gap-8">
-                    <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="Inject perception data into central NovaStream node..." className="flex-1 bg-white/[0.02] border border-white/[0.06] px-12 py-8 rounded-[3rem] text-[16px] text-white outline-none focus:border-cyan-500/50 transition-all font-mono placeholder:text-slate-900" />
+                    <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="Inject perception metadata into central node..." className="flex-1 bg-white/[0.02] border border-white/[0.06] px-12 py-8 rounded-[3rem] text-[16px] text-white outline-none focus:border-cyan-500/50 transition-all font-mono placeholder:text-slate-900" />
                     <button onClick={() => submitReview(selectedMedia.id)} className="bg-white text-black hover:bg-cyan-500 hover:text-white px-20 py-8 rounded-[3rem] text-[14px] font-black uppercase tracking-[0.5em] transition-all shadow-3xl active:scale-95 shadow-white/5 hover:shadow-cyan-600/20">Transmit</button>
                   </div>
                 </div>
