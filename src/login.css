@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap');
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Orbitron', sans-serif;
+}
+
+.login-page{
+    width: 100%;
+    height: 100vh;
+    background:
+        linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)),
+        url("/src/assets/jpg.jpg");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.overlay{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(3px);
+    background: radial-gradient(circle at center, rgba(37,99,235,0.15), transparent 60%);
+
+.glass-card{
+  position:relative;
+  width:420px;
+  padding:50px 40px;
+  border-radius:32px;
+  background:rgba(10,15,35,0.72);
+  backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:
+    0 0 40px rgba(37,99,235,0.25),
+    inset 0 0 20px rgba(255,255,255,0.03);
+  z-index:2;
+  overflow:hidden;
+}
+
+.card-glow{
+  position:absolute;
+  width:300px;
+  height:300px;
+  background:rgba(37,99,235,0.18);
+  border-radius:50%;
+  filter:blur(80px);
+  top:-120px;
+  right:-100px;
+}
+
+.logo-text {
+    text-align: center;
+    font-size: 36px; /* 48px'den 36px'e indirdik, hem küçülecek hem sığacak */
+    font-weight: 700;
+    color: white;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+    text-indent: -1px; /* Sağa kaymayı engelleyen matematiksel denge */
+    font-style: italic;
+    display: block;
+    width: 100%;
+    white-space: nowrap; /* Metnin alt satıra kırılmasını önler */
+}
+
+.logo-text span{
+  color:#2563eb;
+}
+
+.subtitle {
+  text-align: center;
+  color: #7f8db3;
+  margin-bottom: 40px;
+  font-size: 13px;
+  letter-spacing: 4px;
+  text-indent: 4px; /* Harf boşluğu kadar sağa iterek tam merkezi yakalarız */
+}
+
+.input-group{
+  margin-bottom:22px;
+}
+
+.input-group input{
+  width:100%;
+  padding:18px 20px;
+  border:none;
+  outline:none;
+  border-radius:16px;
+  background:#050b18;
+  color:white;
+  font-size:14px;
+  border:1px solid rgba(255,255,255,0.05);
+  transition:0.3s ease;
+}
+
+.input-group input:focus{
+  border:1px solid #2563eb;
+  box-shadow:0 0 15px rgba(37,99,235,0.4);
+  transform:scale(1.02);
+}
+
+.login-btn{
+  width:100%;
+  padding:18px;
+  border:none;
+  border-radius:16px;
+  background:#2563eb;
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+  margin-top:10px;
+  transition:0.3s ease;
+  font-family:'Orbitron', sans-serif;
+}
+
+.login-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 25px rgba(37,99,235,0.6);
+  background:#3b82f6;
+}
+
+.secondary-btn{
+  width:100%;
+  padding:18px;
+  margin-top:22px;
+  border-radius:16px;
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.08);
+  color:#6f7da3;
+  cursor:pointer;
+  transition:0.3s ease;
+  font-family:'Orbitron', sans-serif;
+}
+
+.secondary-btn:hover{
+  border:1px solid rgba(37,99,235,0.5);
+  color:white;
+  background:rgba(37,99,235,0.08);
+}
+
+@media(max-width:500px){
+  .glass-card {
+    width: 90%; /* Mobilde kartın ekranı kaplaması için */
+    padding: 50px 30px;
+  }
+  .logo-text {
+    font-size: 32px; /* Mobilde yazının taşmaması için */
+  }
