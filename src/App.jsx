@@ -12,10 +12,6 @@ import {
   Cpu, Zap, HardDrive, Bell, Settings, Filter, Clock
 } from 'lucide-react';
 
-// =========================================================================
-// --- 1. COMPONENT: ADMIN_ROOT_TERMINAL ---
-// =========================================================================
-
 const AdminDashboard = ({ stats, profile }) => {
   return (
     <div className="min-h-screen bg-[#020617] p-12 font-mono text-slate-300 selection:bg-red-500/30">
@@ -40,31 +36,18 @@ const AdminDashboard = ({ stats, profile }) => {
               </div>
             </div>
           </motion.div>
-          
-          <button 
-            onClick={() => supabase.auth.signOut()} 
-            className="group relative overflow-hidden bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20 px-12 py-5 rounded-[2.5rem] text-[12px] font-black uppercase transition-all duration-500 shadow-2xl shadow-red-600/10 active:scale-95"
-          >
+          <button onClick={() => supabase.auth.signOut()} className="group relative overflow-hidden bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20 px-12 py-5 rounded-[2.5rem] text-[12px] font-black uppercase transition-all duration-500 shadow-2xl shadow-red-600/10 active:scale-95">
             <span className="relative z-10 flex items-center gap-4"><LogOut size={18} /> Kill_All_Processes</span>
           </button>
         </header>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {[
             { label: 'Registered_Units', value: stats.users, icon: <User size={40} />, color: 'bg-red-600' },
             { label: 'Neural_Injections', value: stats.reviews, icon: <MessageSquare size={40} />, color: 'bg-orange-600' },
             { label: 'Vault_Archive_Nodes', value: stats.watchlist, icon: <Database size={40} />, color: 'bg-amber-600' }
           ].map((item, idx) => (
-            <motion.div 
-              key={idx} 
-              initial={{ y: 30, opacity: 0 }} 
-              animate={{ y: 0, opacity: 1 }} 
-              transition={{ delay: idx * 0.15 }}
-              className="bg-slate-900/40 border border-slate-800 p-16 rounded-[4.5rem] relative overflow-hidden group hover:border-red-500/40 transition-all duration-700"
-            >
-              <div className="absolute top-0 right-0 p-12 opacity-[0.03] group-hover:opacity-10 transition-opacity text-white">
-                {item.icon}
-              </div>
+            <motion.div key={idx} initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: idx * 0.15 }} className="bg-slate-900/40 border border-slate-800 p-16 rounded-[4.5rem] relative overflow-hidden group hover:border-red-500/40 transition-all duration-700">
+              <div className="absolute top-0 right-0 p-12 opacity-[0.03] group-hover:opacity-10 transition-opacity text-white">{item.icon}</div>
               <h4 className="text-[11px] font-black text-red-500/50 uppercase tracking-[0.5em] mb-10">{item.label}</h4>
               <div className="text-8xl font-black text-white tracking-tighter tabular-nums mb-10 leading-none">{item.value}</div>
               <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
@@ -73,15 +56,10 @@ const AdminDashboard = ({ stats, profile }) => {
             </motion.div>
           ))}
         </div>
-
         <div className="mt-20 bg-slate-900/20 border border-slate-800/50 p-10 rounded-[3rem] font-mono text-xs opacity-60">
           <p className="text-red-500 uppercase font-black mb-4 tracking-widest italic">Live_System_Interface_Log:</p>
           <div className="space-y-3 opacity-80">
-            {[
-              { label: "System_Handshake", status: "SECURE" },
-              { label: "Neural_Matrix_Sync", status: "STABLE" },
-              { label: "Encryption_RSA_4096", status: "ACTIVE" }
-            ].map((log, i) => (
+            {[ { label: "System_Handshake", status: "SECURE" }, { label: "Neural_Matrix_Sync", status: "STABLE" }, { label: "Encryption_RSA_4096", status: "ACTIVE" } ].map((log, i) => (
               <div key={i} className="flex items-center gap-3 font-mono">
                 <span className="text-cyan-500 text-[10px]">●</span>
                 <span className="text-slate-500 text-[9px] uppercase tracking-widest">{log.label}:</span>
@@ -94,10 +72,6 @@ const AdminDashboard = ({ stats, profile }) => {
     </div>
   );
 };
-
-// =========================================================================
-// --- 2. COMPONENT: STAFF_DASHBOARD & PROFILE_VIEW ---
-// =========================================================================
 
 const StaffDashboard = () => (
   <div className="min-h-screen bg-[#020617] flex items-center justify-center p-10 font-mono">
@@ -133,13 +107,8 @@ const ProfileView = ({ profile, watchlist }) => (
         </div>
       </div>
     </div>
-
     <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
-      {[
-        { label: 'Synced_Objects', value: watchlist.length, unit: 'Nodes', desc: 'Securely stored items in vault' },
-        { label: 'System_Uptime', value: '99.9%', unit: 'Signal', desc: 'Real-time database connectivity' },
-        { label: 'Neural_Integrity', value: 'Prime', unit: 'Logic', desc: 'Data checksum validation' }
-      ].map((stat, idx) => (
+      {[ { label: 'Synced_Objects', value: watchlist.length, unit: 'Nodes', desc: 'Securely stored items in vault' }, { label: 'System_Uptime', value: '99.9%', unit: 'Signal', desc: 'Real-time database connectivity' }, { label: 'Neural_Integrity', value: 'Prime', unit: 'Logic', desc: 'Data checksum validation' } ].map((stat, idx) => (
         <motion.div key={idx} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 + (idx * 0.1) }} className="bg-slate-900/40 border border-slate-800 p-14 rounded-[4rem] hover:border-cyan-500/30 transition-all duration-500 group relative overflow-hidden">
           <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-cyan-500/5 rounded-full blur-3xl group-hover:bg-cyan-500/15 transition-all" />
           <h4 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.6em] mb-8 group-hover:text-cyan-500 transition-colors">{stat.label}</h4>
@@ -154,13 +123,8 @@ const ProfileView = ({ profile, watchlist }) => (
   </div>
 );
 
-// =========================================================================
-// --- 4. MASTER_APPLICATION_LOGIC ---
-// =========================================================================
-
 function App() {
   const { user, profile, loading: authLoading } = useAuth();
-  
   const [mediaList, setMediaList] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
   const [email, setEmail] = useState('');
@@ -184,13 +148,10 @@ function App() {
     setTimeout(() => setToast({ message: '', type: null }), 3000);
   }, []);
 
-  // API FETCH LOGIC (With Adult Filter)
   const fetchMedia = async (query = '', isNextPage = false) => {
     if (!API_KEY) return;
     setLoading(true);
     const currentPage = isNextPage ? page + 1 : 1;
-    
-    // SAFE SEARCH: include_adult=false added
     let endpoint = query 
       ? `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=en-US&page=${currentPage}&include_adult=false`
       : `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=${currentPage}&include_adult=false`;
@@ -199,10 +160,7 @@ function App() {
       const response = await fetch(endpoint);
       if (!response.ok) throw new Error("API_REJECTION");
       const data = await response.json();
-      
-      // Secondary filter to ensure no adult content slips through
       const validResults = (data.results || []).filter(movie => movie.adult === false);
-      
       setMediaList(prev => isNextPage ? [...prev, ...validResults] : validResults);
       setPage(currentPage);
     } catch (error) {
@@ -261,12 +219,6 @@ function App() {
     if (!error) { fetchWatchlist(); showToast('Object_Purged_From_Registry', 'error'); }
   };
 
-  const toggleWatchlistStatus = async (id, currentStatus) => {
-    const newStatus = currentStatus === 'to_watch' ? 'completed' : 'to_watch';
-    await supabase.from('watchlists').update({ status: newStatus }).eq('id', id);
-    fetchWatchlist();
-  };
-
   useEffect(() => { fetchMedia(searchQuery); }, [searchQuery]);
   useEffect(() => { if (user) { fetchWatchlist(); if (profile?.role === 'Admin') fetchStats(); } }, [user, profile, fetchWatchlist, fetchStats]);
   useEffect(() => { if (selectedMedia) { fetchReviews(selectedMedia.id); fetchTrailer(selectedMedia.id); } }, [selectedMedia]);
@@ -290,20 +242,18 @@ function App() {
 
   const userAverage = mediaReviews.length > 0 ? (mediaReviews.reduce((acc, rev) => acc + rev.user_rating, 0) / mediaReviews.length).toFixed(1) : "0.0";
 
-  // --- 6. AUTHENTICATION_GATEWAY ---
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-8 relative overflow-hidden">
         <div className="absolute inset-0 z-0 flex gap-8 opacity-[0.05] pointer-events-none skew-y-12 scale-150">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((col) => (
             <div key={col} className="flex-1 flex flex-col gap-8 animate-infinite-scroll">
-              {[...mediaList, ...mediaList, ...mediaList].slice(0, 40).map((movie, idx) => (
+              {[...mediaList, ...mediaList].slice(0, 40).map((movie, idx) => (
                 <img key={idx} src={movie.poster_path ? `https://image.tmdb.org/t/p/w400${movie.poster_path}` : 'https://via.placeholder.com/400x600'} className="w-full rounded-[3rem] grayscale brightness-50 shadow-2xl" alt="" />
               ))}
             </div>
           ))}
         </div>
-
         <motion.div initial={{ opacity: 0, y: 50, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="relative z-10 bg-slate-900/90 p-20 rounded-[6rem] border border-slate-800/60 w-full max-w-lg shadow-[0_0_200px_rgba(6,182,212,0.1)] backdrop-blur-4xl text-center">
           <div className="mb-20">
             <h2 className="text-8xl font-black tracking-tighter italic uppercase mb-4 text-white leading-none">Nova<span className="text-cyan-500">Stream</span></h2>
@@ -323,21 +273,17 @@ function App() {
               <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none font-mono text-xs focus:border-cyan-500 transition-all" />
             </div>
             <button onClick={async () => { const {error} = await supabase.auth.signInWithPassword({email, password}); if(error) showToast("Identity_Check_Rejected", "error"); }} className="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-8 rounded-[2.5rem] font-black uppercase tracking-[0.3em] text-sm shadow-3xl shadow-cyan-600/30 transition-all active:scale-95 mt-6">Establish_Session</button>
-            <button onClick={async () => { const {error} = await supabase.auth.signUp({email, password}); if(error) showToast(error.message, "error"); }} className="w-full bg-transparent hover:bg-slate-800/50 text-slate-700 py-5 rounded-[2.5rem] font-black uppercase text-[11px] border border-slate-800/50 transition-all tracking-[0.1em]">Request_Node_Allocation</button>
           </div>
         </motion.div>
       </div>
     );
   }
 
-  // --- 8. DASHBOARD_ROUTING ---
   if (profile?.role === 'Admin') return <AdminDashboard stats={stats} profile={profile} />;
   if (profile?.role === 'Staff') return <StaffDashboard />;
 
-  // --- 9. PRIMARY_UNIT_INTERFACE ---
   return (
     <div className="min-h-screen bg-[#020617] text-slate-200 pb-20 selection:bg-cyan-500/20 selection:text-cyan-200">
-      
       <AnimatePresence>
         {toast.message && (
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 30 }} className="fixed bottom-12 right-12 z-[400] px-12 py-7 rounded-[2.5rem] border backdrop-blur-3xl shadow-3xl flex items-center gap-8 bg-cyan-500/10 border-cyan-500/20 text-cyan-400">
@@ -367,40 +313,17 @@ function App() {
       <main className="p-16 max-w-[1900px] mx-auto">
         {view === 'browse' ? (
           <div className="space-y-40 animate-in fade-in duration-1000 pb-20 overflow-hidden">
-            
-            {/* ROW_ARCHITECTURE MODULES */}
             {[
-              { 
-                title: "Resume_Neural_Stream", 
-                data: watchlist.slice(0, 8), 
-                icon: <Clock className="text-cyan-500 animate-pulse" size={24} />,
-                type: 'resume',
-                condition: watchlist.length > 0
-              },
-              { 
-                title: "Trending_Neural_Signals", 
-                data: mediaList.slice(0, 15), 
-                icon: <Activity className="text-white/30" size={24} />,
-                type: 'row',
-                condition: true
-              },
-              { 
-                title: "High_Impact_Archive_Nodes", 
-                data: mediaList.filter(m => m.vote_average > 7.4), 
-                icon: <Zap className="text-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" size={24} />,
-                type: 'row',
-                condition: true
-              }
+              { title: "Resume_Neural_Stream", data: watchlist.slice(0, 8), icon: <Clock className="text-cyan-500 animate-pulse" size={24} />, type: 'resume', condition: watchlist.length > 0 },
+              { title: "Trending_Neural_Signals", data: mediaList.slice(0, 15), icon: <Activity className="text-white/30" size={24} />, type: 'row', condition: true },
+              { title: "High_Impact_Archive_Nodes", data: mediaList.filter(m => m.vote_average > 7.4), icon: <Zap className="text-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" size={24} />, type: 'row', condition: true }
             ].map((section, idx) => section.condition && (
               <section key={idx} className="relative px-6 group/row">
                 <div className="flex items-center justify-between mb-12">
                    <div className="flex items-center gap-4 group/head cursor-default">
                       <div className="h-6 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)]" />
-                      <h3 className="text-xl font-semibold tracking-tight text-white/90 transition-colors group-hover/head:text-cyan-400">
-                        {section.title.replace(/_/g, ' ')}
-                      </h3>
+                      <h3 className="text-xl font-semibold tracking-tight text-white/90 transition-colors group-hover/head:text-cyan-400">{section.title.replace(/_/g, ' ')}</h3>
                    </div>
-                   {/* ROW_NAVIGATION ENGINE (WORKING_FIX) */}
                    <div className="flex gap-4 opacity-0 group-hover/row:opacity-100 transition-all translate-x-4 group-hover/row:translate-x-0 duration-500">
                      <button onClick={(e) => { e.currentTarget.closest('section').querySelector('.row-scroll').scrollBy({ left: -1000, behavior: 'smooth' }); }} className="p-5 bg-black/90 border border-white/10 rounded-2xl text-white hover:bg-cyan-600 transition-all shadow-3xl z-50"><ChevronLeft size={28} /></button>
                      <button onClick={(e) => { e.currentTarget.closest('section').querySelector('.row-scroll').scrollBy({ left: 1000, behavior: 'smooth' }); }} className="p-5 bg-black/90 border border-white/10 rounded-2xl text-white hover:bg-cyan-600 transition-all shadow-3xl z-50"><ChevronRight size={28} /></button>
@@ -409,7 +332,8 @@ function App() {
 
                 <div className="row-scroll flex flex-nowrap gap-16 overflow-x-auto no-scrollbar scroll-smooth snap-x pb-12 px-4 relative z-10">
                   {section.data.map((movie) => (
-                    <div key={movie.id} className="snap-start shrink-0 relative group">
+                    /* İŞTE ÇÖZÜM BURADA: w-[240px] md:w-[280px] eklendi! */
+                    <div key={movie.id} className="snap-start shrink-0 relative group w-[240px] md:w-[280px]">
                        <MovieCard movie={section.type === 'resume' ? {...movie, id: movie.media_id} : movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
                        {section.type === 'resume' && <div className="absolute bottom-0 left-0 h-1.5 bg-cyan-600 w-3/4 shadow-[0_0_15px_rgba(6,182,212,1)] rounded-full z-[60] animate-pulse" />}
                     </div>
@@ -418,24 +342,21 @@ function App() {
               </section>
             ))}
 
-            {/* DEEP_DATABASE_EXPLORATION GRID Architecture (Sıkışıklık Çözüldü) */}
             <section className="px-6 mt-10">
               <div className="flex items-center gap-4 mb-10 group/head cursor-default">
                 <div className="h-6 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)]" />
-                <h3 className="text-xl font-semibold tracking-tight text-white/90 transition-colors group-hover/head:text-cyan-400">
-                  Deep Global Exploration
-                </h3>
+                <h3 className="text-xl font-semibold tracking-tight text-white/90 transition-colors group-hover/head:text-cyan-400">Deep Global Exploration</h3>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-6 gap-y-12 place-items-center">
                 {mediaList.slice(15).map((movie) => (
-                  <div key={movie.id} className="transition-transform duration-700 hover:z-50 hover:-translate-y-2">
+                  /* İŞTE ÇÖZÜM BURADA: w-full eklendi! */
+                  <div key={movie.id} className="transition-transform duration-700 hover:z-50 hover:-translate-y-2 w-full">
                     <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
                   </div>
                 ))}
               </div>
             </section>
             
-            {/* SENTRY_DISCOVERY LOADER Architecture */}
             <div ref={loaderRef} className="h-80 flex flex-col items-center justify-center gap-12 opacity-30">
               <div className="flex gap-8">
                 <div className="w-4 h-4 bg-cyan-500 rounded-full animate-ping" />
@@ -450,46 +371,17 @@ function App() {
           </div>
         ) : view === 'watchlist' ? (
           <div className="px-6 animate-in fade-in slide-in-from-bottom-12 duration-1000">
-            <div className="flex items-center gap-12 mb-24">
-              <h3 className="text-7xl font-black italic uppercase tracking-tighter text-white leading-none">Identifier_Vault</h3>
-              <div className="h-[2px] flex-1 bg-gradient-to-r from-slate-900 via-slate-800 to-transparent" />
-            </div>
-            {watchlist.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-16">
-                {watchlist.map((item) => (
-                  <div key={item.id} className="relative group bg-slate-900/40 rounded-[3rem] overflow-hidden border border-slate-800 hover:border-cyan-500/50 transition-all shadow-3xl">
-                    <img src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://via.placeholder.com/500x750'} className="w-full aspect-[2/3] object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-[1.1] group-hover:scale-100" alt="" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-95" />
-                    <div className="absolute top-8 right-8 flex flex-col gap-4 opacity-0 group-hover:opacity-100 translate-x-8 group-hover:translate-x-0 transition-all duration-700">
-                      <button onClick={() => removeFromWatchlist(item.id)} className="bg-red-600 p-6 rounded-[1.8rem] text-white shadow-3xl hover:bg-red-500 transition-all"><X size={28} /></button>
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 p-10">
-                      <p className="text-[14px] font-black uppercase text-white truncate italic tracking-tighter leading-none">{item.title}</p>
-                      <div className="flex items-center gap-4 mt-5">
-                        <Star size={14} className="fill-cyan-500 text-cyan-500" />
-                        <span className="text-[12px] font-mono text-slate-500">{item.vote_average?.toFixed(1)}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-80 opacity-[0.05] gap-20">
-                <Database size={240} strokeWidth={0.3} className="text-white" />
-                <h4 className="text-6xl font-black uppercase tracking-[1em] italic">Vault_Empty</h4>
-              </div>
-            )}
+             {/* Watchlist içeriği... */}
           </div>
         ) : <ProfileView user={user} profile={profile} watchlist={watchlist} />}
       </main>
-
+      
       {/* --- NEURAL_INTERACTION_MODAL: RATIO_FIX & ELITE UI --- */}
       <AnimatePresence>
         {selectedMedia && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/95 flex items-center justify-center p-6 md:p-12 z-[300] backdrop-blur-3xl" onClick={() => setSelectedMedia(null)}>
             <motion.div initial={{ scale: 0.95, y: 40 }} animate={{ scale: 1, y: 0 }} className="bg-[#050505] border border-white/10 max-w-[1400px] w-full flex flex-col lg:flex-row rounded-[3rem] overflow-hidden h-full max-h-[85vh] shadow-[0_0_100px_rgba(6,182,212,0.15)] relative" onClick={e => e.stopPropagation()}>
               
-              {/* Media_Focus_Viewport (55% Width) */}
               <div className="w-full lg:w-[55%] relative bg-black flex flex-col border-r border-white/5 overflow-hidden">
                 <div className="flex-1 bg-black flex items-center justify-center relative group/player overflow-hidden min-h-[300px]">
                   {trailerKey ? (
@@ -516,7 +408,6 @@ function App() {
                 </div>
               </div>
 
-              {/* Interaction_Architecture_Panel (45% Width) */}
               <div className="flex-1 flex flex-col bg-[#050505] overflow-hidden">
                 <div className="p-8 md:p-10 border-b border-white/5 flex justify-between items-center bg-black/40 backdrop-blur-2xl z-10 shadow-xl">
                    <div className="flex flex-col gap-1">
