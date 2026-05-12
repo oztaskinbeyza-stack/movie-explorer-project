@@ -324,32 +324,56 @@ function App() {
       </AnimatePresence>
       
       {/* Navigation */}
-<nav className="p-8 flex justify-between items-center border-b border-slate-900 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50">
-  <h1 className="text-3xl font-black italic tracking-tighter leading-none hover:scale-105 transition-transform cursor-default">
+<nav className="p-6 md:p-8 flex justify-between items-center border-b border-slate-900 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50">
+  {/* Logo Alanı */}
+  <h1 className="text-2xl md:text-3xl font-black italic tracking-tighter leading-none hover:scale-105 transition-transform cursor-pointer">
     Nova<span className="text-blue-500">Stream</span>
   </h1>
-          <h1 className="text-3xl font-black italic tracking-tighter leading-none hover:scale-105 transition-transform cursor-default">Nova<span className="text-blue-500">Stream</span></h1>
-        <div className="flex items-center gap-8">
-          <div className="relative group hidden md:block">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-500 transition-colors" size={16} />
-            <input type="text" placeholder="Search Neural_Database..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-slate-900 border border-slate-800 pl-12 pr-6 py-3 rounded-full text-xs outline-none focus:border-blue-500 w-80 transition-all font-mono" />
-          </div>
-          <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-widest text-slate-500">
-            <button onClick={() => setView('browse')} className={`hover:text-white transition-colors flex items-center gap-2 ${view === 'browse' ? 'text-blue-500' : ''}`}>
-              <LayoutGrid size={14} /> Browse
-            </button>
-            <button onClick={() => setView('watchlist')} className={`hover:text-white transition-colors flex items-center gap-2 ${view === 'watchlist' ? 'text-blue-500' : ''}`}>
-              <Bookmark size={14} /> Vault ({watchlist.length})
-            </button>
-            <button onClick={() => setView('profile')} className={`hover:text-white transition-colors flex items-center gap-2 ${view === 'profile' ? 'text-blue-500' : ''}`}>
-              <User size={14} /> Profile
-            </button>
-            <button onClick={() => supabase.auth.signOut()} className="bg-slate-900 p-3 rounded-xl hover:text-red-500 hover:border-red-500/20 transition-all border border-slate-800">
-              <LogOut size={16} />
-            </button>
-          </div>
-        </div>
-      </nav>
+
+  <div className="flex items-center gap-4 md:gap-10">
+    <div className="relative group hidden lg:block">
+      <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-500 transition-colors" size={14} />
+      <input 
+        type="text" 
+        placeholder="Search database..." 
+        value={searchQuery} 
+        onChange={(e) => setSearchQuery(e.target.value)} 
+        className="bg-slate-900/50 border border-slate-800 pl-10 pr-6 py-2.5 rounded-xl text-[11px] outline-none focus:border-blue-500 w-64 transition-all font-mono text-slate-300" 
+      />
+    </div>
+
+    <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-widest text-slate-500">
+      <button 
+        onClick={() => setView('browse')} 
+        className={`hover:text-white transition-colors flex items-center gap-2 ${view === 'browse' ? 'text-blue-500' : ''}`}
+      >
+        <LayoutGrid size={14} /> Browse
+      </button>
+
+      <button 
+        onClick={() => setView('watchlist')} 
+        className={`hover:text-white transition-colors flex items-center gap-2 ${view === 'watchlist' ? 'text-blue-500' : ''}`}
+      >
+        <Bookmark size={14} /> Watchlist ({watchlist.length})
+      </button>
+
+      <button 
+        onClick={() => setView('profile')} 
+        className={`hover:text-white transition-colors flex items-center gap-2 ${view === 'profile' ? 'text-blue-500' : ''}`}
+      >
+        <User size={14} /> Profile
+      </button>
+
+      {/* Çıkış Butonu */}
+      <button 
+        onClick={() => supabase.auth.signOut()} 
+        className="bg-slate-900 hover:bg-red-500/10 p-2.5 rounded-xl text-slate-500 hover:text-red-500 transition-all border border-slate-800 hover:border-red-500/20"
+      >
+        <LogOut size={16} />
+      </button>
+    </div>
+  </div>
+</nav>
 
       {/* Main Content Area */}
       <main className="p-8 max-w-[1600px] mx-auto">
