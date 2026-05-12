@@ -202,19 +202,22 @@ function App() {
     setTimeout(() => setToast({ message: '', type: null }), 3000);
   }, []);
 
-  const fetchMedia = async (query = '', isNextPage = false) => {
+const fetchMedia = async (query = '', isNextPage = false) => {
     if (!API_KEY) return;
     setLoading(true);
     const currentPage = isNextPage ? page + 1 : 1;
+    
     let endpoint = query 
-      ? `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=en-US&page=${currentPage}`
-      : `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=${currentPage}`;
+      ? `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=en-US&page=${currentPage}&include_adult=false`
+      : `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=${currentPage}&include_adult=false`;
 
     try {
       const response = await fetch(endpoint);
       if (!response.ok) throw new Error("API_REJECTION");
       const data = await response.json();
-      const validResults = data.results || [];
+      
+      const validResults = (data.results || []).filter(movie => movie.adult === false);
+      
       setMediaList(prev => isNextPage ? [...prev, ...validResults] : validResults);
       setPage(currentPage);
     } catch (error) {
@@ -505,85 +508,100 @@ function App() {
         ) : <ProfileView user={user} profile={profile} watchlist={watchlist} />}
       </main>
 
-      {/* --- NEURAL_INTERACTION_MODAL: RATIO_FIX (60/40) Architecture --- */}
+{/* --- NEURAL_INTERACTION_MODAL: ELITE UI FIX --- */}
       <AnimatePresence>
         {selectedMedia && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/98 flex items-center justify-center p-8 md:p-16 z-[300] backdrop-blur-4xl" onClick={() => setSelectedMedia(null)}>
-            <motion.div initial={{ scale: 0.95, y: 60 }} animate={{ scale: 1, y: 0 }} className="bg-[#050505] border border-white/5 max-w-[1500px] w-full flex flex-col lg:flex-row rounded-[5rem] overflow-hidden h-full max-h-[85vh] shadow-[0_0_200px_rgba(6,182,212,0.15)] relative" onClick={e => e.stopPropagation()}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/95 flex items-center justify-center p-6 md:p-12 z-[300] backdrop-blur-3xl" onClick={() => setSelectedMedia(null)}>
+            <motion.div initial={{ scale: 0.95, y: 40 }} animate={{ scale: 1, y: 0 }} className="bg-[#050505] border border-white/10 max-w-[1400px] w-full flex flex-col lg:flex-row rounded-[3rem] overflow-hidden h-full max-h-[85vh] shadow-[0_0_100px_rgba(6,182,212,0.15)] relative" onClick={e => e.stopPropagation()}>
               
-              {/* Media_Focus_Viewport (60% Width) */}
-              <div className="w-full lg:w-[60%] relative bg-black flex flex-col border-r border-white/5 overflow-hidden">
-                <div className="flex-1 bg-black flex items-center justify-center relative group/player overflow-hidden">
+              <div className="w-full lg:w-[55%] relative bg-black flex flex-col border-r border-white/5 overflow-hidden">
+                <div className="flex-1 bg-black flex items-center justify-center relative group/player overflow-hidden min-h-[300px]">
                   {trailerKey ? (
-                    <iframe src={`https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&modestbranding=1&rel=0`} className="w-full h-full border-0 z-10 scale-[1.01]" allow="autoplay; encrypted-media" allowFullScreen></iframe>
+                    <iframe src={`https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&modestbranding=1&rel=0`} className="w-full h-full border-0 z-10" allow="autoplay; encrypted-media" allowFullScreen></iframe>
                   ) : (
-                    <div className="text-center p-24 opacity-[0.15] flex flex-col items-center gap-10">
-                      <Database size={120} strokeWidth={0.3} className="text-cyan-500" />
-                      <span className="text-[13px] font-black uppercase tracking-[1em] text-cyan-500">Source_Signal_Offline</span>
+                    <div className="text-center p-12 opacity-20 flex flex-col items-center gap-6">
+                      <Database size={80} strokeWidth={0.5} className="text-cyan-500" />
+                      <span className="text-[11px] font-black uppercase tracking-[0.8em] text-cyan-500">Signal_Offline</span>
                     </div>
                   )}
                 </div>
-                <div className="p-14 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent">
-                  <div className="flex items-center gap-8 mb-8 font-mono text-[10px] font-black uppercase">
-                    <div className="bg-cyan-600 text-white px-5 py-2 rounded-xl italic shadow-lg shadow-cyan-600/30 font-bold"><Star size={14} fill="white" className="inline mr-2" /> SCORE_{selectedMedia.vote_average?.toFixed(1)}</div>
-                    <span className="text-slate-500 border-l border-white/10 pl-8 flex items-center gap-3"><Calendar size={16}/> {selectedMedia.release_date?.split('-')[0]}</span>
-                    <span className="text-slate-500 border-l border-white/10 pl-8 flex items-center gap-3"><Globe size={16}/> {selectedMedia.original_language?.toUpperCase()}</span>
+                
+                <div className="p-10 md:p-14 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent">
+                  <div className="flex items-center gap-6 mb-6 font-mono text-[10px] font-bold uppercase">
+                    <div className="bg-cyan-600 text-white px-4 py-2 rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.4)] flex items-center gap-2">
+                      <Star size={14} fill="white" /> 
+                      <span>SCORE_{selectedMedia.vote_average?.toFixed(1)}</span>
+                    </div>
+                    <span className="text-slate-400 flex items-center gap-2"><Calendar size={16}/> {selectedMedia.release_date?.split('-')[0]}</span>
+                    <span className="text-slate-400 border-l border-white/10 pl-6 flex items-center gap-2"><Globe size={16}/> {selectedMedia.original_language?.toUpperCase()}</span>
                   </div>
-                  <h2 className="text-6xl font-black mb-8 uppercase italic text-white tracking-tighter leading-none">{selectedMedia.title}</h2>
-                  <p className="text-white/40 text-[13px] leading-[1.8] font-medium uppercase tracking-tight line-clamp-4 border-l-2 border-cyan-600/20 pl-8">{selectedMedia.overview}</p>
+                  
+                  <h2 className="text-4xl md:text-5xl font-black mb-6 uppercase text-white tracking-tight leading-[1.1]">{selectedMedia.title}</h2>
+                  
+                  <p className="text-white/70 text-[14px] leading-relaxed font-medium line-clamp-3 border-l-4 border-cyan-600/30 pl-6">{selectedMedia.overview}</p>
                 </div>
               </div>
 
-              {/* Interaction_Architecture_Panel (40% Width) */}
               <div className="flex-1 flex flex-col bg-[#050505] overflow-hidden">
-                <div className="p-12 border-b border-white/5 flex justify-between items-center bg-black/40 backdrop-blur-3xl z-10 shadow-2xl">
-                   <div className="flex flex-col gap-2">
-                      <h4 className="text-[11px] font-black text-white/30 uppercase tracking-[0.5em] flex items-center gap-4"><MessageSquare size={18} className="text-cyan-500" /> Neural_Community_Input</h4>
-                      <p className="text-[9px] text-cyan-500/40 font-mono tracking-widest animate-pulse italic leading-none">Establishing_Sync_Points... [ACTIVE]</p>
+                <div className="p-8 md:p-10 border-b border-white/5 flex justify-between items-center bg-black/40 backdrop-blur-2xl z-10 shadow-xl">
+                   <div className="flex flex-col gap-1">
+                      <h4 className="text-[11px] font-black text-white/40 uppercase tracking-[0.4em] flex items-center gap-3"><MessageSquare size={16} className="text-cyan-500" /> Neural_Feed</h4>
+                      <p className="text-[9px] text-cyan-500/50 font-mono tracking-widest animate-pulse mt-1">Establishing_Sync...</p>
                    </div>
-                   <div className="text-right flex items-center gap-8">
-                      <div className="h-14 w-[1px] bg-white/5" />
-                      <div className="flex flex-col"><span className="text-5xl font-black text-white tabular-nums leading-none tracking-tighter">{userAverage}</span><span className="text-[10px] font-bold text-cyan-500/30 uppercase tracking-[0.4em] leading-none italic">Global_Avg</span></div>
+                   <div className="text-right flex items-center gap-6">
+                      <div className="h-10 w-[1px] bg-white/10" />
+                      <div className="flex flex-col">
+                        <span className="text-4xl font-black text-white tabular-nums leading-none tracking-tighter">{userAverage}</span>
+                        <span className="text-[9px] font-bold text-cyan-500/40 uppercase tracking-[0.3em] mt-1">Global_Avg</span>
+                      </div>
                    </div>
                 </div>
 
-                {/* Neural_Feed_Streamable Architecture */}
-                <div className="flex-1 overflow-y-auto p-12 space-y-10 no-scrollbar scroll-smooth">
+                <div className="flex-1 overflow-y-auto p-8 md:p-10 space-y-6 no-scrollbar scroll-smooth">
                   {mediaReviews.length > 0 ? mediaReviews.map((rev, idx) => (
-                    <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} key={idx} className="bg-white/[0.01] border border-white/[0.04] p-10 rounded-[3rem] group hover:border-cyan-500/20 transition-all duration-1000 shadow-xl relative">
-                      <div className="flex justify-between items-center mb-6">
-                        <span className="text-[12px] font-black text-cyan-500 uppercase italic tracking-[0.2em]">UNIT_{rev.user_id?.slice(0, 10)}</span>
-                        <div className="flex gap-2 bg-black/60 px-4 py-2 rounded-xl shadow-inner border border-white/5">
-                          {[...Array(5)].map((_, i) => <Star key={i} size={10} className={i < rev.user_rating ? "fill-cyan-500 text-cyan-500" : "text-white/5"} />)}
+                    <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} key={idx} className="bg-white/[0.02] border border-white/[0.05] p-6 rounded-[2rem] group hover:border-cyan-500/30 transition-all duration-500">
+                      <div className="flex justify-between items-center mb-4">
+                        <span className="text-[11px] font-black text-cyan-500 uppercase tracking-[0.2em]">UNIT_{rev.user_id?.slice(0, 8)}</span>
+                        <div className="flex gap-1 bg-black/40 px-3 py-1.5 rounded-lg border border-white/5">
+                          {[...Array(5)].map((_, i) => <Star key={i} size={10} className={i < rev.user_rating ? "fill-cyan-500 text-cyan-500" : "text-white/10"} />)}
                         </div>
                       </div>
-                      <p className="text-white/70 text-[15px] leading-[1.6] italic font-medium">"{rev.review_text}"</p>
+                      <p className="text-white/80 text-[14px] leading-relaxed font-medium">"{rev.review_text}"</p>
                     </motion.div>
-                  )) : <div className="h-full flex flex-col items-center justify-center opacity-[0.03] gap-10"><Activity size={100} strokeWidth={0.2} className="animate-pulse" /><span className="text-sm font-black uppercase tracking-[1em] italic">No_Signals_Logged</span></div>}
+                  )) : (
+                    <div className="h-full flex flex-col items-center justify-center opacity-20 gap-6">
+                      <Activity size={60} strokeWidth={1} className="animate-pulse text-cyan-500" />
+                      <span className="text-xs font-black uppercase tracking-[0.5em]">No_Signals_Logged</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* Input_Perception_Console Architecture */}
-                <div className="p-12 bg-slate-950/95 border-t border-white/5 backdrop-blur-4xl shadow-[0_-30px_60px_rgba(0,0,0,0.5)]">
-                  <div className="flex items-center justify-between mb-10">
-                    <span className="text-[11px] font-black text-white/20 uppercase tracking-[0.4em]">Assign_Impact_Index:</span>
-                    <div className="flex gap-3">
+                <div className="p-8 md:p-10 bg-slate-950/95 border-t border-white/5 shadow-[0_-20px_40px_rgba(0,0,0,0.5)]">
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">Assign_Impact:</span>
+                    <div className="flex gap-2">
                       {[1, 2, 3, 4, 5].map((n) => (
-                        <button key={n} onClick={() => setRating(n)} className={`w-12 h-12 rounded-[1.2rem] border text-[16px] font-black transition-all duration-500 ${rating >= n ? 'bg-cyan-600 border-cyan-500 text-white shadow-[0_15px_40px_rgba(6,182,212,0.4)] scale-110' : 'bg-transparent border-white/5 text-slate-800 hover:border-white/20'}`}>{n}</button>
+                        <button key={n} onClick={() => setRating(n)} className={`w-10 h-10 rounded-xl border text-[14px] font-black transition-all duration-300 ${rating >= n ? 'bg-cyan-600 border-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.4)] scale-105' : 'bg-transparent border-white/10 text-slate-500 hover:border-white/30 hover:text-white'}`}>{n}</button>
                       ))}
                     </div>
                   </div>
-                  <div className="flex gap-6 items-center">
-                    <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="Inject perception data into registry..." className="flex-1 bg-white/[0.02] border border-white/[0.05] px-10 py-6 rounded-[2.5rem] text-[14px] text-white outline-none focus:border-cyan-500/40 transition-all font-mono placeholder:text-slate-900 shadow-inner" />
-                    <button onClick={() => submitReview(selectedMedia.id)} className="bg-white text-black hover:bg-cyan-500 hover:text-white px-14 py-6 rounded-[2.5rem] text-[13px] font-black uppercase tracking-[0.4em] transition-all shadow-3xl active:scale-95 shadow-white/5 hover:shadow-cyan-600/30">Transmit</button>
+                  <div className="flex gap-4 items-center">
+                    <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="Inject perception data..." className="flex-1 bg-white/[0.03] border border-white/10 px-6 py-4 rounded-[1.5rem] text-[13px] text-white outline-none focus:border-cyan-500/50 transition-all font-mono placeholder:text-slate-500" />
+                    <button onClick={() => submitReview(selectedMedia.id)} className="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95">Transmit</button>
                   </div>
                 </div>
               </div>
               
-              <button onClick={() => setSelectedMedia(null)} className="absolute top-12 right-12 text-white/20 hover:text-white transition-all z-[110] bg-black/60 p-4 rounded-[2rem] border border-white/10 hover:border-cyan-500/50 hover:rotate-90 duration-500 shadow-2xl"><X size={32} /></button>
+              <button onClick={() => setSelectedMedia(null)} className="absolute top-6 right-6 text-white/40 hover:text-white transition-all z-[110] bg-black/80 p-3 rounded-full border border-white/10 hover:bg-cyan-600 hover:border-cyan-500 hover:rotate-90 duration-300"><X size={24} /></button>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+export default App;
     </div>
   );
 }
