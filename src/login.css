@@ -60,14 +60,16 @@ body{
 }
 
 .logo-text {
-  text-align: center;
-  font-size: 48px; /* 58px'den 48px'e çektik, sığması için daha güvenli */
-  font-weight: 700;
-  color: white;
-  margin-bottom: 10px;
-  letter-spacing: -1px; /* -2px metni çok sıkıştırıp okunurluğu bozabilir */
-  font-style: italic; /* Görseldeki gibi durması için */
-  white-space: nowrap; 
+    text-align: center;
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+    text-indent: -1px; /* EKLEDİĞİMİZ SATIR: Kaymayı engeller */
+    font-style: italic;
+    display: block; 
+    width: 100%;
 }
 
 .logo-text span{
@@ -146,18 +148,13 @@ body{
 }
 
 @media(max-width:500px){
-
   .glass-card {
-  /* ... diğer kodlar ... */
-  padding: 50px 30px; /* Kenar boşluklarını 40'tan 30'a çekerek logoyu rahatlattık */
-}
-
-  .logo-text{
-    font-size:42px;
+    width: 90%; /* Mobilde kartın ekranı kaplaması için */
+    padding: 50px 30px;
+  }
+  .logo-text {
+    font-size: 32px; /* Mobilde yazının taşmaması için */
   }
 }
-.logo-text {
-    text-indent: -1px; /* letter-spacing ne kadarsa o kadar negatif indent ver */
-    text-align: center;
-    display: block;
-}
+
+
