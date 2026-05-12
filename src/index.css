@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
+/* --- 1. VARIABLES --- */
 :root {
   --accent-cyan: #06b6d4;
   --accent-cyan-hover: #22d3ee;
@@ -8,6 +9,7 @@
   --bg-slate-900: #0f172a;
 }
 
+/* --- 2. BASE STYLES --- */
 body {
   background-color: var(--bg-slate-950);
   color: #f1f5f9;
@@ -19,8 +21,19 @@ body {
   overflow-x: hidden;
 }
 
-/* --- CUSTOM SCROLLBAR --- */
+::selection {
+  background-color: rgba(6, 182, 212, 0.3);
+  color: #fff;
+}
 
+input::placeholder {
+  color: rgba(255, 255, 255, 0.15) !important;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- 3. CUSTOM SCROLLBAR (GLOBAL) --- */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -38,24 +51,26 @@ body {
   background: var(--accent-cyan-hover);
 }
 
-::selection {
-  background-color: rgba(6, 182, 212, 0.3);
-  color: #fff;
+/* --- 4. UTILITY CLASSES --- */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
 }
-
-/* --- UTILITY CLASSES --- */
 
 .no-scrollbar::-webkit-scrollbar {
-  display: none;
+  display: none;             /* Chrome, Safari and Opera */
 }
 
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.snap-x {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* --- ANIMATIONS --- */
+.snap-x > div {
+  flex: 0 0 auto;            /* Yatay kaydırmada kartların boyutunu korur */
+}
 
+/* --- 5. ANIMATIONS --- */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -74,8 +89,7 @@ body {
   animation: infinite-scroll 40s linear infinite;
 }
 
-/* --- LOGIN PAGE & CARDS --- */
-
+/* --- 6. LOGIN PAGE & COMPONENTS --- */
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -113,7 +127,7 @@ body {
 }
 
 .subtitle {
-  color: #64748b; /* Slate 400 */
+  color: #64748b;
   font-size: 10px;
   letter-spacing: 5px;
   font-weight: 800;
@@ -121,8 +135,7 @@ body {
   margin-bottom: 48px;
 }
 
-/* --- FORM ELEMENTS --- */
-
+/* --- 7. FORM ELEMENTS --- */
 .login-input {
   width: 100%;
   padding: 18px 24px;
@@ -132,7 +145,7 @@ body {
   border-radius: 16px;
   color: #fff;
   outline: none;
-  font-family: 'JetBrains Mono', monospace; /* Fütüristik hava için */
+  font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   transition: all 0.3s ease;
 }
@@ -190,40 +203,11 @@ body {
   color: #fff;
   border-color: rgba(255, 255, 255, 0.1);
 }
-/* --- NOVASTREAM UI POLISH --- */
 
-input::placeholder {
-  color: rgba(255, 255, 255, 0.15) !important;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
-}
-/* Movie Card Image Fix */
+/* --- 8. MOVIE CARD POLISH --- */
 .group img {
   height: 100%;
   width: 100%;
   object-fit: cover;
   transition: transform 0.8s cubic-bezier(0.2, 0, 0.2, 1);
-}
-
-/* Smooth Horizontal Scroll */
-.snap-x {
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
 }

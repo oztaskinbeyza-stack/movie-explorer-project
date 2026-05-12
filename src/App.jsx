@@ -497,66 +497,85 @@ function App() {
 
       {/* DYNAMIC_CORE_VIEWPORT */}
       <main className="p-16 max-w-[1800px] mx-auto">
-        {view === 'browse' ? (
-          <div className="space-y-32 animate-in fade-in duration-1000 pb-20">
-            {/* ROW_ARCHITECTURE: TRENDING & TOP RATED */}
-            {[
-              { title: "Neural_Trending_Signals", data: mediaList.slice(0, 15), id: "trending" },
-              { title: "Neural_Top_Rated_Nodes", data: mediaList.slice(15, 30), id: "top_rated" }
-            ].map((row) => (
-              <section key={row.id} className="relative group px-6">
-                <div className="flex items-center justify-between mb-12">
-                  <div className="flex items-center gap-8">
-                    <div className="h-12 w-[2px] bg-cyan-500 shadow-[0_0_25px_rgba(6,182,212,0.8)]" />
-                    <h3 className="text-[14px] font-black uppercase tracking-[0.6em] text-white/50 italic">{row.title}</h3>
-                  </div>
-                  <div className="flex gap-6 opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0 duration-500">
-                    <button onClick={(e) => e.currentTarget.parentElement.nextSibling.children[1].scrollBy({ left: -800, behavior: 'smooth' })} className="p-4 bg-slate-900 border border-slate-800 rounded-2xl hover:text-cyan-500 transition-all shadow-xl"><ChevronLeft size={24} /></button>
-                    <button onClick={(e) => e.currentTarget.parentElement.nextSibling.children[1].scrollBy({ left: 800, behavior: 'smooth' })} className="p-4 bg-slate-900 border border-slate-800 rounded-2xl hover:text-cyan-500 transition-all shadow-xl"><ChevronRight size={24} /></button>
-                  </div>
-                </div>
-                
-                <div className="relative">
-                  {/* Left Radial Fade */}
-                  <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#020617] to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                  
-                  <div className="flex gap-10 overflow-x-auto no-scrollbar scroll-smooth snap-x pb-12">
-                    {row.data.map((movie) => (
-                      <div key={movie.id} className="min-w-[220px] md:min-w-[260px] snap-start transition-all duration-700"><MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} /></div>
-                    ))}
-                  </div>
+{/* --- BROWSE VIEW: PRIME_STYLE_NEURAL_ROWS --- */}
+{view === 'browse' ? (
+  <div className="space-y-24 animate-in fade-in duration-1000 pb-20 overflow-hidden">
+    
+    {[
+      { title: "Trending_Signals", data: mediaList.slice(0, 15) },
+      { title: "Neural_Top_Rated", data: mediaList.slice(15, 30) }
+    ].map((row, idx) => (
+      <section key={idx} className="relative group/row px-4">
+        {/* Row Header */}
+        <div className="flex items-center gap-4 mb-8">
+          <div className="h-8 w-[1px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
+          <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/50 italic">
+            {row.title}
+          </h3>
+        </div>
 
-                  {/* Right Radial Fade */}
-                  <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#020617] to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                </div>
-              </section>
+        <div className="relative flex items-center">
+          {/* Navigation: Left Button */}
+          <button 
+            onClick={(e) => e.currentTarget.nextSibling.scrollBy({ left: -600, behavior: 'smooth' })} 
+            className="absolute -left-4 z-50 p-4 bg-black/90 border border-white/10 rounded-full text-white opacity-0 group-hover/row:opacity-100 transition-all hover:bg-cyan-600 shadow-2xl hidden md:block"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          
+          {/* Horizontal Scroll Container */}
+          <div className="flex flex-nowrap gap-8 overflow-x-auto no-scrollbar scroll-smooth snap-x w-full">
+            {row.data.map((movie) => (
+              <div key={movie.id} className="snap-start shrink-0">
+                <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
+              </div>
             ))}
-
-            {/* INFINITE_EXPLORATORY_ARCHIVE */}
-            <section className="px-6">
-              <div className="flex items-center gap-8 mb-16">
-                <div className="h-12 w-[2px] bg-cyan-500 shadow-[0_0_25px_rgba(6,182,212,0.8)]" />
-                <h3 className="text-[14px] font-black uppercase tracking-[0.6em] text-white/50 italic">Deep_Database_Exploration</h3>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-9 gap-12">
-                {mediaList.slice(30).map((movie) => <MovieCard key={movie.id} movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />)}
-              </div>
-            </section>
-            
-            {/* DYNAMIC_LOADER_FOOTER */}
-            <div ref={loaderRef} className="h-80 flex flex-col items-center justify-center gap-10 opacity-40">
-              <div className="flex gap-6">
-                <div className="w-3 h-3 bg-cyan-500 rounded-full animate-ping" />
-                <div className="w-3 h-3 bg-cyan-500 rounded-full animate-ping [animation-delay:0.3s]" />
-                <div className="w-3 h-3 bg-cyan-500 rounded-full animate-ping [animation-delay:0.6s]" />
-              </div>
-              <div className="flex flex-col items-center gap-3">
-                <span className="text-[11px] font-black uppercase tracking-[1.5em] text-cyan-500 italic">Expanding_Neural_Sectors</span>
-                <span className="text-slate-800 text-[9px] uppercase font-mono tracking-widest">Protocol: Active_Infinite_Fetch</span>
-              </div>
-            </div>
           </div>
-        ) : view === 'watchlist' ? (
+
+          {/* Navigation: Right Button */}
+          <button 
+            onClick={(e) => e.currentTarget.previousSibling.scrollBy({ left: 600, behavior: 'smooth' })} 
+            className="absolute -right-4 z-50 p-4 bg-black/90 border border-white/10 rounded-full text-white opacity-0 group-hover/row:opacity-100 transition-all hover:bg-cyan-600 shadow-2xl hidden md:block"
+          >
+            <ChevronRight size={24} />
+          </button>
+        </div>
+      </section>
+    ))}
+
+    {/* INFINITE ARCHIVE GRID (Deeper Discovery) */}
+    <section className="px-4">
+      <div className="flex items-center gap-4 mb-12">
+        <div className="h-8 w-[1px] bg-cyan-500" />
+        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/50 italic">
+          Archive_Global_Data_Signals
+        </h3>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-8">
+        {mediaList.slice(30).map((movie) => (
+          <div key={movie.id} className="flex justify-center">
+             <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* INFINITE SCROLL TRIGGER POINT */}
+    <div ref={loaderRef} className="h-60 flex flex-col items-center justify-center gap-6 opacity-20">
+      {loading && (
+        <>
+          <div className="flex gap-3">
+            <div className="w-2 h-2 bg-cyan-500 rounded-full animate-ping" />
+            <div className="w-2 h-2 bg-cyan-500 rounded-full animate-ping [animation-delay:0.2s]" />
+          </div>
+          <span className="text-[9px] font-black uppercase tracking-[1em] text-cyan-500 italic">
+            Syncing_New_Nodes...
+          </span>
+        </>
+      )}
+    </div>
+  </div>
+) : view === 'watchlist' ? (
           <div className="animate-in fade-in slide-in-from-bottom-12 duration-1000 px-6">
             <div className="flex items-center gap-12 mb-24">
               <h3 className="text-7xl font-black italic uppercase tracking-tighter text-white">Identifier_Vault</h3>
