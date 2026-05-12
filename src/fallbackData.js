@@ -6,7 +6,7 @@ export const fallbackMedia = [
     vote_average: 8.8,
     release_date: "2010-07-16",
     original_language: "en",
-    overview: "A thief who steals corporate secrets through the use of dream-sharing technology..."
+    overview: "A thief who steals corporate secrets..."
   },
   {
     id: 102,
@@ -24,6 +24,6 @@ export const fallbackMedia = [
     vote_average: 8.7,
     release_date: "2014-11-05",
     original_language: "en",
-    overview: "The adventures of a group of explorers who make use of a newly discovered wormhole..."
+    overview: "The adventures of a group of explorers..."
   }
 ];
