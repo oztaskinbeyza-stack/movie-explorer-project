@@ -6,7 +6,6 @@ import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    {/* Tüm siteyi Auth (Güvenlik) kalkanının içine alıyoruz */}
     <AuthProvider>
       <App />
     </AuthProvider>
