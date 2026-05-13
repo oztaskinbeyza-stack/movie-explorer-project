@@ -125,7 +125,6 @@ const ProfileView = ({ profile, watchlist }) => (
 
 function App() {
   const { user, profile, loading: authLoading } = useAuth();
-  const [mediaList, setMediaList] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -138,10 +137,10 @@ function App() {
   const [rating, setRating] = useState(5);
   const [toast, setToast] = useState({ message: '', type: null });
   const [stats, setStats] = useState({ users: 0, reviews: 0, watchlist: 0 });
-  const [page, setPage] = useState(1);
   const [trailerKey, setTrailerKey] = useState(null);
   const loaderRef = useRef(null);
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+  
   const [trending, setTrending] = useState([]);
   const [topRated, setTopRated] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
@@ -152,7 +151,7 @@ function App() {
     setTimeout(() => setToast({ message: '', type: null }), 3000);
   }, []);
 
-const fetchData = async (type) => {
+  const fetchMedia = async (type) => {
     if (!API_KEY) return [];
     const endpoints = {
       trending: `https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}`,
@@ -175,9 +174,9 @@ const fetchData = async (type) => {
     const loadInitialData = async () => {
       setLoading(true);
       const [t, tr, u] = await Promise.all([
-        fetchData('trending'), 
-        fetchData('topRated'), 
-        fetchData('upcoming')
+        fetchMedia('trending'), 
+        fetchMedia('topRated'), 
+        fetchMedia('upcoming')
       ]);
       setTrending(t); setTopRated(tr); setUpcoming(u);
       setLoading(false);
@@ -188,7 +187,7 @@ const fetchData = async (type) => {
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
       if (searchQuery) {
-        const results = await fetchData('search');
+        const results = await fetchMedia('search');
         setSearchResults(results);
       }
     }, 500); 
@@ -243,17 +242,8 @@ const fetchData = async (type) => {
     if (!error) { fetchWatchlist(); showToast('Object_Purged_From_Registry', 'error'); }
   };
 
-  useEffect(() => { fetchMedia(searchQuery); }, [searchQuery]);
   useEffect(() => { if (user) { fetchWatchlist(); if (profile?.role === 'Admin') fetchStats(); } }, [user, profile, fetchWatchlist, fetchStats]);
   useEffect(() => { if (selectedMedia) { fetchReviews(selectedMedia.id); fetchTrailer(selectedMedia.id); } }, [selectedMedia]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !loading && view === 'browse') fetchMedia(searchQuery, true);
-    }, { threshold: 0.1, rootMargin: '600px' });
-    if (loaderRef.current) observer.observe(loaderRef.current);
-    return () => { if (loaderRef.current) observer.unobserve(loaderRef.current); };
-  }, [loading, searchQuery, view]);
 
   if (authLoading) return (
     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-10">
@@ -272,7 +262,7 @@ const fetchData = async (type) => {
         <div className="absolute inset-0 z-0 flex gap-8 opacity-[0.05] pointer-events-none skew-y-12 scale-150">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((col) => (
             <div key={col} className="flex-1 flex flex-col gap-8 animate-infinite-scroll">
-              {[...mediaList, ...mediaList].slice(0, 40).map((movie, idx) => (
+              {fallbackMedia.slice(0, 40).map((movie, idx) => (
                 <img key={idx} src={movie.poster_path ? `https://image.tmdb.org/t/p/w400${movie.poster_path}` : 'https://via.placeholder.com/400x600'} className="w-full rounded-[3rem] grayscale brightness-50 shadow-2xl" alt="" />
               ))}
             </div>
@@ -319,10 +309,10 @@ const fetchData = async (type) => {
       
       <nav className="px-16 py-12 flex justify-between items-center border-b border-slate-900 bg-slate-950/80 backdrop-blur-3xl sticky top-0 z-[100]">
         <div className="flex items-center gap-20">
-          <h1 className="text-5xl font-black italic tracking-tighter leading-none hover:scale-110 transition-all cursor-pointer group" onClick={() => setView('browse')}>Nova<span className="text-cyan-500 group-hover:drop-shadow-[0_0_10px_rgba(6,182,212,0.5)] transition-all">Stream</span></h1>
+          <h1 className="text-5xl font-black italic tracking-tighter leading-none hover:scale-110 transition-all cursor-pointer group" onClick={() => {setView('browse'); setSearchQuery('');}}>Nova<span className="text-cyan-500 group-hover:drop-shadow-[0_0_10px_rgba(6,182,212,0.5)] transition-all">Stream</span></h1>
           <div className="relative group hidden xl:block">
             <Search className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-800 group-focus-within:text-cyan-500 transition-colors" size={20} />
-            <input type="text" placeholder="Inject_Query_to_Database..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-slate-900/50 border border-slate-800/80 pl-16 pr-10 py-5 rounded-[2rem] text-[13px] outline-none focus:border-cyan-500 w-[450px] transition-all font-mono text-slate-300 placeholder:text-slate-900" />
+            <input type="text" placeholder="Inject_Query..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-slate-900/50 border border-slate-800/80 pl-16 pr-10 py-5 rounded-[2rem] text-[13px] outline-none focus:border-cyan-500 w-[450px] transition-all font-mono text-slate-300 placeholder:text-slate-900" />
           </div>
         </div>
         <div className="flex items-center gap-14 text-[12px] font-black uppercase tracking-[0.4em] text-slate-600 font-mono">
@@ -334,7 +324,7 @@ const fetchData = async (type) => {
         </div>
       </nav>
 
-<main className="p-16 max-w-[1900px] mx-auto">
+      <main className="p-16 max-w-[1900px] mx-auto">
         {searchQuery ? (
           <section className="animate-in fade-in duration-700">
             <div className="flex items-center gap-4 mb-10">
@@ -343,7 +333,7 @@ const fetchData = async (type) => {
                 Search_Results for: <span className="text-cyan-500">"{searchQuery}"</span>
               </h3>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-6 gap-y-12 place-items-center">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-6 gap-y-12">
               {searchResults.map((movie) => (
                 <div key={movie.id} className="transition-transform duration-700 hover:z-50 hover:-translate-y-2 w-full">
                   <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
@@ -356,8 +346,8 @@ const fetchData = async (type) => {
             {[
               { title: "Resume_Neural_Stream", data: watchlist.slice(0, 8), icon: <Clock className="text-cyan-500 animate-pulse" size={24} />, type: 'resume', condition: watchlist.length > 0 },
               { title: "Trending_Neural_Signals", data: trending.slice(0, 15), icon: <Activity className="text-white/30" size={24} />, type: 'row', condition: trending.length > 0 },
-              { title: "High_Impact_Archive_Nodes (Top Rated)", data: topRated.slice(0, 15), icon: <Zap className="text-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" size={24} />, type: 'row', condition: topRated.length > 0 },
-              { title: "Incoming_Transmissions (Upcoming)", data: upcoming.slice(0, 15), icon: <Globe className="text-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]" size={24} />, type: 'row', condition: upcoming.length > 0 }
+              { title: "High_Impact_Archive_Nodes", data: topRated.slice(0, 15), icon: <Zap className="text-amber-500" size={24} />, type: 'row', condition: topRated.length > 0 },
+              { title: "Incoming_Transmissions", data: upcoming.slice(0, 15), icon: <Globe className="text-purple-500" size={24} />, type: 'row', condition: upcoming.length > 0 }
             ].map((section, idx) => section.condition && (
               <section key={idx} className="relative px-6 group/row">
                 <div className="flex items-center justify-between mb-12">
@@ -371,7 +361,7 @@ const fetchData = async (type) => {
                    </div>
                 </div>
 
-                <div className="row-scroll no-scrollbar scroll-smooth snap-x pb-12 px-4 relative z-10">
+                <div className="row-scroll no-scrollbar flex flex-nowrap gap-16 overflow-x-auto scroll-smooth snap-x pb-12 px-4 relative z-10">
                   {section.data.map((movie) => (
                     <div key={movie.id} className="snap-start shrink-0 relative group w-[240px] md:w-[280px]">
                        <MovieCard movie={section.type === 'resume' ? {...movie, id: movie.media_id} : movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
@@ -385,7 +375,6 @@ const fetchData = async (type) => {
         )}
       </main>
       
-      {/* --- NEURAL_INTERACTION_MODAL: RATIO_FIX & ELITE UI --- */}
       <AnimatePresence>
         {selectedMedia && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/95 flex items-center justify-center p-6 md:p-12 z-[300] backdrop-blur-3xl" onClick={() => setSelectedMedia(null)}>
