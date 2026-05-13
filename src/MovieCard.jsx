@@ -1,10 +1,7 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Play, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Star } from 'lucide-react';
 
 export default function MovieCard({ movie, onSelect, onAdd }) {
-  const [isHovered, setIsHovered] = useState(false);
-
   const getPosterUrl = (path) => {
     if (!path) return 'https://via.placeholder.com/500x750?text=No+Image';
     if (path.startsWith('http')) return path;
@@ -13,14 +10,13 @@ export default function MovieCard({ movie, onSelect, onAdd }) {
 
   return (
     <motion.div
-      className="relative group bg-slate-900/40 rounded-[2rem] overflow-hidden border border-slate-800 transition-all duration-300 shadow-3xl hover:border-cyan-500/50 cursor-pointer w-full"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      whileHover={{ y: -10 }}
+      className="relative group bg-slate-900/40 rounded-[2rem] overflow-hidden border border-slate-800 hover:border-cyan-500/50 transition-all duration-300 shadow-3xl cursor-pointer w-full"
       onClick={() => onSelect(movie)}
     >
       <img
         src={getPosterUrl(movie.poster_path)}
-        className="w-full aspect-[2/3] object-cover transition-transform duration-700 group-hover:scale-105 grayscale group-hover:grayscale-0"
+        className="w-full aspect-[2/3] object-cover transition-transform duration-700 group-hover:scale-110" 
         alt={movie.title}
         loading="lazy"
       />

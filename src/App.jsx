@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 // =========================================================================
-// --- 1. COMPONENT: ADMIN_ROOT_STATION (DETAYLI UI) ---
+// --- 1. COMPONENT: ADMIN_ROOT_STATION (TAM DETAY) ---
 // =========================================================================
 
 const AdminDashboard = ({ stats, profile }) => {
@@ -157,7 +157,7 @@ const ProfileView = ({ profile, watchlist }) => (
 );
 
 // =========================================================================
-// --- 3. MASTER_APPLICATION_LOGIC (TAM LİSTE) ---
+// --- 3. MASTER_APPLICATION_LOGIC (EXACT VERSION) ---
 // =========================================================================
 
 function App() {
@@ -198,7 +198,6 @@ function App() {
     setTimeout(() => setToast({ message: '', type: null }), 3000);
   }, []);
 
-  // --- NÜKLEER VERİ ÇEKME MOTORU (+18 VE KELİME FİLTRELİ) ---
   const fetchMedia = async (endpoint) => {
     if (!API_KEY) return [];
     try {
@@ -206,7 +205,7 @@ function App() {
       const res = await fetch(fullUrl);
       const data = await res.json();
       
-      // 🔥 GELİŞMİŞ NÜKLEER FİLTRE: image_3b8ff0.jpg'deki gibi içerikleri yok eder.
+      // NÜKLEER FİLTRE (+18 TEMİZLİĞİ)
       const blacklist = ['porn', 'sex', 'erotic', 'adult', 'xxx', 'nudity', 'strip', 'prostitute', 'escort', 'hentai'];
       
       const filtered = (data.results || []).filter(m => {
@@ -214,21 +213,11 @@ function App() {
         const originalTitle = (m.original_title || "").toLowerCase();
         const overview = (m.overview || "").toLowerCase();
         const isAdultFlag = m.adult === true;
-        
-        const hasBadWord = blacklist.some(word => 
-          title.includes(word) || 
-          overview.includes(word) || 
-          originalTitle.includes(word)
-        );
-        
+        const hasBadWord = blacklist.some(word => title.includes(word) || overview.includes(word) || originalTitle.includes(word));
         return !isAdultFlag && !hasBadWord;
       });
-      
       return filtered;
-    } catch (error) {
-      console.error("API Signal Lost:", error);
-      return [];
-    }
+    } catch (error) { return []; }
   };
 
   useEffect(() => {
@@ -250,22 +239,15 @@ function App() {
           fetchMedia(`https://api.themoviedb.org/3/discover/movie?with_genres=18`),
           fetchMedia(`https://api.themoviedb.org/3/discover/movie?with_genres=9648`)
         ]);
-        
         setTrending(t); setPopular(p); setTopRated(tr); setUpcoming(u); 
         setAction(a); setScifi(sf); setHorror(h); setComedy(c);
         setAnimation(an); setDocumentary(d); setDrama(dr); setMystery(m);
-        
         if (profile?.role === 'Admin') fetchStats();
-      } catch (err) {
-        showToast("Neural_Sync_Interrupt", "error");
-      } finally {
-        setLoading(false);
-      }
+      } catch (err) { showToast("Neural_Sync_Interrupt", "error"); } finally { setLoading(false); }
     };
     loadAllContent();
   }, [user, profile]);
 
-  // Arama Debounce logic
   useEffect(() => {
     const timer = setTimeout(async () => {
       if (searchQuery) {
@@ -336,15 +318,14 @@ function App() {
 
   const userAverage = mediaReviews.length > 0 ? (mediaReviews.reduce((acc, rev) => acc + rev.user_rating, 0) / mediaReviews.length).toFixed(1) : "0.0";
 
-  // --- LOGIN GATEWAY ---
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-8 relative overflow-hidden">
-        <div className="absolute inset-0 z-0 flex gap-8 opacity-[0.05] pointer-events-none skew-y-12 scale-150">
+        <div className="absolute inset-0 z-0 flex gap-8 opacity-[0.1] pointer-events-none skew-y-12 scale-150">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((col) => (
             <div key={col} className="flex-1 flex flex-col gap-8 animate-infinite-scroll">
               {fallbackMedia.slice(0, 30).map((movie, idx) => (
-                <img key={idx} src={`https://image.tmdb.org/t/p/w400${movie.poster_path}`} className="w-full rounded-[3rem] grayscale brightness-50 shadow-2xl" alt="" />
+                <img key={idx} src={`https://image.tmdb.org/t/p/w400${movie.poster_path}`} className="w-full rounded-[3rem] brightness-75 shadow-2xl" alt="" />
               ))}
             </div>
           ))}
@@ -359,15 +340,9 @@ function App() {
             </div>
           </div>
           <div className="space-y-8 text-left">
-            <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase text-slate-700 tracking-[0.4em] ml-6">Node_Identifier</label>
-              <input type="email" placeholder="root@novastream.sys" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none font-mono text-xs focus:border-cyan-500 transition-all" />
-            </div>
-            <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase text-slate-700 tracking-[0.4em] ml-6">Encrypted_Passkey</label>
-              <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none font-mono text-xs focus:border-cyan-500 transition-all" />
-            </div>
-            <button onClick={async () => { const {error} = await supabase.auth.signInWithPassword({email, password}); if(error) showToast("Identity_Check_Rejected", "error"); }} className="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-8 rounded-[2.5rem] font-black uppercase tracking-[0.3em] text-sm shadow-3xl shadow-cyan-600/30 transition-all active:scale-95 mt-6">Establish_Session</button>
+            <input type="email" placeholder="Node_Identifier..." value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none font-mono text-xs focus:border-cyan-500 transition-all" />
+            <input type="password" placeholder="Encrypted_Passkey..." value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none font-mono text-xs focus:border-cyan-500 transition-all" />
+            <button onClick={async () => { const {error} = await supabase.auth.signInWithPassword({email, password}); if(error) showToast("Identity_Check_Rejected", "error"); }} className="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-8 rounded-[2.5rem] font-black uppercase tracking-[0.3em] text-sm shadow-3xl shadow-cyan-600/30 active:scale-95 transition-all">Establish_Session</button>
           </div>
         </motion.div>
       </div>
@@ -472,9 +447,9 @@ function App() {
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-16">
               {watchlist.map((item) => (
                 <div key={item.id} className="relative group bg-slate-900/40 rounded-[3rem] overflow-hidden border border-slate-800 hover:border-cyan-500/50 transition-all shadow-3xl">
-                  <img src={`https://image.tmdb.org/t/p/w500${item.poster_path}`} className="w-full aspect-[2/3] object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt="" />
+                  <img src={`https://image.tmdb.org/t/p/w500${item.poster_path}`} className="w-full aspect-[2/3] object-cover transition-all duration-1000" alt="" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-95" />
-                  <button onClick={() => removeFromWatchlist(item.id)} className="absolute top-8 right-8 bg-red-600 p-6 rounded-[1.8rem] text-white opacity-0 group-hover:opacity-100 transition-all shadow-3xl hover:bg-red-500"><X size={28} /></button>
+                  <button onClick={() => removeFromWatchlist(item.id)} className="absolute top-8 right-8 bg-red-600 p-6 rounded-[1.8rem] text-white opacity-0 group-hover:opacity-10 transition-all shadow-3xl hover:bg-red-500"><X size={28} /></button>
                   <div className="absolute bottom-0 left-0 right-0 p-10">
                     <p className="text-[14px] font-black uppercase text-white truncate italic tracking-tighter leading-none">{item.title}</p>
                     <div className="flex items-center gap-4 mt-5">
@@ -489,7 +464,6 @@ function App() {
         ) : <ProfileView profile={profile} watchlist={watchlist} />}
       </main>
       
-      {/* --- NEURAL_INTERACTION_MODAL: FULL RATIO_FIX & ELITE UI --- */}
       <AnimatePresence>
         {selectedMedia && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/95 flex items-center justify-center p-6 md:p-12 z-[300] backdrop-blur-3xl" onClick={() => setSelectedMedia(null)}>
@@ -569,7 +543,7 @@ function App() {
                 </div>
               </div>
               
-              <button onClick={() => setSelectedMedia(null)} className="absolute top-6 right-6 text-white/40 hover:text-white transition-all z-[110] bg-black/80 p-3 rounded-full border border-white/10 hover:bg-cyan-600 hover:rotate-90 duration-300"><X size={24} /></button>
+              <button onClick={() => setSelectedMedia(null)} className="absolute top-6 right-6 text-white/40 hover:text-white transition-all z-[110] bg-black/80 p-3 rounded-full border border-white/10 hover:bg-cyan-600 hover:border-cyan-500 hover:rotate-90 duration-300"><X size={24} /></button>
             </motion.div>
           </motion.div>
         )}
