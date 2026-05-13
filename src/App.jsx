@@ -13,11 +13,11 @@ import {
   Ghost, Laugh, Tv, Film, Eye, ShieldAlert, ZapOff,
   Flame, TrendingUp, BarChart3, Layers, MonitorPlay,
   Clapperboard, Home as HomeIcon, Trophy, Compass,
-  Sword, Heart, Zap as ActionIcon, Skull
+  Sword, Heart, Skull, BookOpen
 } from 'lucide-react';
 
 // =========================================================================
-// --- 1. COMPONENT: ADMIN_ROOT_STATION (Full Detailed UI) ---
+// --- 1. COMPONENT: ADMIN_ROOT_STATION ---
 // =========================================================================
 
 const AdminDashboard = ({ stats, profile }) => {
@@ -31,16 +31,16 @@ const AdminDashboard = ({ stats, profile }) => {
               <span className="text-[12px] font-black uppercase tracking-[0.6em]">Protocol_ID: NOVA_ROOT_STATION</span>
             </div>
             <h2 className="text-7xl font-black text-white tracking-tighter uppercase italic leading-none drop-shadow-2xl">
-              Central_<span className="text-red-600">Admin</span>_Node
+              Merkezi_<span className="text-red-600">Yönetim</span>_Paneli
             </h2>
             <div className="flex items-center gap-10 mt-10">
               <div className="flex flex-col gap-1">
-                <span className="text-slate-600 text-[9px] uppercase tracking-widest text-left">Active_Operator</span>
+                <span className="text-slate-600 text-[9px] uppercase tracking-widest text-left">Aktif_Operatör</span>
                 <p className="text-slate-300 text-[11px] uppercase tracking-[0.4em]">{profile?.email}</p>
               </div>
               <div className="flex flex-col gap-1 border-l border-slate-800 pl-10">
-                <span className="text-slate-600 text-[9px] uppercase tracking-widest text-left">Neural_Status</span>
-                <p className="text-green-500 text-[11px] uppercase tracking-[0.4em] animate-pulse">Running_Stable</p>
+                <span className="text-slate-600 text-[9px] uppercase tracking-widest text-left">Sistem_Durumu</span>
+                <p className="text-green-500 text-[11px] uppercase tracking-[0.4em] animate-pulse">Stabil_Çalışıyor</p>
               </div>
             </div>
           </motion.div>
@@ -49,15 +49,15 @@ const AdminDashboard = ({ stats, profile }) => {
             onClick={() => supabase.auth.signOut()} 
             className="group relative overflow-hidden bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20 px-12 py-5 rounded-[2.5rem] text-[12px] font-black uppercase transition-all duration-500 shadow-2xl shadow-red-600/10 active:scale-95"
           >
-            <span className="relative z-10 flex items-center gap-4"><LogOut size={18} /> Kill_All_Processes</span>
+            <span className="relative z-10 flex items-center gap-4"><LogOut size={18} /> Tüm_Süreçleri_Durdur</span>
           </button>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {[
-            { label: 'Registered_Units', value: stats.users, icon: <User size={40} />, color: 'bg-red-600' },
-            { label: 'Neural_Injections', value: stats.reviews, icon: <MessageSquare size={40} />, color: 'bg-orange-600' },
-            { label: 'Vault_Archive_Nodes', value: stats.watchlist, icon: <Database size={40} />, color: 'bg-amber-600' }
+            { label: 'Kayıtlı_Birimler', value: stats.users, icon: <User size={40} />, color: 'bg-red-600' },
+            { label: 'Nöral_Girişler', value: stats.reviews, icon: <MessageSquare size={40} />, color: 'bg-orange-600' },
+            { label: 'Arşiv_Düğümleri', value: stats.watchlist, icon: <Database size={40} />, color: 'bg-amber-600' }
           ].map((item, idx) => (
             <motion.div 
               key={idx} 
@@ -83,57 +83,54 @@ const AdminDashboard = ({ stats, profile }) => {
 };
 
 // =========================================================================
-// --- 2. COMPONENTS: STAFF & PROFILE (Full Detail) ---
+// --- 2. COMPONENTS: STAFF & PROFILE ---
 // =========================================================================
 
 const StaffDashboard = () => (
-  <div className="min-h-screen bg-[#020617] flex items-center justify-center p-10 font-mono">
-    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-slate-900 p-24 border border-blue-500/20 rounded-[5.5rem] w-full max-w-2xl text-center backdrop-blur-3xl shadow-[0_0_150px_rgba(37,99,235,0.1)] relative">
-      <div className="w-32 h-32 bg-blue-500/10 rounded-[3.5rem] flex items-center justify-center text-blue-500 mx-auto mb-14 border border-blue-500/20 shadow-inner">
+  <div className="min-h-screen bg-[#020617] flex items-center justify-center p-10 font-mono text-center">
+    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-slate-900 p-24 border border-blue-500/20 rounded-[5.5rem] w-full max-w-2xl backdrop-blur-3xl shadow-2xl">
+      <div className="w-32 h-32 bg-blue-500/10 rounded-[3.5rem] flex items-center justify-center text-blue-500 mx-auto mb-14 border border-blue-500/20">
         <Activity size={64} className="animate-pulse" />
       </div>
-      <h2 className="text-5xl font-black text-blue-500 mb-6 tracking-tighter uppercase italic leading-none">Staff_Sector</h2>
-      <p className="text-slate-500 mb-16 text-[13px] font-medium uppercase tracking-[0.5em] leading-relaxed">Neural_Content_Moderation_Active <br /> <span className="text-blue-500/40">Protocol: Nova_Cipher_v4.2</span></p>
-      <button onClick={() => supabase.auth.signOut()} className="w-full bg-blue-600 hover:bg-blue-500 text-white py-8 rounded-[2.5rem] font-black uppercase tracking-[0.4em] text-[14px] transition-all shadow-2xl shadow-blue-600/40 active:scale-95">Disconnect_Secure_Link</button>
+      <h2 className="text-5xl font-black text-blue-500 mb-6 tracking-tighter uppercase italic">Personel_Sektörü</h2>
+      <p className="text-slate-500 mb-16 text-[13px] font-medium uppercase tracking-[0.5em]">Nöral İçerik Moderasyonu Aktif</p>
+      <button onClick={() => supabase.auth.signOut()} className="w-full bg-blue-600 hover:bg-blue-500 text-white py-8 rounded-[2.5rem] font-black uppercase tracking-[0.4em] transition-all active:scale-95">Bağlantıyı_Kes</button>
     </motion.div>
   </div>
 );
 
 const ProfileView = ({ profile, watchlist }) => (
   <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-20 duration-1000 py-20">
-    <div className="bg-slate-900 border border-slate-800 rounded-[6rem] p-24 mb-20 relative overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)]">
+    <div className="bg-slate-900 border border-slate-800 rounded-[6rem] p-24 mb-20 relative overflow-hidden shadow-2xl">
       <div className="absolute top-0 right-0 p-24 opacity-[0.02] pointer-events-none select-none">
-        <span className="text-[25rem] font-black italic text-cyan-500 leading-none uppercase">Unit</span>
+        <span className="text-[25rem] font-black italic text-cyan-500 leading-none uppercase">UNIT</span>
       </div>
       <div className="flex flex-col lg:flex-row items-center gap-20 relative z-10">
-        <div className="w-64 h-60 bg-gradient-to-br from-cyan-500 via-cyan-800 to-slate-950 rounded-[5rem] flex items-center justify-center text-7xl font-black text-white shadow-[0_40px_80px_rgba(6,182,212,0.4)] border-[6px] border-white/10">{profile?.email?.[0].toUpperCase() || 'U'}</div>
+        <div className="w-64 h-60 bg-gradient-to-br from-cyan-500 via-cyan-800 to-slate-950 rounded-[5rem] flex items-center justify-center text-7xl font-black text-white shadow-2xl border-[6px] border-white/10">{profile?.email?.[0].toUpperCase() || 'U'}</div>
         <div className="text-center lg:text-left">
           <div className="flex items-center justify-center lg:justify-start gap-5 mb-6">
             <div className="w-3 h-3 rounded-full bg-cyan-500 animate-ping" />
-            <span className="text-[11px] font-black text-cyan-500 uppercase tracking-[0.7em]">Neural_Unit_Verified</span>
+            <span className="text-[11px] font-black text-cyan-500 uppercase tracking-[0.7em]">Nöral_Birim_Doğrulandı</span>
           </div>
-          <h2 className="text-7xl font-black tracking-tighter uppercase italic text-white mb-8 leading-none drop-shadow-lg">{profile?.email?.split('@')[0]}</h2>
+          <h2 className="text-7xl font-black tracking-tighter uppercase italic text-white mb-8 drop-shadow-lg">{profile?.email?.split('@')[0]}</h2>
           <div className="flex flex-wrap justify-center lg:justify-start gap-8">
-            <span className="bg-cyan-500/10 text-cyan-500 border border-cyan-500/20 px-10 py-4 rounded-[1.5rem] text-[12px] font-black uppercase tracking-[0.4em]">Unit_Clearance: {profile?.role || 'User'}</span>
-            <span className="bg-slate-800/50 text-slate-400 border border-slate-700 px-10 py-4 rounded-[1.5rem] text-[12px] font-black uppercase tracking-[0.4em]">Clearance_ID: NOVA-4-ALPHA</span>
+            <span className="bg-cyan-500/10 text-cyan-500 border border-cyan-500/20 px-10 py-4 rounded-[1.5rem] text-[12px] font-black uppercase tracking-[0.4em]">Yetki_Seviyesi: {profile?.role || 'User'}</span>
           </div>
         </div>
       </div>
     </div>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
       {[ 
-        { label: 'Synced_Objects', value: watchlist.length, unit: 'Nodes', desc: 'Securely stored items in vault' }, 
-        { label: 'System_Uptime', value: '99.9%', unit: 'Signal', desc: 'Real-time database connectivity' }, 
-        { label: 'Neural_Integrity', value: 'Prime', unit: 'Logic', desc: 'Data checksum validation' } 
+        { label: 'Senkronize_Nesneler', value: watchlist.length, unit: 'Düğüm' }, 
+        { label: 'Sistem_Uptime', value: '99.9%', unit: 'Sinyal' }, 
+        { label: 'Nöral_Bütünlük', value: 'Prime', unit: 'Mantık' } 
       ].map((stat, idx) => (
-        <motion.div key={idx} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 + (idx * 0.1) }} className="bg-slate-900/40 border border-slate-800 p-14 rounded-[4rem] hover:border-cyan-500/30 transition-all duration-500 group relative overflow-hidden">
-          <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-cyan-500/5 rounded-full blur-3xl group-hover:bg-cyan-500/15 transition-all" />
-          <h4 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.6em] mb-8 group-hover:text-cyan-500 transition-colors">{stat.label}</h4>
-          <div className="flex items-baseline justify-center md:justify-start gap-5 mb-6">
-            <span className="text-7xl font-black text-white tracking-tighter tabular-nums leading-none">{stat.value}</span>
-            <span className="text-[13px] font-bold text-cyan-500/40 uppercase tracking-tighter italic">{stat.unit}</span>
+        <motion.div key={idx} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="bg-slate-900/40 border border-slate-800 p-14 rounded-[4rem] hover:border-cyan-500/30 transition-all">
+          <h4 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.6em] mb-8">{stat.label}</h4>
+          <div className="flex items-baseline gap-5">
+            <span className="text-7xl font-black text-white tracking-tighter tabular-nums">{stat.value}</span>
+            <span className="text-[13px] font-bold text-cyan-500/40 uppercase italic">{stat.unit}</span>
           </div>
-          <p className="text-[11px] text-slate-600 font-medium uppercase tracking-[0.2em] leading-relaxed">{stat.desc}</p>
         </motion.div>
       ))}
     </div>
@@ -141,7 +138,7 @@ const ProfileView = ({ profile, watchlist }) => (
 );
 
 // =========================================================================
-// --- 3. MASTER_APPLICATION_LOGIC (PRIME EVOLUTION) ---
+// --- 3. MASTER_APPLICATION_LOGIC (EXACT VERSION) ---
 // =========================================================================
 
 function App() {
@@ -152,8 +149,8 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('browse'); 
-  const [mainTab, setMainTab] = useState('home'); // home, movie, tv, sports, doc
-  const [activeSub, setActiveSub] = useState('all'); // action, horror, etc.
+  const [mainTab, setMainTab] = useState('home'); 
+  const [activeSub, setActiveSub] = useState('all'); 
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [review, setReview] = useState('');
   const [mediaReviews, setMediaReviews] = useState([]);
@@ -163,7 +160,7 @@ function App() {
   const [trailerKey, setTrailerKey] = useState(null);
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
-  // --- CONTENT STATES ---
+  // Content States
   const [trending, setTrending] = useState([]);
   const [popular, setPopular] = useState([]);
   const [topRated, setTopRated] = useState([]);
@@ -177,11 +174,9 @@ function App() {
   const [drama, setDrama] = useState([]);
   const [mystery, setMystery] = useState([]);
   const [sports, setSports] = useState([]);
-  // --- TV STATES ---
   const [trendingTV, setTrendingTV] = useState([]);
   const [topRatedTV, setTopRatedTV] = useState([]);
   const [popularTV, setPopularTV] = useState([]);
-  
   const [searchResults, setSearchResults] = useState([]);
 
   const showToast = useCallback((message, type = 'success') => {
@@ -192,14 +187,15 @@ function App() {
   const fetchMedia = async (endpoint) => {
     if (!API_KEY) return [];
     try {
-      const fullUrl = `${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${API_KEY}&language=en-US&include_adult=false`;
+      // language=tr-TR: Özellikleri Türkçe çeker
+      const fullUrl = `${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${API_KEY}&language=tr-TR&include_adult=false`;
       const res = await fetch(fullUrl);
       const data = await res.json();
       
       const blacklist = ['porn', 'sex', 'erotic', 'adult', 'xxx', 'nudity', 'strip', 'prostitute', 'escort', 'hentai'];
       
       return (data.results || []).filter(m => {
-        const title = (m.title || m.name || m.original_title || m.original_name || "").toLowerCase();
+        const title = (m.title || m.name || "").toLowerCase();
         const overview = (m.overview || "").toLowerCase();
         const hasBadWord = blacklist.some(word => title.includes(word) || overview.includes(word));
         return m.adult !== true && !hasBadWord;
@@ -228,14 +224,14 @@ function App() {
           fetchMedia(`https://api.themoviedb.org/3/trending/tv/week`),
           fetchMedia(`https://api.themoviedb.org/3/tv/top_rated`),
           fetchMedia(`https://api.themoviedb.org/3/tv/popular`),
-          fetchMedia(`https://api.themoviedb.org/3/discover/movie?with_keywords=6075`) // Sports keyword
+          fetchMedia(`https://api.themoviedb.org/3/discover/movie?with_keywords=6075`)
         ]);
         setTrending(t); setPopular(p); setTopRated(tr); setUpcoming(u); 
         setAction(a); setScifi(sf); setHorror(h); setComedy(c);
         setAnimation(an); setDocumentary(d); setDrama(dr); setMystery(m);
         setTrendingTV(ttv); setTopRatedTV(trtv); setPopularTV(ptv); setSports(sp);
         if (profile?.role === 'Admin') fetchStats();
-      } catch (err) { showToast("Neural_Sync_Interrupt", "error"); } finally { setLoading(false); }
+      } catch (err) { showToast("Nöral_Senkronizasyon_Hatası", "error"); } finally { setLoading(false); }
     };
     loadAllContent();
   }, [user, profile]);
@@ -261,8 +257,8 @@ function App() {
   };
 
   const fetchWatchlist = useCallback(async () => {
-    const { data } = await supabase.from('watchlists').select('*').order('created_at', { ascending: false });
-    setWatchlist(data || []);
+    const { data, error } = await supabase.from('watchlists').select('*').order('created_at', { ascending: false });
+    if (!error) setWatchlist(data || []);
   }, []);
 
   const fetchReviews = async (mediaId) => {
@@ -281,31 +277,30 @@ function App() {
   const submitReview = async (mediaId) => {
     if (!review || !user) return;
     const { error } = await supabase.from('reviews').insert([{ media_id: String(mediaId), review_text: review, user_rating: rating, user_id: user.id }]);
-    if (!error) { setReview(''); await fetchReviews(mediaId); showToast('Neural_Perception_Injected'); }
+    if (!error) { setReview(''); await fetchReviews(mediaId); showToast('Nöral_Algı_Enjekte_Edildi'); }
   };
 
   const addToWatchlist = async (m) => {
-    if (watchlist.some(item => String(item.media_id) === String(m.id))) return showToast('Object_Already_Identified', 'error');
+    if (watchlist.some(item => String(item.media_id) === String(m.id))) return showToast('Zaten_Kasada_Mevcut', 'error');
     const { error } = await supabase.from('watchlists').insert([{ 
       media_id: m.id, title: m.title || m.name, poster_path: m.poster_path, 
       vote_average: m.vote_average, user_id: user?.id, status: 'to_watch'
     }]);
-    if (!error) { fetchWatchlist(); showToast('Object_Synced_Vault'); }
+    if (!error) { fetchWatchlist(); showToast('Nesne_Senkronize_Edildi'); }
   };
 
   const removeFromWatchlist = async (id) => {
     const { error } = await supabase.from('watchlists').delete().eq('id', id);
-    if (!error) { fetchWatchlist(); showToast('Object_Purged_Registry', 'error'); }
+    if (!error) { fetchWatchlist(); showToast('Nesne_Kayıttan_Silindi', 'error'); }
   };
 
   useEffect(() => { if (user) fetchWatchlist(); }, [user, fetchWatchlist]);
   useEffect(() => { if (selectedMedia) { fetchReviews(selectedMedia.id); fetchTrailer(selectedMedia.id); } }, [selectedMedia]);
 
-  if (authLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center font-black text-cyan-500 animate-pulse tracking-[1em]">INITIALIZING...</div>;
+  if (authLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center font-black text-cyan-500 animate-pulse tracking-[1em]">BAŞLATILIYOR...</div>;
 
   const userAverage = mediaReviews.length > 0 ? (mediaReviews.reduce((acc, rev) => acc + rev.user_rating, 0) / mediaReviews.length).toFixed(1) : "0.0";
 
-  // --- LOGIN GATEWAY ---
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-8 relative overflow-hidden">
@@ -321,9 +316,9 @@ function App() {
         <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 bg-slate-900/90 p-20 rounded-[6rem] border border-slate-800 w-full max-w-lg text-center backdrop-blur-3xl shadow-2xl">
           <h2 className="text-8xl font-black tracking-tighter italic uppercase mb-20 text-white">Nova<span className="text-cyan-500">Stream</span></h2>
           <div className="space-y-8">
-            <input type="email" placeholder="Identifier..." value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none focus:border-cyan-500" />
-            <input type="password" placeholder="Passkey..." value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none focus:border-cyan-500" />
-            <button onClick={async () => { const {error} = await supabase.auth.signInWithPassword({email, password}); if(error) showToast("Identity_Rejected", "error"); }} className="w-full bg-cyan-600 py-8 rounded-[2.5rem] font-black uppercase text-white shadow-3xl transition-all">Establish_Session</button>
+            <input type="email" placeholder="Kimlik..." value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none focus:border-cyan-500" />
+            <input type="password" placeholder="Şifre..." value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none focus:border-cyan-500" />
+            <button onClick={async () => { const {error} = await supabase.auth.signInWithPassword({email, password}); if(error) showToast("Kimlik_Doğrulanamadı", "error"); }} className="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-8 rounded-[2.5rem] font-black uppercase shadow-3xl transition-all">Oturum_Aç</button>
           </div>
         </motion.div>
       </div>
@@ -334,30 +329,30 @@ function App() {
   if (profile?.role === 'Staff') return <StaffDashboard />;
 
   const allSections = [
-    { title: "Resume_Neural_Stream", data: watchlist.slice(0, 8), icon: <Clock size={20}/>, type: 'resume', category: 'all', sub: 'all', condition: watchlist.length > 0 },
-    { title: "Trending_Global_Signals", data: trending, icon: <Activity size={20}/>, category: 'movie', sub: 'all', condition: true },
-    { title: "Trending_Series_Link", data: trendingTV, icon: <MonitorPlay size={20}/>, category: 'tv', sub: 'all', condition: true },
-    { title: "Action_Combat_Sectors", data: action, icon: <ActionIcon size={20}/>, category: 'movie', sub: 'action', condition: true },
-    { title: "Dark_Horror_Injections", data: horror, icon: <Skull size={20}/>, category: 'movie', sub: 'horror', condition: true },
-    { title: "Emotional_Drama_Sectors", data: drama, icon: <Heart size={20}/>, category: 'movie', sub: 'drama', condition: true },
-    { title: "High_Impact_Movies", data: topRated, icon: <Zap size={20}/>, category: 'movie', sub: 'all', condition: true },
-    { title: "Elite_Series_Matrix", data: topRatedTV, icon: <Award size={20}/>, category: 'tv', sub: 'all', condition: true },
-    { title: "Global_Popularity_Nodes", data: popular, icon: <Globe size={20}/>, category: 'movie', sub: 'all', condition: true },
-    { title: "Upcoming_Transmissions", data: upcoming, icon: <Tv size={20}/>, category: 'movie', sub: 'all', condition: true },
-    { title: "Documentary_Data_Files", data: documentary, icon: <Database size={20}/>, category: 'doc', sub: 'all', condition: true },
-    { title: "Sports_Live_Matrix", data: sports, icon: <Trophy size={20}/>, category: 'sports', sub: 'all', condition: true },
-    { title: "Cybernetic_Sci-Fi_Nodes", data: scifi, icon: <Cpu size={20}/>, category: 'movie', sub: 'scifi', condition: true },
-    { title: "Light_Comedy_Protocol", data: comedy, icon: <Laugh size={20}/>, category: 'movie', sub: 'comedy', condition: true },
-    { title: "Animated_Neural_Frames", data: animation, icon: <Film size={20}/>, category: 'movie', sub: 'all', condition: true },
-    { title: "Mystery_Cipher_Nodes", data: mystery, icon: <Shield size={20}/>, category: 'movie', sub: 'all', condition: true }
+    { title: "İzlemeye_Devam_Et", data: watchlist.slice(0, 8), icon: <Clock size={20}/>, type: 'resume', category: 'all', sub: 'all', condition: watchlist.length > 0 },
+    { title: "Haftalık_Popüler_Filmler", data: trending, icon: <Activity size={20}/>, category: 'movie', sub: 'all', condition: true },
+    { title: "Popüler_Diziler", data: trendingTV, icon: <MonitorPlay size={20}/>, category: 'tv', sub: 'all', condition: true },
+    { title: "Aksiyon_Sektörü", data: action, icon: <Sword size={20}/>, category: 'movie', sub: 'action', condition: true },
+    { title: "Korku_Enjeksiyonları", data: horror, icon: <Skull size={20}/>, category: 'movie', sub: 'horror', condition: true },
+    { title: "Dram_Sektörleri", data: drama, icon: <Heart size={20}/>, category: 'movie', sub: 'drama', condition: true },
+    { title: "Belgesel_Dosyaları", data: documentary, icon: <BookOpen size={20}/>, category: 'doc', sub: 'all', condition: true },
+    { title: "Canlı_Spor_Matrisi", data: sports, icon: <Trophy size={20}/>, category: 'sports', sub: 'all', condition: true },
+    { title: "Bilim_Kurgu_Düğümleri", data: scifi, icon: <Cpu size={20}/>, category: 'movie', sub: 'scifi', condition: true },
+    { title: "Komedi_Protokolleri", data: comedy, icon: <Laugh size={20}/>, category: 'movie', sub: 'comedy', condition: true },
+    { title: "En_Yüksek_Puanlı_Diziler", data: topRatedTV, icon: <Award size={20}/>, category: 'tv', sub: 'all', condition: true }
   ];
 
-  // Functional Filtering Logic
+  // Prime Filter Logic:
   const filteredSections = allSections.filter(s => {
-    if (mainTab === 'home') return true;
     if (s.type === 'resume') return true;
-    if (activeSub !== 'all' && s.sub === activeSub) return true;
-    if (activeSub === 'all' && s.category === mainTab) return true;
+    if (mainTab === 'home') {
+       if (activeSub === 'all') return true;
+       return s.sub === activeSub;
+    }
+    if (mainTab === 'movie') return s.category === 'movie' && (activeSub === 'all' || s.sub === activeSub);
+    if (mainTab === 'tv') return s.category === 'tv' && (activeSub === 'all' || s.sub === activeSub);
+    if (mainTab === 'sports') return s.category === 'sports';
+    if (mainTab === 'doc') return s.category === 'doc';
     return false;
   });
 
@@ -371,25 +366,24 @@ function App() {
       )}</AnimatePresence>
 
       <nav className="border-b border-white/5 bg-slate-950/80 backdrop-blur-3xl sticky top-0 z-[100]">
-        {/* MAIN NAVIGATION BAR */}
         <div className="px-16 py-8 flex justify-between items-center">
           <div className="flex items-center gap-16">
-            <h1 className="text-5xl font-black italic tracking-tighter cursor-pointer group" onClick={() => {setView('browse'); setSearchQuery(''); setMainTab('home'); setActiveSub('all');}}>
-              Nova<span className="text-cyan-500 transition-all">Stream</span>
+            <h1 className="text-5xl font-black italic tracking-tighter cursor-pointer group" onClick={() => {setMainTab('home'); setActiveSub('all'); setSearchQuery('');}}>
+              Nova<span className="text-cyan-500">Stream</span>
             </h1>
             
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-8">
               {[
-                { id: 'home', label: 'Home', icon: <HomeIcon size={18}/> },
-                { id: 'movie', label: 'Movies', icon: <Clapperboard size={18}/> },
-                { id: 'tv', label: 'TV Series', icon: <MonitorPlay size={18}/> },
-                { id: 'sports', label: 'Sports', icon: <Trophy size={18}/> },
-                { id: 'doc', label: 'Documentaries', icon: <Database size={18}/> }
+                { id: 'home', label: 'Anasayfa' },
+                { id: 'movie', label: 'Filmler' },
+                { id: 'tv', label: 'Diziler' },
+                { id: 'sports', label: 'Spor' },
+                { id: 'doc', label: 'Belgesel' }
               ].map((tab) => (
                 <button 
                   key={tab.id}
-                  onClick={() => {setMainTab(tab.id); setActiveSub('all'); setView('browse');}}
-                  className={`text-[13px] font-black uppercase tracking-[0.2em] flex items-center gap-3 transition-all duration-300 ${mainTab === tab.id ? 'text-white scale-110' : 'text-slate-600 hover:text-white'}`}
+                  onClick={() => {setMainTab(tab.id); setActiveSub('all');}}
+                  className={`text-[13px] font-black uppercase tracking-[0.2em] transition-all ${mainTab === tab.id ? 'text-white border-b-2 border-cyan-500 pb-2' : 'text-slate-600 hover:text-white'}`}
                 >
                   {tab.label}
                 </button>
@@ -400,47 +394,48 @@ function App() {
           <div className="flex items-center gap-14 text-[12px] font-black uppercase tracking-[0.4em] text-slate-600 font-mono">
             <div className="relative group hidden xl:block">
               <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-800" size={18} />
-              <input type="text" placeholder="Inject Query..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-slate-900/50 border border-white/5 pl-14 pr-8 py-3 rounded-[1.5rem] text-[12px] outline-none focus:border-cyan-500 w-[250px] transition-all" />
+              <input type="text" placeholder="Sistemde Ara..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-slate-900/50 border border-white/5 pl-14 pr-8 py-3 rounded-[1.5rem] text-[12px] outline-none focus:border-cyan-500 w-[250px] transition-all" />
             </div>
-            <button onClick={() => setView('watchlist')} className={`hover:text-white flex items-center gap-4 ${view === 'watchlist' ? 'text-cyan-500' : ''}`}><Bookmark size={20} /> Vault</button>
-            <button onClick={() => setView('profile')} className={`hover:text-white flex items-center gap-4 ${view === 'profile' ? 'text-cyan-500' : ''}`}><User size={20} /> Profile</button>
-            <button onClick={() => supabase.auth.signOut()} className="bg-slate-900 p-3 rounded-xl hover:text-red-500 border border-white/5"><LogOut size={20} /></button>
+            <button onClick={() => setView('watchlist')} className={`hover:text-white flex items-center gap-4 ${view === 'watchlist' ? 'text-cyan-500' : ''}`}><Bookmark size={20} /> Kasa</button>
+            <button onClick={() => setView('profile')} className={`hover:text-white flex items-center gap-4 ${view === 'profile' ? 'text-cyan-500' : ''}`}><User size={20} /> Profil</button>
+            <button onClick={() => supabase.auth.signOut()} className="bg-slate-900 p-3 rounded-xl border border-white/5 hover:text-red-500"><LogOut size={20} /></button>
           </div>
         </div>
 
-        {/* SUB-CATEGORY PILLS (SMALLER AREA) */}
-        <div className="px-16 py-4 bg-black/20 flex items-center gap-4 overflow-x-auto no-scrollbar border-t border-white/[0.02]">
-           <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest mr-4">Sector_Jump:</span>
-           {[
-             { id: 'all', label: 'All Content', icon: <Layers size={14}/> },
-             { id: 'action', label: 'Action', icon: <Sword size={14}/> },
-             { id: 'horror', label: 'Horror', icon: <Skull size={14}/> },
-             { id: 'drama', label: 'Drama', icon: <Heart size={14}/> },
-             { id: 'scifi', label: 'Sci-Fi', icon: <Cpu size={14}/> },
-             { id: 'comedy', label: 'Comedy', icon: <Laugh size={14}/> },
-             { id: 'trending', label: 'Trending', icon: <Flame size={14}/> }
-           ].map(sub => (
-             <button
-               key={sub.id}
-               onClick={() => {setActiveSub(sub.id); setView('browse');}}
-               className={`px-6 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-all duration-500 ${activeSub === sub.id ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400' : 'bg-transparent border-white/5 text-slate-500 hover:border-white/20'}`}
-             >
-               {sub.icon} {sub.label}
-             </button>
-           ))}
-        </div>
+        {/* SUB-CATEGORY PILLS (Functional) */}
+        {(mainTab === 'home' || mainTab === 'movie' || mainTab === 'tv') && (
+          <div className="px-16 py-4 bg-black/20 flex items-center gap-4 overflow-x-auto no-scrollbar border-t border-white/[0.02]">
+            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest mr-4">Tür_Seç:</span>
+            {[
+              { id: 'all', label: 'Tümü' },
+              { id: 'action', label: 'Aksiyon' },
+              { id: 'horror', label: 'Korku' },
+              { id: 'drama', label: 'Dram' },
+              { id: 'scifi', label: 'Bilim Kurgu' },
+              { id: 'comedy', label: 'Komedi' }
+            ].map(sub => (
+              <button
+                key={sub.id}
+                onClick={() => setActiveSub(sub.id)}
+                className={`px-6 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all ${activeSub === sub.id ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400' : 'bg-transparent border-white/5 text-slate-500 hover:border-white/20'}`}
+              >
+                {sub.label}
+              </button>
+            ))}
+          </div>
+        )}
       </nav>
 
       <main className="p-16 max-w-[1900px] mx-auto">
         {searchQuery ? (
           <section className="animate-in fade-in duration-700">
-            <h3 className="text-xl font-black italic text-white/90 mb-10 uppercase">Results_For: <span className="text-cyan-500">"{searchQuery}"</span></h3>
+            <h3 className="text-xl font-black italic text-white/90 mb-10 uppercase tracking-tighter">Arama_Sonuçları: <span className="text-cyan-500">"{searchQuery}"</span></h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-12">
               {searchResults.map((m) => (<div key={m.id} className="w-full"><MovieCard movie={m} onSelect={setSelectedMedia} onAdd={addToWatchlist} /></div>))}
             </div>
           </section>
         ) : view === 'browse' ? (
-          <div className="space-y-40 animate-in fade-in duration-1000">
+          <div className="space-y-40">
             {filteredSections.map((section, idx) => section.condition && (
               <section key={idx} className="relative px-6 group/row">
                 <div className="flex items-center justify-between mb-12">
@@ -449,8 +444,8 @@ function App() {
                       <h3 className="text-xl font-semibold text-white/90 uppercase tracking-tighter italic">{section.title.replace(/_/g, ' ')}</h3>
                    </div>
                    <div className="flex gap-4 opacity-0 group-hover/row:opacity-100 transition-all">
-                     <button onClick={(e) => { e.currentTarget.closest('section').querySelector('.row-scroll').scrollBy({ left: -1000, behavior: 'smooth' }); }} className="p-5 bg-black/90 border border-white/10 rounded-2xl text-white hover:bg-cyan-600 transition-all shadow-3xl z-50"><ChevronLeft size={28} /></button>
-                     <button onClick={(e) => { e.currentTarget.closest('section').querySelector('.row-scroll').scrollBy({ left: 1000, behavior: 'smooth' }); }} className="p-5 bg-black/90 border border-white/10 rounded-2xl text-white hover:bg-cyan-600 transition-all shadow-3xl z-50"><ChevronRight size={28} /></button>
+                     <button onClick={(e) => { e.currentTarget.closest('section').querySelector('.row-scroll').scrollBy({ left: -1000, behavior: 'smooth' }); }} className="p-5 bg-black border border-white/10 rounded-2xl text-white hover:bg-cyan-600 transition-all shadow-3xl z-50"><ChevronLeft size={28} /></button>
+                     <button onClick={(e) => { e.currentTarget.closest('section').querySelector('.row-scroll').scrollBy({ left: 1000, behavior: 'smooth' }); }} className="p-5 bg-black border border-white/10 rounded-2xl text-white hover:bg-cyan-600 transition-all shadow-3xl z-50"><ChevronRight size={28} /></button>
                    </div>
                 </div>
                 <div className="row-scroll no-scrollbar flex flex-nowrap gap-16 overflow-x-auto scroll-smooth snap-x pb-12 px-4 relative z-10">
@@ -466,12 +461,12 @@ function App() {
           </div>
         ) : view === 'watchlist' ? (
           <div className="px-6 animate-in fade-in slide-in-from-bottom-12 duration-1000">
-            <h3 className="text-7xl font-black italic uppercase tracking-tighter text-white mb-24">Identifier_Vault</h3>
+            <h3 className="text-7xl font-black italic uppercase tracking-tighter text-white mb-24">Birim_Kasası</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-16">
               {watchlist.map((item) => (
                 <div key={item.id} className="relative group bg-slate-900/40 rounded-[3rem] overflow-hidden border border-slate-800 hover:border-cyan-500/50 transition-all shadow-3xl">
                   <img src={`https://image.tmdb.org/t/p/w500${item.poster_path}`} className="w-full aspect-[2/3] object-cover transition-all duration-1000" alt="" />
-                  <button onClick={() => removeFromWatchlist(item.id)} className="absolute top-8 right-8 bg-red-600 p-6 rounded-[1.8rem] text-white opacity-0 group-hover:opacity-10 transition-all shadow-3xl"><X size={28} /></button>
+                  <button onClick={() => removeFromWatchlist(item.id)} className="absolute top-8 right-8 bg-red-600 p-6 rounded-[1.8rem] text-white opacity-0 group-hover:opacity-10 transition-all shadow-3xl hover:bg-red-500"><X size={28} /></button>
                 </div>
               ))}
             </div>
@@ -490,7 +485,7 @@ function App() {
               </div>
               <div className="p-10 md:p-14 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent">
                 <div className="flex items-center gap-6 mb-6 font-mono text-[10px] font-bold uppercase text-slate-400">
-                  <span className="bg-cyan-600 text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-xl shadow-cyan-600/20"><Star size={14} fill="white" /> {selectedMedia.vote_average?.toFixed(1)}</span>
+                  <span className="bg-cyan-600 text-white px-4 py-2 rounded-xl flex items-center gap-2"><Star size={14} fill="white" /> {selectedMedia.vote_average?.toFixed(1)}</span>
                   <span>{selectedMedia.release_date?.split('-')[0] || selectedMedia.first_air_date?.split('-')[0]}</span>
                   <span className="border-l border-white/10 pl-6">{selectedMedia.original_language?.toUpperCase()}</span>
                 </div>
@@ -499,14 +494,14 @@ function App() {
               </div>
             </div>
             <div className="flex-1 flex flex-col bg-[#050505] overflow-hidden">
-              <div className="p-8 md:p-10 border-b border-white/5 flex justify-between items-center bg-black/40 backdrop-blur-2xl shadow-xl">
+              <div className="p-8 md:p-10 border-b border-white/5 flex justify-between items-center bg-black/40 backdrop-blur-2xl">
                  <div className="flex flex-col gap-1">
-                    <h4 className="text-[11px] font-black text-white/40 uppercase tracking-[0.4em] flex items-center gap-3"><MessageSquare size={16} className="text-cyan-500" /> Neural_Feed</h4>
-                    <p className="text-[9px] text-cyan-500/50 font-mono animate-pulse">Sync_Established</p>
+                    <h4 className="text-[11px] font-black text-white/40 uppercase tracking-[0.4em] flex items-center gap-3"><MessageSquare size={16} className="text-cyan-500" /> Nöral_Feed</h4>
+                    <p className="text-[9px] text-cyan-500/50 font-mono animate-pulse">Senkronizasyon_Tamamlandı</p>
                  </div>
                  <div className="text-right">
                     <span className="text-4xl font-black text-white tabular-nums">{userAverage}</span>
-                    <p className="text-[9px] font-bold text-cyan-500/40 uppercase tracking-[0.3em]">Global_Avg</p>
+                    <p className="text-[9px] font-bold text-cyan-500/40 uppercase tracking-[0.3em]">Küresel_Ort</p>
                  </div>
               </div>
               <div className="flex-1 overflow-y-auto p-8 md:p-10 space-y-6 no-scrollbar">
@@ -518,11 +513,11 @@ function App() {
                     </div>
                     <p className="text-white/80 text-[14px]">"{rev.review_text}"</p>
                   </motion.div>
-                )) : <div className="h-full flex flex-col items-center justify-center opacity-20 gap-6"><Activity size={60} className="animate-pulse text-cyan-500" /><span className="text-xs font-black uppercase tracking-[0.5em]">No_Signals_Logged</span></div>}
+                )) : <div className="h-full flex flex-col items-center justify-center opacity-20 gap-6"><Activity size={60} className="animate-pulse text-cyan-500" /><span className="text-xs font-black uppercase tracking-[0.5em]">Sinyal_Kaydedilmedi</span></div>}
               </div>
               <div className="p-8 md:p-10 bg-slate-950/95 border-t border-white/5">
                 <div className="flex items-center justify-between mb-6">
-                  <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">Assign Impact:</span>
+                  <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">Etki_Atayın:</span>
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <button key={n} onClick={() => setRating(n)} className={`w-10 h-10 rounded-xl border text-[14px] font-black transition-all ${rating >= n ? 'bg-cyan-600 border-cyan-500 text-white shadow-3xl' : 'bg-transparent border-white/10 text-slate-500'}`}>{n}</button>
@@ -530,8 +525,8 @@ function App() {
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="Inject perception data..." className="flex-1 bg-white/[0.03] border border-white/10 px-6 py-4 rounded-[1.5rem] text-[13px] text-white outline-none focus:border-cyan-500/50 transition-all font-mono" />
-                  <button onClick={() => submitReview(selectedMedia.id)} className="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all">Transmit</button>
+                  <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="Algı verisi girin..." className="flex-1 bg-white/[0.03] border border-white/10 px-6 py-4 rounded-[1.5rem] text-[13px] text-white outline-none focus:border-cyan-500/50 transition-all font-mono" />
+                  <button onClick={() => submitReview(selectedMedia.id)} className="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-[1.5rem] text-[11px] font-black uppercase transition-all">İlet</button>
                 </div>
               </div>
             </div>
