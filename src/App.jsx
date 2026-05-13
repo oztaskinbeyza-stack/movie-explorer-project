@@ -175,8 +175,6 @@ function App() {
   const [trailerKey, setTrailerKey] = useState(null);
   const loaderRef = useRef(null);
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-  
-  // Kategori State'leri (TAM LİSTE)
   const [trending, setTrending] = useState([]);
   const [popular, setPopular] = useState([]);
   const [topRated, setTopRated] = useState([]);
@@ -196,19 +194,20 @@ function App() {
     setTimeout(() => setToast({ message: '', type: null }), 3000);
   }, []);
 
-  const fetchMedia = async (endpoint) => {
+const fetchMedia = async (endpoint) => {
     if (!API_KEY) return [];
     try {
       const res = await fetch(`${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${API_KEY}&language=tr-TR&include_adult=false`);
       const data = await res.json();
-      return data.results || [];
+      
+      return (data.results || []).filter(m => m.adult === false);
     } catch (error) {
       console.error("Fetch Error:", error);
       return [];
     }
   };
 
-  useEffect(() => {
+useEffect(() => {
     const loadAllContent = async () => {
       if (!user) return;
       setLoading(true);
@@ -230,15 +229,12 @@ function App() {
         setTrending(t); setPopular(p); setTopRated(tr); setUpcoming(u); 
         setAction(a); setScifi(sf); setHorror(h); setComedy(c);
         setAnimation(an); setDocumentary(d); setDrama(dr); setMystery(m);
-        if (profile?.role === 'Admin') fetchStats();
-      } catch (err) {
-        showToast("Neural_Sync_Failed", "error");
       } finally {
         setLoading(false);
       }
     };
     loadAllContent();
-  }, [user, profile]);
+  }, [user]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
@@ -310,6 +306,21 @@ function App() {
 
   const userAverage = mediaReviews.length > 0 ? (mediaReviews.reduce((acc, rev) => acc + rev.user_rating, 0) / mediaReviews.length).toFixed(1) : "0.0";
 
+  const sections = [
+    { title: "Resume_Neural_Stream", data: watchlist.slice(0, 8), icon: <Clock size={20}/>, type: 'resume', condition: watchlist.length > 0 },
+    { title: "Trending_Neural_Signals", data: trending, icon: <Activity size={20}/>, condition: true },
+    { title: "Global_Popularity_Matrix", data: popular, icon: <Globe size={20}/>, condition: true },
+    { title: "High_Impact_Archive_Nodes", data: topRated, icon: <Zap size={20}/>, condition: true },
+    { title: "Incoming_Transmissions", data: upcoming, icon: <Tv size={20}/>, condition: true },
+    { title: "Action_Combat_Sectors", data: action, icon: <Zap size={20}/>, condition: true },
+    { title: "Cybernetic_Sci-Fi_Nodes", data: scifi, icon: <Cpu size={20}/>, condition: true },
+    { title: "Dark_Horror_Injections", data: horror, icon: <Ghost size={20}/>, condition: true },
+    { title: "Light_Comedy_Protocol", data: comedy, icon: <Laugh size={20}/>, condition: true },
+    { title: "Animated_Neural_Frames", data: animation, icon: <Film size={20}/>, condition: true },
+    { title: "Documentary_Data_Files", data: documentary, icon: <Database size={20}/>, condition: true },
+    { title: "Emotional_Drama_Sectors", data: drama, icon: <Activity size={20}/>, condition: true },
+    { title: "Mystery_Cipher_Nodes", data: mystery, icon: <Shield size={20}/>, condition: true }
+  ];
   // --- LOGIN GATEWAY ---
   if (!user) {
     return (
