@@ -310,71 +310,59 @@ function App() {
         </div>
       </nav>
 
-      <main className="p-16 max-w-[1900px] mx-auto">
-        {view === 'browse' ? (
-          <div className="space-y-40 animate-in fade-in duration-1000 pb-20 overflow-hidden">
-            {[
-              { title: "Resume_Neural_Stream", data: watchlist.slice(0, 8), icon: <Clock className="text-cyan-500 animate-pulse" size={24} />, type: 'resume', condition: watchlist.length > 0 },
-              { title: "Trending_Neural_Signals", data: mediaList.slice(0, 15), icon: <Activity className="text-white/30" size={24} />, type: 'row', condition: true },
-              { title: "High_Impact_Archive_Nodes", data: mediaList.filter(m => m.vote_average > 7.4), icon: <Zap className="text-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" size={24} />, type: 'row', condition: true }
-            ].map((section, idx) => section.condition && (
-              <section key={idx} className="relative px-6 group/row">
-                <div className="flex items-center justify-between mb-12">
-                   <div className="flex items-center gap-4 group/head cursor-default">
-                      <div className="h-6 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)]" />
-                      <h3 className="text-xl font-semibold tracking-tight text-white/90 transition-colors group-hover/head:text-cyan-400">{section.title.replace(/_/g, ' ')}</h3>
-                   </div>
-                   <div className="flex gap-4 opacity-0 group-hover/row:opacity-100 transition-all translate-x-4 group-hover/row:translate-x-0 duration-500">
-                     <button onClick={(e) => { e.currentTarget.closest('section').querySelector('.row-scroll').scrollBy({ left: -1000, behavior: 'smooth' }); }} className="p-5 bg-black/90 border border-white/10 rounded-2xl text-white hover:bg-cyan-600 transition-all shadow-3xl z-50"><ChevronLeft size={28} /></button>
-                     <button onClick={(e) => { e.currentTarget.closest('section').querySelector('.row-scroll').scrollBy({ left: 1000, behavior: 'smooth' }); }} className="p-5 bg-black/90 border border-white/10 rounded-2xl text-white hover:bg-cyan-600 transition-all shadow-3xl z-50"><ChevronRight size={28} /></button>
-                   </div>
-                </div>
-
-                <div className="row-scroll flex flex-nowrap gap-16 overflow-x-auto no-scrollbar scroll-smooth snap-x pb-12 px-4 relative z-10">
-                  {section.data.map((movie) => (
-                    /* İŞTE ÇÖZÜM BURADA: w-[240px] md:w-[280px] eklendi! */
-                    <div key={movie.id} className="snap-start shrink-0 relative group w-[240px] md:w-[280px]">
-                       <MovieCard movie={section.type === 'resume' ? {...movie, id: movie.media_id} : movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
-                       {section.type === 'resume' && <div className="absolute bottom-0 left-0 h-1.5 bg-cyan-600 w-3/4 shadow-[0_0_15px_rgba(6,182,212,1)] rounded-full z-[60] animate-pulse" />}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            ))}
-
-            <section className="px-6 mt-10">
-              <div className="flex items-center gap-4 mb-10 group/head cursor-default">
-                <div className="h-6 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)]" />
-                <h3 className="text-xl font-semibold tracking-tight text-white/90 transition-colors group-hover/head:text-cyan-400">Deep Global Exploration</h3>
+<main className="p-16 max-w-[1900px] mx-auto">
+  {view === 'browse' ? (
+    <div className="space-y-40 animate-in fade-in duration-1000 pb-20 overflow-hidden">
+      
+      {searchQuery && (
+        <section className="px-6">
+          <div className="flex items-center gap-4 mb-10">
+            <div className="h-6 w-[2px] bg-cyan-500" />
+            <h3 className="text-xl font-semibold text-white/90">Results for: <span className="text-cyan-500">"{searchQuery}"</span></h3>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-8">
+            {mediaList.map((movie) => (
+              <div key={movie.id} className="w-full">
+                <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-6 gap-y-12 place-items-center">
-                {mediaList.slice(15).map((movie) => (
-                  /* İŞTE ÇÖZÜM BURADA: w-full eklendi! */
-                  <div key={movie.id} className="transition-transform duration-700 hover:z-50 hover:-translate-y-2 w-full">
-                    <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {!searchQuery && (
+        <>
+          {[
+            { title: "Resume_Neural_Stream", data: watchlist.slice(0, 8), type: 'resume', condition: watchlist.length > 0 },
+            { title: "Trending_Neural_Signals", data: mediaList.slice(0, 15), type: 'row', condition: true },
+            { title: "Popular_on_NovaStream", data: mediaList.slice(15, 30), type: 'row', condition: true }
+          ].map((section, idx) => section.condition && (
+            <section key={idx} className="relative px-6 group/row">
+              <div className="flex items-center justify-between mb-12">
+                <div className="flex items-center gap-4">
+                  <div className="h-6 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)]" />
+                  <h3 className="text-xl font-semibold text-white/90 uppercase italic tracking-tight">{section.title.replace(/_/g, ' ')}</h3>
+                </div>
+              </div>
+
+              <div className="row-scroll no-scrollbar scroll-smooth snap-x">
+                {section.data.map((movie) => (
+                  <div key={movie.id} className="snap-start shrink-0 w-[240px] md:w-[280px]">
+                     <MovieCard movie={section.type === 'resume' ? {...movie, id: movie.media_id} : movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
                   </div>
                 ))}
               </div>
             </section>
-            
-            <div ref={loaderRef} className="h-80 flex flex-col items-center justify-center gap-12 opacity-30">
-              <div className="flex gap-8">
-                <div className="w-4 h-4 bg-cyan-500 rounded-full animate-ping" />
-                <div className="w-4 h-4 bg-cyan-500 rounded-full animate-ping [animation-delay:0.3s]" />
-                <div className="w-4 h-4 bg-cyan-500 rounded-full animate-ping [animation-delay:0.6s]" />
-              </div>
-              <div className="flex flex-col items-center gap-4">
-                <span className="text-[12px] font-black uppercase tracking-[1.8em] text-cyan-500 italic">Expanding_Neural_Sector</span>
-                <span className="text-slate-800 text-[10px] uppercase font-mono tracking-widest leading-none">Protocol: Continuous_Fetch_Active</span>
-              </div>
-            </div>
-          </div>
-        ) : view === 'watchlist' ? (
-          <div className="px-6 animate-in fade-in slide-in-from-bottom-12 duration-1000">
-             {/* Watchlist içeriği... */}
-          </div>
-        ) : <ProfileView user={user} profile={profile} watchlist={watchlist} />}
-      </main>
+          ))}
+        </>
+      )}
+      
+      <div ref={loaderRef} className="h-40 flex justify-center items-center opacity-30">
+        <div className="w-4 h-4 bg-cyan-500 rounded-full animate-ping" />
+      </div>
+    </div>
+  ) : <ProfileView profile={profile} watchlist={watchlist} />}
+</main>
       
       {/* --- NEURAL_INTERACTION_MODAL: RATIO_FIX & ELITE UI --- */}
       <AnimatePresence>
