@@ -142,34 +142,58 @@ function App() {
   const [trailerKey, setTrailerKey] = useState(null);
   const loaderRef = useRef(null);
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+  const [trending, setTrending] = useState([]);
+  const [topRated, setTopRated] = useState([]);
+  const [upcoming, setUpcoming] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast({ message: '', type: null }), 3000);
   }, []);
 
-  const fetchMedia = async (query = '', isNextPage = false) => {
-    if (!API_KEY) return;
-    setLoading(true);
-    const currentPage = isNextPage ? page + 1 : 1;
-    let endpoint = query 
-      ? `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=en-US&page=${currentPage}&include_adult=false`
-      : `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=${currentPage}&include_adult=false`;
+const fetchData = async (type) => {
+    if (!API_KEY) return [];
+    const endpoints = {
+      trending: `https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}`,
+      topRated: `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}`,
+      upcoming: `https://api.themoviedb.org/3/movie/upcoming?api_key=${API_KEY}`,
+      search: `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(searchQuery)}`
+    };
 
     try {
-      const response = await fetch(endpoint);
-      if (!response.ok) throw new Error("API_REJECTION");
-      const data = await response.json();
-      const validResults = (data.results || []).filter(movie => movie.adult === false);
-      setMediaList(prev => isNextPage ? [...prev, ...validResults] : validResults);
-      setPage(currentPage);
+      const res = await fetch(endpoints[type]);
+      const data = await res.json();
+      return data.results || [];
     } catch (error) {
-      if (!isNextPage) setMediaList(fallbackMedia);
-      showToast("Data_Stream_Interrupted_Core_Offline", "error");
-    } finally {
-      setTimeout(() => setLoading(false), 600);
+      console.error("Data Stream Error:", error);
+      return [];
     }
   };
+
+  useEffect(() => {
+    const loadInitialData = async () => {
+      setLoading(true);
+      const [t, tr, u] = await Promise.all([
+        fetchData('trending'), 
+        fetchData('topRated'), 
+        fetchData('upcoming')
+      ]);
+      setTrending(t); setTopRated(tr); setUpcoming(u);
+      setLoading(false);
+    };
+    if (user && !searchQuery) loadInitialData();
+  }, [user, searchQuery]);
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (searchQuery) {
+        const results = await fetchData('search');
+        setSearchResults(results);
+      }
+    }, 500); 
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
 
   const fetchTrailer = async (movieId) => {
     try {
@@ -311,58 +335,55 @@ function App() {
       </nav>
 
 <main className="p-16 max-w-[1900px] mx-auto">
-  {view === 'browse' ? (
-    <div className="space-y-40 animate-in fade-in duration-1000 pb-20 overflow-hidden">
-      
-      {searchQuery && (
-        <section className="px-6">
-          <div className="flex items-center gap-4 mb-10">
-            <div className="h-6 w-[2px] bg-cyan-500" />
-            <h3 className="text-xl font-semibold text-white/90">Results for: <span className="text-cyan-500">"{searchQuery}"</span></h3>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-8">
-            {mediaList.map((movie) => (
-              <div key={movie.id} className="w-full">
-                <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
-              </div>
+        {searchQuery ? (
+          <section className="animate-in fade-in duration-700">
+            <div className="flex items-center gap-4 mb-10">
+              <div className="h-6 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)]" />
+              <h3 className="text-xl font-black italic uppercase tracking-tighter text-white/90">
+                Search_Results for: <span className="text-cyan-500">"{searchQuery}"</span>
+              </h3>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-6 gap-y-12 place-items-center">
+              {searchResults.map((movie) => (
+                <div key={movie.id} className="transition-transform duration-700 hover:z-50 hover:-translate-y-2 w-full">
+                  <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : (
+          <div className="space-y-32 animate-in fade-in duration-1000 pb-20 overflow-hidden">
+            {[
+              { title: "Resume_Neural_Stream", data: watchlist.slice(0, 8), icon: <Clock className="text-cyan-500 animate-pulse" size={24} />, type: 'resume', condition: watchlist.length > 0 },
+              { title: "Trending_Neural_Signals", data: trending.slice(0, 15), icon: <Activity className="text-white/30" size={24} />, type: 'row', condition: trending.length > 0 },
+              { title: "High_Impact_Archive_Nodes (Top Rated)", data: topRated.slice(0, 15), icon: <Zap className="text-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" size={24} />, type: 'row', condition: topRated.length > 0 },
+              { title: "Incoming_Transmissions (Upcoming)", data: upcoming.slice(0, 15), icon: <Globe className="text-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]" size={24} />, type: 'row', condition: upcoming.length > 0 }
+            ].map((section, idx) => section.condition && (
+              <section key={idx} className="relative px-6 group/row">
+                <div className="flex items-center justify-between mb-12">
+                   <div className="flex items-center gap-4 group/head cursor-default">
+                      <div className="h-6 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)]" />
+                      <h3 className="text-xl font-semibold tracking-tight text-white/90 transition-colors group-hover/head:text-cyan-400">{section.title.replace(/_/g, ' ')}</h3>
+                   </div>
+                   <div className="flex gap-4 opacity-0 group-hover/row:opacity-100 transition-all translate-x-4 group-hover/row:translate-x-0 duration-500">
+                     <button onClick={(e) => { e.currentTarget.closest('section').querySelector('.row-scroll').scrollBy({ left: -1000, behavior: 'smooth' }); }} className="p-5 bg-black/90 border border-white/10 rounded-2xl text-white hover:bg-cyan-600 transition-all shadow-3xl z-50"><ChevronLeft size={28} /></button>
+                     <button onClick={(e) => { e.currentTarget.closest('section').querySelector('.row-scroll').scrollBy({ left: 1000, behavior: 'smooth' }); }} className="p-5 bg-black/90 border border-white/10 rounded-2xl text-white hover:bg-cyan-600 transition-all shadow-3xl z-50"><ChevronRight size={28} /></button>
+                   </div>
+                </div>
+
+                <div className="row-scroll no-scrollbar scroll-smooth snap-x pb-12 px-4 relative z-10">
+                  {section.data.map((movie) => (
+                    <div key={movie.id} className="snap-start shrink-0 relative group w-[240px] md:w-[280px]">
+                       <MovieCard movie={section.type === 'resume' ? {...movie, id: movie.media_id} : movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
+                       {section.type === 'resume' && <div className="absolute bottom-0 left-0 h-1.5 bg-cyan-600 w-3/4 shadow-[0_0_15px_rgba(6,182,212,1)] rounded-full z-[60] animate-pulse" />}
+                    </div>
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
-        </section>
-      )}
-
-      {!searchQuery && (
-        <>
-          {[
-            { title: "Resume_Neural_Stream", data: watchlist.slice(0, 8), type: 'resume', condition: watchlist.length > 0 },
-            { title: "Trending_Neural_Signals", data: mediaList.slice(0, 15), type: 'row', condition: true },
-            { title: "Popular_on_NovaStream", data: mediaList.slice(15, 30), type: 'row', condition: true }
-          ].map((section, idx) => section.condition && (
-            <section key={idx} className="relative px-6 group/row">
-              <div className="flex items-center justify-between mb-12">
-                <div className="flex items-center gap-4">
-                  <div className="h-6 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)]" />
-                  <h3 className="text-xl font-semibold text-white/90 uppercase italic tracking-tight">{section.title.replace(/_/g, ' ')}</h3>
-                </div>
-              </div>
-
-              <div className="row-scroll no-scrollbar scroll-smooth snap-x">
-                {section.data.map((movie) => (
-                  <div key={movie.id} className="snap-start shrink-0 w-[240px] md:w-[280px]">
-                     <MovieCard movie={section.type === 'resume' ? {...movie, id: movie.media_id} : movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
-                  </div>
-                ))}
-              </div>
-            </section>
-          ))}
-        </>
-      )}
-      
-      <div ref={loaderRef} className="h-40 flex justify-center items-center opacity-30">
-        <div className="w-4 h-4 bg-cyan-500 rounded-full animate-ping" />
-      </div>
-    </div>
-  ) : <ProfileView profile={profile} watchlist={watchlist} />}
-</main>
+        )}
+      </main>
       
       {/* --- NEURAL_INTERACTION_MODAL: RATIO_FIX & ELITE UI --- */}
       <AnimatePresence>

@@ -5,6 +5,12 @@ import { useState } from 'react';
 export default function MovieCard({ movie, onSelect, onAdd }) {
   const [isHovered, setIsHovered] = useState(false);
 
+  const getPosterUrl = (path) => {
+    if (!path) return 'https://via.placeholder.com/500x750?text=No+Image';
+    if (path.startsWith('http')) return path;
+    return `https://image.tmdb.org/t/p/w500${path}`;
+  };
+
   return (
     <motion.div
       className="relative group bg-slate-900/40 rounded-[2rem] overflow-hidden border border-slate-800 transition-all duration-300 shadow-3xl hover:border-cyan-500/50 cursor-pointer w-full"
@@ -13,9 +19,10 @@ export default function MovieCard({ movie, onSelect, onAdd }) {
       onClick={() => onSelect(movie)}
     >
       <img
-        src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Image'}
+        src={getPosterUrl(movie.poster_path)}
         className="w-full aspect-[2/3] object-cover transition-transform duration-700 group-hover:scale-105 grayscale group-hover:grayscale-0"
         alt={movie.title}
+        loading="lazy"
       />
       
       <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 z-20 flex items-center gap-2">

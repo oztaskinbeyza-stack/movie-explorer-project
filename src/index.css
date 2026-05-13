@@ -18,7 +18,8 @@ body {
 .row-scroll {
   display: flex;
   flex-wrap: nowrap;
-  gap: 2rem;
+  gap: 1.5rem;
   overflow-x: auto;
   padding-bottom: 2rem;
+  -webkit-overflow-scrolling: touch;
 }
