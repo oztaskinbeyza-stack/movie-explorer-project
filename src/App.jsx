@@ -56,18 +56,6 @@ const AdminDashboard = ({ stats, profile }) => {
             </motion.div>
           ))}
         </div>
-        <div className="mt-20 bg-slate-900/20 border border-slate-800/50 p-10 rounded-[3rem] font-mono text-xs opacity-60">
-          <p className="text-red-500 uppercase font-black mb-4 tracking-widest italic">Live_System_Interface_Log:</p>
-          <div className="space-y-3 opacity-80">
-            {[ { label: "System_Handshake", status: "SECURE" }, { label: "Neural_Matrix_Sync", status: "STABLE" }, { label: "Encryption_RSA_4096", status: "ACTIVE" } ].map((log, i) => (
-              <div key={i} className="flex items-center gap-3 font-mono">
-                <span className="text-cyan-500 text-[10px]">●</span>
-                <span className="text-slate-500 text-[9px] uppercase tracking-widest">{log.label}:</span>
-                <span className="text-cyan-400 text-[9px] font-bold">[{log.status}]</span>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -142,8 +130,11 @@ function App() {
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
   
   const [trending, setTrending] = useState([]);
+  const [popular, setPopular] = useState([]);
   const [topRated, setTopRated] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
+  const [actionMovies, setActionMovies] = useState([]);
+  const [sciFiMovies, setSciFiMovies] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
 
   const showToast = useCallback((message, type = 'success') => {
@@ -155,8 +146,11 @@ function App() {
     if (!API_KEY) return [];
     const endpoints = {
       trending: `https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}`,
+      popular: `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`,
       topRated: `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}`,
       upcoming: `https://api.themoviedb.org/3/movie/upcoming?api_key=${API_KEY}`,
+      action: `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=28`,
+      scifi: `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=87`,
       search: `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(searchQuery)}`
     };
 
@@ -173,12 +167,20 @@ function App() {
   useEffect(() => {
     const loadInitialData = async () => {
       setLoading(true);
-      const [t, tr, u] = await Promise.all([
+      const [t, p, tr, u, a, sf] = await Promise.all([
         fetchMedia('trending'), 
+        fetchMedia('popular'),
         fetchMedia('topRated'), 
-        fetchMedia('upcoming')
+        fetchMedia('upcoming'),
+        fetchMedia('action'),
+        fetchMedia('scifi')
       ]);
-      setTrending(t); setTopRated(tr); setUpcoming(u);
+      setTrending(t); 
+      setPopular(p);
+      setTopRated(tr); 
+      setUpcoming(u);
+      setActionMovies(a);
+      setSciFiMovies(sf);
       setLoading(false);
     };
     if (user && !searchQuery) loadInitialData();
@@ -345,9 +347,12 @@ function App() {
           <div className="space-y-32 animate-in fade-in duration-1000 pb-20 overflow-hidden">
             {[
               { title: "Resume_Neural_Stream", data: watchlist.slice(0, 8), icon: <Clock className="text-cyan-500 animate-pulse" size={24} />, type: 'resume', condition: watchlist.length > 0 },
-              { title: "Trending_Neural_Signals", data: trending.slice(0, 15), icon: <Activity className="text-white/30" size={24} />, type: 'row', condition: trending.length > 0 },
-              { title: "High_Impact_Archive_Nodes", data: topRated.slice(0, 15), icon: <Zap className="text-amber-500" size={24} />, type: 'row', condition: topRated.length > 0 },
-              { title: "Incoming_Transmissions", data: upcoming.slice(0, 15), icon: <Globe className="text-purple-500" size={24} />, type: 'row', condition: upcoming.length > 0 }
+              { title: "Trending_Neural_Signals", data: trending, icon: <Activity className="text-white/30" size={24} />, type: 'row', condition: trending.length > 0 },
+              { title: "Global_Popularity_Nodes", data: popular, icon: <Globe className="text-blue-500" size={24} />, type: 'row', condition: popular.length > 0 },
+              { title: "High_Impact_Archive_Nodes", data: topRated, icon: <Zap className="text-amber-500" size={24} />, type: 'row', condition: topRated.length > 0 },
+              { title: "Incoming_Transmissions", data: upcoming, icon: <Clock className="text-purple-500" size={24} />, type: 'row', condition: upcoming.length > 0 },
+              { title: "Action_Neural_Sectors", data: actionMovies, icon: <Zap className="text-red-500" size={24} />, type: 'row', condition: actionMovies.length > 0 },
+              { title: "Sci-Fi_Deep_Space_Nodes", data: sciFiMovies, icon: <Cpu className="text-cyan-400" size={24} />, type: 'row', condition: sciFiMovies.length > 0 }
             ].map((section, idx) => section.condition && (
               <section key={idx} className="relative px-6 group/row">
                 <div className="flex items-center justify-between mb-12">
@@ -451,7 +456,7 @@ function App() {
                   </div>
                   <div className="flex gap-4 items-center">
                     <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="Inject perception data..." className="flex-1 bg-white/[0.03] border border-white/10 px-6 py-4 rounded-[1.5rem] text-[13px] text-white outline-none focus:border-cyan-500/50 transition-all font-mono placeholder:text-slate-500" />
-                    <button onClick={() => submitReview(selectedMedia.id)} className="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95">Transmit</button>
+                    <button onClick={() => submitReview(selectedMedia.id)} className="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_0_200px_rgba(6,182,212,0.3)] active:scale-95">Transmit</button>
                   </div>
                 </div>
               </div>
