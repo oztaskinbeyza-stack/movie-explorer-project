@@ -12,11 +12,12 @@ import {
   Cpu, Zap, HardDrive, Bell, Settings, Filter, Clock,
   Ghost, Laugh, Tv, Film, Eye, ShieldAlert, ZapOff,
   Flame, TrendingUp, BarChart3, Layers, MonitorPlay,
-  Clapperboard, Home as HomeIcon, Trophy
+  Clapperboard, Home as HomeIcon, Trophy, Compass,
+  Sword, Heart, Zap as ActionIcon, Skull
 } from 'lucide-react';
 
 // =========================================================================
-// --- 1. COMPONENT: ADMIN_ROOT_STATION (Full Detail) ---
+// --- 1. COMPONENT: ADMIN_ROOT_STATION (Full Detailed UI) ---
 // =========================================================================
 
 const AdminDashboard = ({ stats, profile }) => {
@@ -75,24 +76,6 @@ const AdminDashboard = ({ stats, profile }) => {
               </div>
             </motion.div>
           ))}
-        </div>
-
-        <div className="mt-20 bg-slate-900/20 border border-slate-800/50 p-10 rounded-[3rem] font-mono text-xs opacity-60">
-          <p className="text-red-500 uppercase font-black mb-4 tracking-widest italic">Live_System_Interface_Log:</p>
-          <div className="space-y-3 opacity-80">
-            {[
-              { label: "System_Handshake", status: "SECURE" },
-              { label: "Neural_Matrix_Sync", status: "STABLE" },
-              { label: "Encryption_RSA_4096", status: "ACTIVE" },
-              { label: "Database_Latency", status: "14ms" }
-            ].map((log, i) => (
-              <div key={i} className="flex items-center gap-3 font-mono">
-                <span className="text-cyan-500 text-[10px]">●</span>
-                <span className="text-slate-500 text-[9px] uppercase tracking-widest">{log.label}:</span>
-                <span className="text-cyan-400 text-[9px] font-bold">[{log.status}]</span>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </div>
@@ -158,7 +141,7 @@ const ProfileView = ({ profile, watchlist }) => (
 );
 
 // =========================================================================
-// --- 3. MASTER_APPLICATION_LOGIC (FULL PRIME INTEGRATION) ---
+// --- 3. MASTER_APPLICATION_LOGIC (PRIME EVOLUTION) ---
 // =========================================================================
 
 function App() {
@@ -169,7 +152,8 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('browse'); 
-  const [contentType, setContentType] = useState('all'); // 'all', 'movie', 'tv'
+  const [mainTab, setMainTab] = useState('home'); // home, movie, tv, sports, doc
+  const [activeSub, setActiveSub] = useState('all'); // action, horror, etc.
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [review, setReview] = useState('');
   const [mediaReviews, setMediaReviews] = useState([]);
@@ -192,6 +176,7 @@ function App() {
   const [documentary, setDocumentary] = useState([]);
   const [drama, setDrama] = useState([]);
   const [mystery, setMystery] = useState([]);
+  const [sports, setSports] = useState([]);
   // --- TV STATES ---
   const [trendingTV, setTrendingTV] = useState([]);
   const [topRatedTV, setTopRatedTV] = useState([]);
@@ -216,9 +201,8 @@ function App() {
       return (data.results || []).filter(m => {
         const title = (m.title || m.name || m.original_title || m.original_name || "").toLowerCase();
         const overview = (m.overview || "").toLowerCase();
-        const isAdultFlag = m.adult === true;
         const hasBadWord = blacklist.some(word => title.includes(word) || overview.includes(word));
-        return !isAdultFlag && !hasBadWord;
+        return m.adult !== true && !hasBadWord;
       });
     } catch (error) { return []; }
   };
@@ -228,7 +212,7 @@ function App() {
       if (!user) return;
       setLoading(true);
       try {
-        const [t, p, tr, u, a, sf, h, c, an, d, dr, m, ttv, trtv, ptv] = await Promise.all([
+        const [t, p, tr, u, a, sf, h, c, an, d, dr, m, ttv, trtv, ptv, sp] = await Promise.all([
           fetchMedia(`https://api.themoviedb.org/3/trending/movie/week`),
           fetchMedia(`https://api.themoviedb.org/3/movie/popular`),
           fetchMedia(`https://api.themoviedb.org/3/movie/top_rated`),
@@ -241,15 +225,15 @@ function App() {
           fetchMedia(`https://api.themoviedb.org/3/discover/movie?with_genres=99`),
           fetchMedia(`https://api.themoviedb.org/3/discover/movie?with_genres=18`),
           fetchMedia(`https://api.themoviedb.org/3/discover/movie?with_genres=9648`),
-          // TV Fetching
           fetchMedia(`https://api.themoviedb.org/3/trending/tv/week`),
           fetchMedia(`https://api.themoviedb.org/3/tv/top_rated`),
-          fetchMedia(`https://api.themoviedb.org/3/tv/popular`)
+          fetchMedia(`https://api.themoviedb.org/3/tv/popular`),
+          fetchMedia(`https://api.themoviedb.org/3/discover/movie?with_keywords=6075`) // Sports keyword
         ]);
         setTrending(t); setPopular(p); setTopRated(tr); setUpcoming(u); 
         setAction(a); setScifi(sf); setHorror(h); setComedy(c);
         setAnimation(an); setDocumentary(d); setDrama(dr); setMystery(m);
-        setTrendingTV(ttv); setTopRatedTV(trtv); setPopularTV(ptv);
+        setTrendingTV(ttv); setTopRatedTV(trtv); setPopularTV(ptv); setSports(sp);
         if (profile?.role === 'Admin') fetchStats();
       } catch (err) { showToast("Neural_Sync_Interrupt", "error"); } finally { setLoading(false); }
     };
@@ -277,8 +261,8 @@ function App() {
   };
 
   const fetchWatchlist = useCallback(async () => {
-    const { data, error } = await supabase.from('watchlists').select('*').order('created_at', { ascending: false });
-    if (!error) setWatchlist(data || []);
+    const { data } = await supabase.from('watchlists').select('*').order('created_at', { ascending: false });
+    setWatchlist(data || []);
   }, []);
 
   const fetchReviews = async (mediaId) => {
@@ -301,8 +285,7 @@ function App() {
   };
 
   const addToWatchlist = async (m) => {
-    const isDuplicate = watchlist.some(item => String(item.media_id) === String(m.id));
-    if (isDuplicate) return showToast('Object_Already_Identified', 'error');
+    if (watchlist.some(item => String(item.media_id) === String(m.id))) return showToast('Object_Already_Identified', 'error');
     const { error } = await supabase.from('watchlists').insert([{ 
       media_id: m.id, title: m.title || m.name, poster_path: m.poster_path, 
       vote_average: m.vote_average, user_id: user?.id, status: 'to_watch'
@@ -322,6 +305,7 @@ function App() {
 
   const userAverage = mediaReviews.length > 0 ? (mediaReviews.reduce((acc, rev) => acc + rev.user_rating, 0) / mediaReviews.length).toFixed(1) : "0.0";
 
+  // --- LOGIN GATEWAY ---
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-8 relative overflow-hidden">
@@ -339,7 +323,7 @@ function App() {
           <div className="space-y-8">
             <input type="email" placeholder="Identifier..." value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none focus:border-cyan-500" />
             <input type="password" placeholder="Passkey..." value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none focus:border-cyan-500" />
-            <button onClick={async () => { const {error} = await supabase.auth.signInWithPassword({email, password}); if(error) showToast("Identity_Rejected", "error"); }} className="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-8 rounded-[2.5rem] font-black uppercase text-white shadow-3xl">Establish_Session</button>
+            <button onClick={async () => { const {error} = await supabase.auth.signInWithPassword({email, password}); if(error) showToast("Identity_Rejected", "error"); }} className="w-full bg-cyan-600 py-8 rounded-[2.5rem] font-black uppercase text-white shadow-3xl transition-all">Establish_Session</button>
           </div>
         </motion.div>
       </div>
@@ -350,27 +334,32 @@ function App() {
   if (profile?.role === 'Staff') return <StaffDashboard />;
 
   const allSections = [
-    { title: "Resume_Neural_Stream", data: watchlist.slice(0, 8), icon: <Clock size={20}/>, type: 'resume', category: 'all', condition: watchlist.length > 0 },
-    { title: "Trending_Global_Signals", data: trending, icon: <Activity size={20}/>, category: 'movie', condition: true },
-    { title: "Trending_Series_Link", data: trendingTV, icon: <MonitorPlay size={20}/>, category: 'tv', condition: true },
-    { title: "High_Impact_Movies", data: topRated, icon: <Zap size={20}/>, category: 'movie', condition: true },
-    { title: "Elite_Series_Matrix", data: topRatedTV, icon: <Award size={20}/>, category: 'tv', condition: true },
-    { title: "Global_Popularity_Nodes", data: popular, icon: <Globe size={20}/>, category: 'movie', condition: true },
-    { title: "Upcoming_Transmissions", data: upcoming, icon: <Tv size={20}/>, category: 'movie', condition: true },
-    { title: "Popular_Series_Network", data: popularTV, icon: <Layers size={20}/>, category: 'tv', condition: true },
-    { title: "Action_Combat_Sectors", data: action, icon: <Zap size={20}/>, category: 'movie', condition: true },
-    { title: "Cybernetic_Sci-Fi_Nodes", data: scifi, icon: <Cpu size={20}/>, category: 'movie', condition: true },
-    { title: "Dark_Horror_Injections", data: horror, icon: <Ghost size={20}/>, category: 'movie', condition: true },
-    { title: "Light_Comedy_Protocol", data: comedy, icon: <Laugh size={20}/>, category: 'movie', condition: true },
-    { title: "Animated_Neural_Frames", data: animation, icon: <Film size={20}/>, category: 'movie', condition: true },
-    { title: "Documentary_Data_Files", data: documentary, icon: <Database size={20}/>, category: 'movie', condition: true },
-    { title: "Emotional_Drama_Sectors", data: drama, icon: <Activity size={20}/>, category: 'movie', condition: true },
-    { title: "Mystery_Cipher_Nodes", data: mystery, icon: <Shield size={20}/>, category: 'movie', condition: true }
+    { title: "Resume_Neural_Stream", data: watchlist.slice(0, 8), icon: <Clock size={20}/>, type: 'resume', category: 'all', sub: 'all', condition: watchlist.length > 0 },
+    { title: "Trending_Global_Signals", data: trending, icon: <Activity size={20}/>, category: 'movie', sub: 'all', condition: true },
+    { title: "Trending_Series_Link", data: trendingTV, icon: <MonitorPlay size={20}/>, category: 'tv', sub: 'all', condition: true },
+    { title: "Action_Combat_Sectors", data: action, icon: <ActionIcon size={20}/>, category: 'movie', sub: 'action', condition: true },
+    { title: "Dark_Horror_Injections", data: horror, icon: <Skull size={20}/>, category: 'movie', sub: 'horror', condition: true },
+    { title: "Emotional_Drama_Sectors", data: drama, icon: <Heart size={20}/>, category: 'movie', sub: 'drama', condition: true },
+    { title: "High_Impact_Movies", data: topRated, icon: <Zap size={20}/>, category: 'movie', sub: 'all', condition: true },
+    { title: "Elite_Series_Matrix", data: topRatedTV, icon: <Award size={20}/>, category: 'tv', sub: 'all', condition: true },
+    { title: "Global_Popularity_Nodes", data: popular, icon: <Globe size={20}/>, category: 'movie', sub: 'all', condition: true },
+    { title: "Upcoming_Transmissions", data: upcoming, icon: <Tv size={20}/>, category: 'movie', sub: 'all', condition: true },
+    { title: "Documentary_Data_Files", data: documentary, icon: <Database size={20}/>, category: 'doc', sub: 'all', condition: true },
+    { title: "Sports_Live_Matrix", data: sports, icon: <Trophy size={20}/>, category: 'sports', sub: 'all', condition: true },
+    { title: "Cybernetic_Sci-Fi_Nodes", data: scifi, icon: <Cpu size={20}/>, category: 'movie', sub: 'scifi', condition: true },
+    { title: "Light_Comedy_Protocol", data: comedy, icon: <Laugh size={20}/>, category: 'movie', sub: 'comedy', condition: true },
+    { title: "Animated_Neural_Frames", data: animation, icon: <Film size={20}/>, category: 'movie', sub: 'all', condition: true },
+    { title: "Mystery_Cipher_Nodes", data: mystery, icon: <Shield size={20}/>, category: 'movie', sub: 'all', condition: true }
   ];
 
-  const filteredSections = contentType === 'all' 
-    ? allSections 
-    : allSections.filter(s => s.category === contentType || s.type === 'resume');
+  // Functional Filtering Logic
+  const filteredSections = allSections.filter(s => {
+    if (mainTab === 'home') return true;
+    if (s.type === 'resume') return true;
+    if (activeSub !== 'all' && s.sub === activeSub) return true;
+    if (activeSub === 'all' && s.category === mainTab) return true;
+    return false;
+  });
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-200 pb-40 selection:bg-cyan-500/20 selection:text-cyan-200">
@@ -381,27 +370,28 @@ function App() {
         </motion.div>
       )}</AnimatePresence>
 
-      <nav className="border-b border-slate-900 bg-slate-950/80 backdrop-blur-3xl sticky top-0 z-[100]">
-        <div className="px-16 py-10 flex justify-between items-center">
-          <div className="flex items-center gap-20">
-            <h1 className="text-5xl font-black italic tracking-tighter cursor-pointer group" onClick={() => {setView('browse'); setSearchQuery(''); setContentType('all');}}>
-              Nova<span className="text-cyan-500 group-hover:drop-shadow-[0_0_10px_rgba(6,182,212,0.5)] transition-all">Stream</span>
+      <nav className="border-b border-white/5 bg-slate-950/80 backdrop-blur-3xl sticky top-0 z-[100]">
+        {/* MAIN NAVIGATION BAR */}
+        <div className="px-16 py-8 flex justify-between items-center">
+          <div className="flex items-center gap-16">
+            <h1 className="text-5xl font-black italic tracking-tighter cursor-pointer group" onClick={() => {setView('browse'); setSearchQuery(''); setMainTab('home'); setActiveSub('all');}}>
+              Nova<span className="text-cyan-500 transition-all">Stream</span>
             </h1>
             
-            {/* PRIME_STYLE_SUB_NAV */}
-            <div className="flex items-center gap-4 bg-slate-900/50 p-2 rounded-[2rem] border border-white/5">
+            <div className="flex items-center gap-6">
               {[
-                { id: 'all', label: 'Home', icon: <HomeIcon size={16}/> },
-                { id: 'movie', label: 'Movies', icon: <Clapperboard size={16}/> },
-                { id: 'tv', label: 'TV Series', icon: <MonitorPlay size={16}/> },
-                { id: 'sports', label: 'Sports', icon: <Trophy size={16}/> }
-              ].map((pill) => (
+                { id: 'home', label: 'Home', icon: <HomeIcon size={18}/> },
+                { id: 'movie', label: 'Movies', icon: <Clapperboard size={18}/> },
+                { id: 'tv', label: 'TV Series', icon: <MonitorPlay size={18}/> },
+                { id: 'sports', label: 'Sports', icon: <Trophy size={18}/> },
+                { id: 'doc', label: 'Documentaries', icon: <Database size={18}/> }
+              ].map((tab) => (
                 <button 
-                  key={pill.id}
-                  onClick={() => {setContentType(pill.id); setView('browse');}}
-                  className={`px-8 py-3 rounded-[1.5rem] text-[12px] font-black uppercase tracking-widest flex items-center gap-3 transition-all duration-500 ${contentType === pill.id ? 'bg-cyan-600 text-white shadow-xl shadow-cyan-600/20 scale-105' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
+                  key={tab.id}
+                  onClick={() => {setMainTab(tab.id); setActiveSub('all'); setView('browse');}}
+                  className={`text-[13px] font-black uppercase tracking-[0.2em] flex items-center gap-3 transition-all duration-300 ${mainTab === tab.id ? 'text-white scale-110' : 'text-slate-600 hover:text-white'}`}
                 >
-                  {pill.icon} {pill.label}
+                  {tab.label}
                 </button>
               ))}
             </div>
@@ -409,20 +399,42 @@ function App() {
           
           <div className="flex items-center gap-14 text-[12px] font-black uppercase tracking-[0.4em] text-slate-600 font-mono">
             <div className="relative group hidden xl:block">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-800 group-focus-within:text-cyan-500 transition-colors" size={18} />
-              <input type="text" placeholder="Inject_Query..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-slate-900/50 border border-slate-800/80 pl-14 pr-8 py-3 rounded-[1.5rem] text-[12px] outline-none focus:border-cyan-500 w-[300px] transition-all font-mono" />
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-800" size={18} />
+              <input type="text" placeholder="Inject Query..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-slate-900/50 border border-white/5 pl-14 pr-8 py-3 rounded-[1.5rem] text-[12px] outline-none focus:border-cyan-500 w-[250px] transition-all" />
             </div>
-            <button onClick={() => setView('watchlist')} className={`hover:text-white flex items-center gap-4 transition-all ${view === 'watchlist' ? 'text-cyan-500' : ''}`}><Bookmark size={20} /> Vault ({watchlist.length})</button>
-            <button onClick={() => setView('profile')} className={`hover:text-white flex items-center gap-4 transition-all ${view === 'profile' ? 'text-cyan-500' : ''}`}><User size={20} /> Profile</button>
+            <button onClick={() => setView('watchlist')} className={`hover:text-white flex items-center gap-4 ${view === 'watchlist' ? 'text-cyan-500' : ''}`}><Bookmark size={20} /> Vault</button>
+            <button onClick={() => setView('profile')} className={`hover:text-white flex items-center gap-4 ${view === 'profile' ? 'text-cyan-500' : ''}`}><User size={20} /> Profile</button>
             <button onClick={() => supabase.auth.signOut()} className="bg-slate-900 p-3 rounded-xl hover:text-red-500 border border-white/5"><LogOut size={20} /></button>
           </div>
+        </div>
+
+        {/* SUB-CATEGORY PILLS (SMALLER AREA) */}
+        <div className="px-16 py-4 bg-black/20 flex items-center gap-4 overflow-x-auto no-scrollbar border-t border-white/[0.02]">
+           <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest mr-4">Sector_Jump:</span>
+           {[
+             { id: 'all', label: 'All Content', icon: <Layers size={14}/> },
+             { id: 'action', label: 'Action', icon: <Sword size={14}/> },
+             { id: 'horror', label: 'Horror', icon: <Skull size={14}/> },
+             { id: 'drama', label: 'Drama', icon: <Heart size={14}/> },
+             { id: 'scifi', label: 'Sci-Fi', icon: <Cpu size={14}/> },
+             { id: 'comedy', label: 'Comedy', icon: <Laugh size={14}/> },
+             { id: 'trending', label: 'Trending', icon: <Flame size={14}/> }
+           ].map(sub => (
+             <button
+               key={sub.id}
+               onClick={() => {setActiveSub(sub.id); setView('browse');}}
+               className={`px-6 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-all duration-500 ${activeSub === sub.id ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400' : 'bg-transparent border-white/5 text-slate-500 hover:border-white/20'}`}
+             >
+               {sub.icon} {sub.label}
+             </button>
+           ))}
         </div>
       </nav>
 
       <main className="p-16 max-w-[1900px] mx-auto">
         {searchQuery ? (
           <section className="animate-in fade-in duration-700">
-            <h3 className="text-xl font-black italic text-white/90 mb-10">Search_Results: <span className="text-cyan-500">"{searchQuery}"</span></h3>
+            <h3 className="text-xl font-black italic text-white/90 mb-10 uppercase">Results_For: <span className="text-cyan-500">"{searchQuery}"</span></h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-12">
               {searchResults.map((m) => (<div key={m.id} className="w-full"><MovieCard movie={m} onSelect={setSelectedMedia} onAdd={addToWatchlist} /></div>))}
             </div>
@@ -510,16 +522,16 @@ function App() {
               </div>
               <div className="p-8 md:p-10 bg-slate-950/95 border-t border-white/5">
                 <div className="flex items-center justify-between mb-6">
-                  <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">Assign_Impact:</span>
+                  <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">Assign Impact:</span>
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((n) => (
-                      <button key={n} onClick={() => setRating(n)} className={`w-10 h-10 rounded-xl border text-[14px] font-black transition-all ${rating >= n ? 'bg-cyan-600 border-cyan-600 text-white shadow-3xl' : 'bg-transparent border-white/10 text-slate-500'}`}>{n}</button>
+                      <button key={n} onClick={() => setRating(n)} className={`w-10 h-10 rounded-xl border text-[14px] font-black transition-all ${rating >= n ? 'bg-cyan-600 border-cyan-500 text-white shadow-3xl' : 'bg-transparent border-white/10 text-slate-500'}`}>{n}</button>
                     ))}
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="Inject perception data..." className="flex-1 bg-white/[0.03] border border-white/10 px-6 py-4 rounded-[1.5rem] text-[13px] text-white outline-none focus:border-cyan-500/50 transition-all font-mono" />
-                  <button onClick={() => submitReview(selectedMedia.id)} className="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)]">Transmit</button>
+                  <button onClick={() => submitReview(selectedMedia.id)} className="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all">Transmit</button>
                 </div>
               </div>
             </div>
