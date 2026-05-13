@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 // =========================================================================
-// --- 1. COMPONENT: ADMIN_ROOT_TERMINAL ---
+// --- 1. COMPONENT: ADMIN_ROOT_STATION (TAM DETAY) ---
 // =========================================================================
 
 const AdminDashboard = ({ stats, profile }) => {
@@ -41,11 +41,7 @@ const AdminDashboard = ({ stats, profile }) => {
               </div>
             </div>
           </motion.div>
-          
-          <button 
-            onClick={() => supabase.auth.signOut()} 
-            className="group relative overflow-hidden bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20 px-12 py-5 rounded-[2.5rem] text-[12px] font-black uppercase transition-all duration-500 shadow-2xl shadow-red-600/10 active:scale-95"
-          >
+          <button onClick={() => supabase.auth.signOut()} className="group relative overflow-hidden bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20 px-12 py-5 rounded-[2.5rem] text-[12px] font-black uppercase transition-all duration-500 shadow-2xl shadow-red-600/10 active:scale-95">
             <span className="relative z-10 flex items-center gap-4"><LogOut size={18} /> Kill_All_Processes</span>
           </button>
         </header>
@@ -56,16 +52,8 @@ const AdminDashboard = ({ stats, profile }) => {
             { label: 'Neural_Injections', value: stats.reviews, icon: <MessageSquare size={40} />, color: 'bg-orange-600' },
             { label: 'Vault_Archive_Nodes', value: stats.watchlist, icon: <Database size={40} />, color: 'bg-amber-600' }
           ].map((item, idx) => (
-            <motion.div 
-              key={idx} 
-              initial={{ y: 30, opacity: 0 }} 
-              animate={{ y: 0, opacity: 1 }} 
-              transition={{ delay: idx * 0.15 }}
-              className="bg-slate-900/40 border border-slate-800 p-16 rounded-[4.5rem] relative overflow-hidden group hover:border-red-500/40 transition-all duration-700"
-            >
-              <div className="absolute top-0 right-0 p-12 opacity-[0.03] group-hover:opacity-10 transition-opacity text-white">
-                {item.icon}
-              </div>
+            <motion.div key={idx} initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: idx * 0.15 }} className="bg-slate-900/40 border border-slate-800 p-16 rounded-[4.5rem] relative overflow-hidden group hover:border-red-500/40 transition-all duration-700">
+              <div className="absolute top-0 right-0 p-12 opacity-[0.03] group-hover:opacity-10 transition-opacity text-white">{item.icon}</div>
               <h4 className="text-[11px] font-black text-red-500/50 uppercase tracking-[0.5em] mb-10">{item.label}</h4>
               <div className="text-8xl font-black text-white tracking-tighter tabular-nums mb-10 leading-none">{item.value}</div>
               <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
@@ -78,11 +66,7 @@ const AdminDashboard = ({ stats, profile }) => {
         <div className="mt-20 bg-slate-900/20 border border-slate-800/50 p-10 rounded-[3rem] font-mono text-xs opacity-60">
           <p className="text-red-500 uppercase font-black mb-4 tracking-widest italic">Live_System_Interface_Log:</p>
           <div className="space-y-3 opacity-80">
-            {[
-              { label: "System_Handshake", status: "SECURE" },
-              { label: "Neural_Matrix_Sync", status: "STABLE" },
-              { label: "Encryption_RSA_4096", status: "ACTIVE" }
-            ].map((log, i) => (
+            {[ { label: "System_Handshake", status: "SECURE" }, { label: "Neural_Matrix_Sync", status: "STABLE" }, { label: "Encryption_RSA_4096", status: "ACTIVE" } ].map((log, i) => (
               <div key={i} className="flex items-center gap-3 font-mono">
                 <span className="text-cyan-500 text-[10px]">●</span>
                 <span className="text-slate-500 text-[9px] uppercase tracking-widest">{log.label}:</span>
@@ -97,7 +81,7 @@ const AdminDashboard = ({ stats, profile }) => {
 };
 
 // =========================================================================
-// --- 2. COMPONENT: STAFF_DASHBOARD & PROFILE_VIEW ---
+// --- 2. COMPONENTS: STAFF_DASHBOARD & PROFILE_VIEW (TAM DETAY) ---
 // =========================================================================
 
 const StaffDashboard = () => (
@@ -135,10 +119,10 @@ const ProfileView = ({ profile, watchlist }) => (
       </div>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
-      {[
-        { label: 'Synced_Objects', value: watchlist.length, unit: 'Nodes', desc: 'Securely stored items in vault' },
-        { label: 'System_Uptime', value: '99.9%', unit: 'Signal', desc: 'Real-time database connectivity' },
-        { label: 'Neural_Integrity', value: 'Prime', unit: 'Logic', desc: 'Data checksum validation' }
+      {[ 
+        { label: 'Synced_Objects', value: watchlist.length, unit: 'Nodes', desc: 'Securely stored items in vault' }, 
+        { label: 'System_Uptime', value: '99.9%', unit: 'Signal', desc: 'Real-time database connectivity' }, 
+        { label: 'Neural_Integrity', value: 'Prime', unit: 'Logic', desc: 'Data checksum validation' } 
       ].map((stat, idx) => (
         <motion.div key={idx} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 + (idx * 0.1) }} className="bg-slate-900/40 border border-slate-800 p-14 rounded-[4rem] hover:border-cyan-500/30 transition-all duration-500 group relative overflow-hidden">
           <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-cyan-500/5 rounded-full blur-3xl group-hover:bg-cyan-500/15 transition-all" />
@@ -155,7 +139,7 @@ const ProfileView = ({ profile, watchlist }) => (
 );
 
 // =========================================================================
-// --- 3. MASTER_APPLICATION_LOGIC ---
+// --- 3. MASTER_APP_LOGIC (EXACT FULL SIZE) ---
 // =========================================================================
 
 function App() {
@@ -173,8 +157,9 @@ function App() {
   const [toast, setToast] = useState({ message: '', type: null });
   const [stats, setStats] = useState({ users: 0, reviews: 0, watchlist: 0 });
   const [trailerKey, setTrailerKey] = useState(null);
-  const loaderRef = useRef(null);
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+
+  // Tüm Kategori State'leri (TAM LİSTE)
   const [trending, setTrending] = useState([]);
   const [popular, setPopular] = useState([]);
   const [topRated, setTopRated] = useState([]);
@@ -194,20 +179,16 @@ function App() {
     setTimeout(() => setToast({ message: '', type: null }), 3000);
   }, []);
 
-const fetchMedia = async (endpoint) => {
+  const fetchMedia = async (endpoint) => {
     if (!API_KEY) return [];
     try {
       const res = await fetch(`${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${API_KEY}&language=tr-TR&include_adult=false`);
       const data = await res.json();
-      
-      return (data.results || []).filter(m => m.adult === false);
-    } catch (error) {
-      console.error("Fetch Error:", error);
-      return [];
-    }
+      return (data.results || []).filter(m => m.adult === false); // +18 ÇİFT KATMANLI FİLTRE
+    } catch (error) { return []; }
   };
 
-useEffect(() => {
+  useEffect(() => {
     const loadAllContent = async () => {
       if (!user) return;
       setLoading(true);
@@ -229,21 +210,22 @@ useEffect(() => {
         setTrending(t); setPopular(p); setTopRated(tr); setUpcoming(u); 
         setAction(a); setScifi(sf); setHorror(h); setComedy(c);
         setAnimation(an); setDocumentary(d); setDrama(dr); setMystery(m);
+        if (profile?.role === 'Admin') fetchStats();
       } finally {
         setLoading(false);
       }
     };
     loadAllContent();
-  }, [user]);
+  }, [user, profile]);
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(async () => {
+    const timer = setTimeout(async () => {
       if (searchQuery) {
         const results = await fetchMedia(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(searchQuery)}`);
         setSearchResults(results);
       }
-    }, 500); 
-    return () => clearTimeout(delayDebounceFn);
+    }, 500);
+    return () => clearTimeout(timer);
   }, [searchQuery]);
 
   const fetchTrailer = async (movieId) => {
@@ -256,14 +238,14 @@ useEffect(() => {
   };
 
   const fetchWatchlist = useCallback(async () => {
-    const { data, error } = await supabase.from('watchlists').select('*').order('created_at', { ascending: false });
-    if (!error) setWatchlist(data || []);
+    const { data } = await supabase.from('watchlists').select('*').order('created_at', { ascending: false });
+    setWatchlist(data || []);
   }, []);
 
   const fetchReviews = async (mediaId) => {
     if (!mediaId) return;
-    const { data, error } = await supabase.from('reviews').select('*').eq('media_id', String(mediaId)).order('created_at', { ascending: false });
-    if (!error) setMediaReviews(data || []);
+    const { data } = await supabase.from('reviews').select('*').eq('media_id', String(mediaId)).order('created_at', { ascending: false });
+    setMediaReviews(data || []);
   };
 
   const fetchStats = useCallback(async () => {
@@ -279,19 +261,19 @@ useEffect(() => {
     if (!error) { setReview(''); await fetchReviews(mediaId); showToast('Neural_Perception_Injected'); }
   };
 
-  const addToWatchlist = async (mediaItem) => {
-    const isDuplicate = watchlist.some(item => String(item.media_id) === String(mediaItem.id));
+  const addToWatchlist = async (m) => {
+    const isDuplicate = watchlist.some(item => String(item.media_id) === String(m.id));
     if (isDuplicate) return showToast('Object_Already_In_Vault', 'error');
     const { error } = await supabase.from('watchlists').insert([{ 
-      media_id: mediaItem.id, title: mediaItem.title, poster_path: mediaItem.poster_path, 
-      vote_average: mediaItem.vote_average, user_id: user?.id, status: 'to_watch'
+      media_id: m.id, title: m.title, poster_path: m.poster_path, 
+      vote_average: m.vote_average, user_id: user?.id, status: 'to_watch'
     }]);
     if (!error) { fetchWatchlist(); showToast('Object_Synced'); }
   };
 
   const removeFromWatchlist = async (id) => {
-    const { error } = await supabase.from('watchlists').delete().eq('id', id);
-    if (!error) { fetchWatchlist(); showToast('Object_Purged', 'error'); }
+    await supabase.from('watchlists').delete().eq('id', id);
+    fetchWatchlist(); showToast('Object_Purged', 'error');
   };
 
   useEffect(() => { if (user) fetchWatchlist(); }, [user, fetchWatchlist]);
@@ -306,22 +288,6 @@ useEffect(() => {
 
   const userAverage = mediaReviews.length > 0 ? (mediaReviews.reduce((acc, rev) => acc + rev.user_rating, 0) / mediaReviews.length).toFixed(1) : "0.0";
 
-  const sections = [
-    { title: "Resume_Neural_Stream", data: watchlist.slice(0, 8), icon: <Clock size={20}/>, type: 'resume', condition: watchlist.length > 0 },
-    { title: "Trending_Neural_Signals", data: trending, icon: <Activity size={20}/>, condition: true },
-    { title: "Global_Popularity_Matrix", data: popular, icon: <Globe size={20}/>, condition: true },
-    { title: "High_Impact_Archive_Nodes", data: topRated, icon: <Zap size={20}/>, condition: true },
-    { title: "Incoming_Transmissions", data: upcoming, icon: <Tv size={20}/>, condition: true },
-    { title: "Action_Combat_Sectors", data: action, icon: <Zap size={20}/>, condition: true },
-    { title: "Cybernetic_Sci-Fi_Nodes", data: scifi, icon: <Cpu size={20}/>, condition: true },
-    { title: "Dark_Horror_Injections", data: horror, icon: <Ghost size={20}/>, condition: true },
-    { title: "Light_Comedy_Protocol", data: comedy, icon: <Laugh size={20}/>, condition: true },
-    { title: "Animated_Neural_Frames", data: animation, icon: <Film size={20}/>, condition: true },
-    { title: "Documentary_Data_Files", data: documentary, icon: <Database size={20}/>, condition: true },
-    { title: "Emotional_Drama_Sectors", data: drama, icon: <Activity size={20}/>, condition: true },
-    { title: "Mystery_Cipher_Nodes", data: mystery, icon: <Shield size={20}/>, condition: true }
-  ];
-  // --- LOGIN GATEWAY ---
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-8 relative overflow-hidden">
@@ -346,7 +312,7 @@ useEffect(() => {
           <div className="space-y-8 text-left">
             <input type="email" placeholder="root@novastream.sys" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none font-mono text-xs focus:border-cyan-500 transition-all" />
             <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none font-mono text-xs focus:border-cyan-500 transition-all" />
-            <button onClick={async () => { const {error} = await supabase.auth.signInWithPassword({email, password}); if(error) showToast("Identity_Check_Rejected", "error"); }} className="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-8 rounded-[2.5rem] font-black uppercase tracking-[0.3em] text-sm shadow-3xl active:scale-95 transition-all">Establish_Session</button>
+            <button onClick={async () => { const {error} = await supabase.auth.signInWithPassword({email, password}); if(error) showToast("Identity_Check_Rejected", "error"); }} className="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-8 rounded-[2.5rem] font-black uppercase tracking-[0.3em] text-sm shadow-3xl active:scale-95 transition-all mt-6">Establish_Session</button>
           </div>
         </motion.div>
       </div>
@@ -359,8 +325,8 @@ useEffect(() => {
   const sections = [
     { title: "Resume_Neural_Stream", data: watchlist.slice(0, 8), icon: <Clock size={20}/>, type: 'resume', condition: watchlist.length > 0 },
     { title: "Trending_Neural_Signals", data: trending, icon: <Activity size={20}/>, condition: true },
-    { title: "High_Impact_Archive_Nodes", data: topRated, icon: <Zap size={20}/>, condition: true },
     { title: "Global_Popularity_Matrix", data: popular, icon: <Globe size={20}/>, condition: true },
+    { title: "High_Impact_Archive_Nodes", data: topRated, icon: <Zap size={20}/>, condition: true },
     { title: "Incoming_Transmissions", data: upcoming, icon: <Tv size={20}/>, condition: true },
     { title: "Action_Combat_Sectors", data: action, icon: <Zap size={20}/>, condition: true },
     { title: "Cybernetic_Sci-Fi_Nodes", data: scifi, icon: <Cpu size={20}/>, condition: true },
@@ -403,16 +369,9 @@ useEffect(() => {
       <main className="p-16 max-w-[1900px] mx-auto">
         {searchQuery ? (
           <section className="animate-in fade-in duration-700">
-            <div className="flex items-center gap-4 mb-10">
-              <div className="h-6 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)]" />
-              <h3 className="text-xl font-black italic uppercase tracking-tighter text-white/90">Search_Results: <span className="text-cyan-500">"{searchQuery}"</span></h3>
-            </div>
+            <h3 className="text-xl font-black italic uppercase text-white/90 mb-10">Search_Results: <span className="text-cyan-500">"{searchQuery}"</span></h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-6 gap-y-12">
-              {searchResults.map((m) => (
-                <div key={m.id} className="transition-transform duration-700 hover:z-50 hover:-translate-y-2 w-full">
-                  <MovieCard movie={m} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
-                </div>
-              ))}
+              {searchResults.map((m) => (<div key={m.id} className="w-full"><MovieCard movie={m} onSelect={setSelectedMedia} onAdd={addToWatchlist} /></div>))}
             </div>
           </section>
         ) : view === 'browse' ? (
@@ -422,9 +381,7 @@ useEffect(() => {
                 <div className="flex items-center justify-between mb-12">
                    <div className="flex items-center gap-4 group/head cursor-default">
                       <div className="h-6 w-[2px] bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)]" />
-                      <h3 className="text-xl font-semibold tracking-tight text-white/90 transition-colors group-hover/head:text-cyan-400">
-                        {section.title.replace(/_/g, ' ')}
-                      </h3>
+                      <h3 className="text-xl font-semibold tracking-tight text-white/90 uppercase tracking-tighter italic">{section.title.replace(/_/g, ' ')}</h3>
                    </div>
                    <div className="flex gap-4 opacity-0 group-hover/row:opacity-100 transition-all duration-500">
                      <button onClick={(e) => { e.currentTarget.closest('section').querySelector('.row-scroll').scrollBy({ left: -1000, behavior: 'smooth' }); }} className="p-5 bg-black/90 border border-white/10 rounded-2xl text-white hover:bg-cyan-600 transition-all shadow-3xl z-50"><ChevronLeft size={28} /></button>
@@ -449,7 +406,7 @@ useEffect(() => {
               {watchlist.map((item) => (
                 <div key={item.id} className="relative group bg-slate-900/40 rounded-[3rem] overflow-hidden border border-slate-800 hover:border-cyan-500/50 transition-all shadow-3xl">
                   <img src={`https://image.tmdb.org/t/p/w500${item.poster_path}`} className="w-full aspect-[2/3] object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt="" />
-                  <button onClick={() => removeFromWatchlist(item.id)} className="absolute top-8 right-8 bg-red-600 p-6 rounded-[1.8rem] text-white opacity-0 group-hover:opacity-100 transition-all"><X size={28} /></button>
+                  <button onClick={() => removeFromWatchlist(item.id)} className="absolute top-8 right-8 bg-red-600 p-6 rounded-[1.8rem] text-white opacity-0 group-hover:opacity-10 transition-all shadow-3xl"><X size={28} /></button>
                 </div>
               ))}
             </div>
@@ -461,8 +418,8 @@ useEffect(() => {
         {selectedMedia && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/95 flex items-center justify-center p-6 md:p-12 z-[300] backdrop-blur-3xl" onClick={() => setSelectedMedia(null)}>
             <motion.div initial={{ scale: 0.95, y: 40 }} animate={{ scale: 1, y: 0 }} className="bg-[#050505] border border-white/10 max-w-[1400px] w-full flex flex-col lg:flex-row rounded-[3rem] overflow-hidden h-full max-h-[85vh] shadow-2xl relative" onClick={e => e.stopPropagation()}>
-              <div className="w-full lg:w-[55%] relative bg-black flex flex-col border-r border-white/5">
-                <div className="flex-1 bg-black flex items-center justify-center relative overflow-hidden min-h-[300px]">
+              <div className="w-full lg:w-[55%] relative bg-black flex flex-col border-r border-white/5 overflow-hidden">
+                <div className="flex-1 bg-black flex items-center justify-center relative min-h-[300px]">
                   {trailerKey ? (
                     <iframe src={`https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1`} className="w-full h-full border-0 z-10" allowFullScreen></iframe>
                   ) : <Database size={80} className="text-cyan-500 opacity-20" />}
@@ -477,9 +434,8 @@ useEffect(() => {
                   <p className="text-white/70 text-[14px] leading-relaxed font-medium line-clamp-3 border-l-4 border-cyan-600/30 pl-6">{selectedMedia.overview}</p>
                 </div>
               </div>
-
               <div className="flex-1 flex flex-col bg-[#050505] overflow-hidden">
-                <div className="p-8 md:p-10 border-b border-white/5 flex justify-between items-center bg-black/40 backdrop-blur-2xl">
+                <div className="p-8 md:p-10 border-b border-white/5 flex justify-between items-center bg-black/40 backdrop-blur-2xl shadow-xl">
                    <div className="flex flex-col gap-1">
                       <h4 className="text-[11px] font-black text-white/40 uppercase tracking-[0.4em] flex items-center gap-3"><MessageSquare size={16} className="text-cyan-500" /> Neural_Feed</h4>
                       <p className="text-[9px] text-cyan-500/50 font-mono tracking-widest animate-pulse mt-1">Establishing_Sync...</p>
@@ -489,7 +445,6 @@ useEffect(() => {
                       <p className="text-[9px] font-bold text-cyan-500/40 uppercase tracking-[0.3em]">Global_Avg</p>
                    </div>
                 </div>
-
                 <div className="flex-1 overflow-y-auto p-8 md:p-10 space-y-6 no-scrollbar">
                   {mediaReviews.length > 0 ? mediaReviews.map((rev, idx) => (
                     <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} key={idx} className="bg-white/[0.02] border border-white/[0.05] p-6 rounded-[2rem] hover:border-cyan-500/30 transition-all duration-500">
@@ -508,23 +463,21 @@ useEffect(() => {
                     </div>
                   )}
                 </div>
-
-                <div className="p-8 md:p-10 bg-slate-950/95 border-t border-white/5">
+                <div className="p-8 md:p-10 bg-slate-950/95 border-t border-white/5 shadow-2xl">
                   <div className="flex items-center justify-between mb-6">
                     <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">Assign_Impact:</span>
                     <div className="flex gap-2">
                       {[1, 2, 3, 4, 5].map((n) => (
-                        <button key={n} onClick={() => setRating(n)} className={`w-10 h-10 rounded-xl border text-[14px] font-black transition-all ${rating >= n ? 'bg-cyan-600 border-cyan-500 text-white' : 'bg-transparent border-white/10 text-slate-500'}`}>{n}</button>
+                        <button key={n} onClick={() => setRating(n)} className={`w-10 h-10 rounded-xl border text-[14px] font-black transition-all ${rating >= n ? 'bg-cyan-600 border-cyan-500 text-white shadow-3xl' : 'bg-transparent border-white/10 text-slate-500'}`}>{n}</button>
                       ))}
                     </div>
                   </div>
                   <div className="flex gap-4">
                     <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="Inject perception data..." className="flex-1 bg-white/[0.03] border border-white/10 px-6 py-4 rounded-[1.5rem] text-[13px] text-white outline-none focus:border-cyan-500/50 transition-all font-mono" />
-                    <button onClick={() => submitReview(selectedMedia.id)} className="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)]">Transmit</button>
+                    <button onClick={() => submitReview(selectedMedia.id)} className="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95">Transmit</button>
                   </div>
                 </div>
               </div>
-              
               <button onClick={() => setSelectedMedia(null)} className="absolute top-6 right-6 text-white/40 hover:text-white transition-all z-[110] bg-black/80 p-3 rounded-full border border-white/10 hover:bg-cyan-600 hover:rotate-90 duration-300"><X size={24} /></button>
             </motion.div>
           </motion.div>
