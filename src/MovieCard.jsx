@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Star } from 'lucide-react';
+import { Star, Play, Plus, Info, ShieldCheck } from 'lucide-react';
 
 export default function MovieCard({ movie, onSelect, onAdd }) {
   const getPosterUrl = (path) => {
@@ -8,28 +8,75 @@ export default function MovieCard({ movie, onSelect, onAdd }) {
     return `https://image.tmdb.org/t/p/w500${path}`;
   };
 
+  const getYear = () => {
+    const date = movie.release_date || movie.first_air_date;
+    return date ? date.split('-')[0] : '';
+  };
+
   return (
     <motion.div
-      whileHover={{ y: -10 }}
-      className="relative group bg-slate-900/40 rounded-[2rem] overflow-hidden border border-slate-800 hover:border-cyan-500/50 transition-all duration-300 shadow-3xl cursor-pointer w-full"
+      className="relative group rounded-xl overflow-hidden cursor-pointer w-full aspect-[2/3] bg-slate-900 border border-white/5"
+      whileHover={{ scale: 1.15, zIndex: 50 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
       onClick={() => onSelect(movie)}
     >
+      {/* Base Poster */}
       <img
         src={getPosterUrl(movie.poster_path)}
-        className="w-full aspect-[2/3] object-cover transition-transform duration-700 group-hover:scale-110" 
-        alt={movie.title}
+        className="w-full h-full object-cover" 
+        alt={movie.title || movie.name}
         loading="lazy"
       />
       
-      <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 z-20 flex items-center gap-2">
-        <Star size={12} className="fill-cyan-500 text-cyan-500" />
-        <span className="text-[10px] font-mono text-white">{movie.vote_average?.toFixed(1)}</span>
-      </div>
+      {/* Prime-style Hover Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+        
+        <h4 className="text-white font-bold text-sm leading-tight mb-1 line-clamp-2">
+          {movie.title || movie.name}
+        </h4>
+        
+        <div className="flex items-center gap-1.5 mb-3 text-cyan-400">
+          <ShieldCheck size={12} />
+          <span className="text-[9px] font-bold uppercase tracking-wider">Included with Nova</span>
+        </div>
 
-      <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent z-10">
-        <p className="text-[12px] font-black uppercase text-white truncate italic tracking-tight">
-          {movie.title}
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2 mb-3">
+          <button 
+            className="flex-1 bg-white hover:bg-gray-200 text-black py-1.5 rounded flex items-center justify-center gap-1.5 transition-colors"
+            onClick={(e) => { e.stopPropagation(); onSelect(movie); }}
+          >
+            <Play size={12} className="fill-black" />
+            <span className="text-[10px] font-bold">Play</span>
+          </button>
+          <button 
+            className="w-8 h-8 rounded-full border-2 border-white/40 hover:border-white text-white flex items-center justify-center transition-colors bg-white/10 backdrop-blur-md shrink-0"
+            onClick={(e) => { e.stopPropagation(); onSelect(movie); }}
+            title="Details"
+          >
+            <Info size={14} />
+          </button>
+          <button 
+            className="w-8 h-8 rounded-full border-2 border-white/40 hover:border-white text-white flex items-center justify-center transition-colors bg-white/10 backdrop-blur-md shrink-0"
+            onClick={(e) => { e.stopPropagation(); onAdd(movie); }}
+            title="Add to Watchlist"
+          >
+            <Plus size={14} />
+          </button>
+        </div>
+
+        {/* Meta Info */}
+        <div className="flex items-center gap-2 text-[10px] font-medium text-slate-300 mb-2">
+          <span className="bg-white/10 px-1.5 py-0.5 rounded text-white">{movie.adult ? '18+' : '13+'}</span>
+          <span>{getYear()}</span>
+          <span className="flex items-center gap-1 text-yellow-500"><Star size={10} className="fill-yellow-500"/> {movie.vote_average?.toFixed(1)}</span>
+        </div>
+
+        {/* Overview Snippet */}
+        <p className="text-[9px] text-slate-400 line-clamp-3 leading-relaxed">
+          {movie.overview || "No synopsis available."}
         </p>
+
       </div>
     </motion.div>
   );
