@@ -167,21 +167,26 @@ function App() {
   useEffect(() => {
     const loadInitialData = async () => {
       setLoading(true);
-      const [t, p, tr, u, a, sf] = await Promise.all([
-        fetchMedia('trending'), 
-        fetchMedia('popular'),
-        fetchMedia('topRated'), 
-        fetchMedia('upcoming'),
-        fetchMedia('action'),
-        fetchMedia('scifi')
-      ]);
-      setTrending(t); 
-      setPopular(p);
-      setTopRated(tr); 
-      setUpcoming(u);
-      setActionMovies(a);
-      setSciFiMovies(sf);
-      setLoading(false);
+      try {
+        const [t, p, tr, u, a, sf] = await Promise.all([
+          fetchMedia('trending'), 
+          fetchMedia('popular'),
+          fetchMedia('topRated'), 
+          fetchMedia('upcoming'),
+          fetchMedia('action'),
+          fetchMedia('scifi')
+        ]);
+        setTrending(t); 
+        setPopular(p);
+        setTopRated(tr); 
+        setUpcoming(u);
+        setActionMovies(a);
+        setSciFiMovies(sf);
+      } catch (err) {
+        console.error("Failed to load initial data", err);
+      } finally {
+        setLoading(false);
+      }
     };
     if (user && !searchQuery) loadInitialData();
   }, [user, searchQuery]);
@@ -343,8 +348,8 @@ function App() {
               ))}
             </div>
           </section>
-        ) : (
-          <div className="space-y-32 animate-in fade-in duration-1000 pb-20 overflow-hidden">
+        ) : view === 'browse' ? (
+          <div className="space-y-40 animate-in fade-in duration-1000 pb-20 overflow-hidden">
             {[
               { title: "Resume_Neural_Stream", data: watchlist.slice(0, 8), icon: <Clock className="text-cyan-500 animate-pulse" size={24} />, type: 'resume', condition: watchlist.length > 0 },
               { title: "Trending_Neural_Signals", data: trending, icon: <Activity className="text-white/30" size={24} />, type: 'row', condition: trending.length > 0 },
@@ -377,7 +382,39 @@ function App() {
               </section>
             ))}
           </div>
-        )}
+        ) : view === 'watchlist' ? (
+          <div className="px-6 animate-in fade-in slide-in-from-bottom-12 duration-1000">
+            <div className="flex items-center gap-12 mb-24">
+              <h3 className="text-7xl font-black italic uppercase tracking-tighter text-white leading-none">Identifier_Vault</h3>
+              <div className="h-[2px] flex-1 bg-gradient-to-r from-slate-900 via-slate-800 to-transparent" />
+            </div>
+            {watchlist.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-16">
+                {watchlist.map((item) => (
+                  <div key={item.id} className="relative group bg-slate-900/40 rounded-[3rem] overflow-hidden border border-slate-800 hover:border-cyan-500/50 transition-all shadow-3xl">
+                    <img src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://via.placeholder.com/500x750'} className="w-full aspect-[2/3] object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-[1.1] group-hover:scale-100" alt="" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-95" />
+                    <div className="absolute top-8 right-8 flex flex-col gap-4 opacity-0 group-hover:opacity-100 translate-x-8 group-hover:translate-x-0 transition-all duration-700">
+                      <button onClick={() => removeFromWatchlist(item.id)} className="bg-red-600 p-6 rounded-[1.8rem] text-white shadow-3xl hover:bg-red-500 transition-all"><X size={28} /></button>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 p-10">
+                      <p className="text-[14px] font-black uppercase text-white truncate italic tracking-tighter leading-none">{item.title}</p>
+                      <div className="flex items-center gap-4 mt-5">
+                        <Star size={14} className="fill-cyan-500 text-cyan-500" />
+                        <span className="text-[12px] font-mono text-slate-500">{item.vote_average?.toFixed(1)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-80 opacity-[0.05] gap-20">
+                <Database size={240} strokeWidth={0.3} className="text-white" />
+                <h4 className="text-6xl font-black uppercase tracking-[1em] italic">Vault_Empty</h4>
+              </div>
+            )}
+          </div>
+        ) : <ProfileView profile={profile} watchlist={watchlist} />}
       </main>
       
       <AnimatePresence>
@@ -456,7 +493,7 @@ function App() {
                   </div>
                   <div className="flex gap-4 items-center">
                     <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="Inject perception data..." className="flex-1 bg-white/[0.03] border border-white/10 px-6 py-4 rounded-[1.5rem] text-[13px] text-white outline-none focus:border-cyan-500/50 transition-all font-mono placeholder:text-slate-500" />
-                    <button onClick={() => submitReview(selectedMedia.id)} className="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_0_200px_rgba(6,182,212,0.3)] active:scale-95">Transmit</button>
+                    <button onClick={() => submitReview(selectedMedia.id)} className="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] active:scale-95">Transmit</button>
                   </div>
                 </div>
               </div>
