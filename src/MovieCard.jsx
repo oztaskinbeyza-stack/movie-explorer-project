@@ -27,7 +27,9 @@ export default function MovieCard({ movie, onSelect, onAdd }) {
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent z-10">
-        <p className="text-[12px] font-black uppercase text-white truncate italic tracking-tight">{movie.title}</p>
+        <p className="text-[12px] font-black uppercase text-white truncate italic tracking-tight">
+          {movie.title}
+        </p>
       </div>
     </motion.div>
   );
