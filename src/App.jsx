@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from './supabaseClient';
 import { useAuth } from './AuthContext';
-import { fallbackMedia } from './fallbackData';
+
 import MovieCard from './MovieCard';
 import ProfilePage from './ProfilePage';
 import { getSophisticatedRecommendations } from './recommendation_logic';
@@ -206,10 +206,10 @@ const HeroCarousel = ({ movies, onSelect, onAdd, watchlist }) => {
           >
             {/* BADGE: Prime Video Style */}
             <div className="flex items-center gap-2">
-              <span className="flex items-center gap-1.5 px-3 py-1 bg-cyan-500/20 backdrop-blur-md rounded-full text-cyan-400 font-bold text-xs border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+              <span className="flex items-center gap-1.5 px-3 py-1 bg-cyan-900/50 rounded-full text-cyan-400 font-bold text-xs border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.4)]">
                 <TrendingUp size={14} className="text-cyan-400 animate-bounce" /> #1 Top Trending Content
               </span>
-              <span className="flex items-center gap-1 px-2.5 py-1 bg-yellow-500/20 backdrop-blur-md rounded-full text-yellow-400 font-bold text-xs border border-yellow-500/30">
+              <span className="flex items-center gap-1 px-2.5 py-1 bg-yellow-900/50 rounded-full text-yellow-400 font-bold text-xs border border-yellow-500/30">
                 <Star size={12} className="fill-yellow-400 text-yellow-400" /> {currentMovie.vote_average ? currentMovie.vote_average.toFixed(1) : '8.5'}
               </span>
             </div>
@@ -235,7 +235,7 @@ const HeroCarousel = ({ movies, onSelect, onAdd, watchlist }) => {
 
               <button
                 onClick={() => onAdd(currentMovie)}
-                className={`flex items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-xl border transition-all duration-300 hover:scale-105 ${isInWatchlist ? 'bg-cyan-500/30 border-cyan-500/50 text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.4)]' : 'bg-white/10 hover:bg-white/20 border-white/20 text-white'}`}
+                className={`flex items-center justify-center w-14 h-14 rounded-2xl border transition-all duration-300 hover:scale-105 ${isInWatchlist ? 'bg-cyan-500/30 border-cyan-500/50 text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.4)]' : 'bg-black/40 hover:bg-black/60 border-white/20 text-white'}`}
                 title={isInWatchlist ? "Already in Watchlist" : "Add to Watchlist"}
               >
                 {isInWatchlist ? <Check size={24} /> : <Plus size={24} />}
@@ -243,7 +243,7 @@ const HeroCarousel = ({ movies, onSelect, onAdd, watchlist }) => {
 
               <button
                 onClick={() => onSelect(currentMovie)}
-                className="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 text-white transition-all duration-300 hover:scale-105"
+                className="flex items-center justify-center w-14 h-14 rounded-2xl bg-black/40 hover:bg-black/60 border border-white/20 text-white transition-all duration-300 hover:scale-105"
                 title="More Info"
               >
                 <Info size={24} />
@@ -256,14 +256,14 @@ const HeroCarousel = ({ movies, onSelect, onAdd, watchlist }) => {
       {/* ARROW CONTROLS */}
       <button
         onClick={() => setActiveIdx(prev => (prev - 1 + Math.min(movies.length, 5)) % Math.min(movies.length, 5))}
-        className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 hover:bg-black/80 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 hover:scale-110"
+        className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 hover:bg-black/90 border border-white/10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 hover:scale-110"
       >
         <ChevronLeft size={24} />
       </button>
 
       <button
         onClick={() => setActiveIdx(prev => (prev + 1) % Math.min(movies.length, 5))}
-        className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 hover:bg-black/80 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 hover:scale-110"
+        className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 hover:bg-black/90 border border-white/10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 hover:scale-110"
       >
         <ChevronRight size={24} />
       </button>
@@ -299,6 +299,9 @@ function App() {
   const [mediaReviews, setMediaReviews] = useState([]);
   const [rating, setRating] = useState(5);
   const [toast, setToast] = useState({ message: '', type: null });
+  const [replyTo, setReplyTo] = useState(null); // reviewId being replied to
+  const [replyText, setReplyText] = useState('');
+  const [localVotes, setLocalVotes] = useState({}); // { reviewId: { up: bool, count: number } }
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -307,6 +310,7 @@ function App() {
   const [trailerKey, setTrailerKey] = useState(null);
   const [tmdbReviews, setTmdbReviews] = useState([]);
   const [mediaDetail, setMediaDetail] = useState(null);
+  const [footerModal, setFooterModal] = useState(null);
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
   // --- CONTENT STATES ---
@@ -339,7 +343,7 @@ function App() {
     setTimeout(() => setToast({ message: '', type: null }), 3000);
   }, []);
 
-  const fetchMedia = async (endpoint, pages = 2) => {
+  const fetchMedia = async (endpoint, pages = 3) => {
     if (!API_KEY) return [];
     try {
       let allResults = [];
@@ -562,7 +566,13 @@ function App() {
   const fetchReviews = async (mediaId) => {
     if (!mediaId) return;
     const { data } = await supabase.from('reviews').select('*').eq('media_id', String(mediaId)).order('created_at', { ascending: false });
-    setMediaReviews(data || []);
+    if (!data) { setMediaReviews([]); return; }
+    // Enrich with profile usernames
+    const enriched = await Promise.all(data.map(async (rev) => {
+      const { data: prof } = await supabase.from('profiles').select('username, full_name').eq('id', rev.user_id).single();
+      return { ...rev, _username: prof?.username || prof?.full_name || null };
+    }));
+    setMediaReviews(enriched);
   };
 
   const fetchStats = useCallback(async () => {
@@ -578,11 +588,16 @@ function App() {
       media_id: String(mediaId),
       review_text: review,
       user_rating: rating,
-      user_id: user.id,
-      upvotes: 0,
-      downvotes: 0
+      user_id: user.id
     }]);
-    if (!error) { setReview(''); await fetchReviews(mediaId); showToast('Review submitted successfully'); }
+    if (!error) {
+      setReview('');
+      await fetchReviews(mediaId);
+      showToast('Review submitted successfully');
+    } else {
+      showToast('Error: ' + error.message, 'error');
+      console.error('Review insert error:', error);
+    }
   };
 
   const deleteReview = async (reviewId, mediaId) => {
@@ -595,12 +610,33 @@ function App() {
     if (!error) { await fetchReviews(mediaId); showToast('Review updated'); }
   };
 
-  const voteReview = async (reviewId, type, mediaId) => {
-    // In a real app, we'd track who voted. For this mock, we just increment.
-    const field = type === 'up' ? 'upvotes' : 'downvotes';
-    const { data } = await supabase.from('reviews').select(field).eq('id', reviewId).single();
-    const { error } = await supabase.from('reviews').update({ [field]: (data[field] || 0) + 1 }).eq('id', reviewId);
-    if (!error) await fetchReviews(mediaId);
+  const voteReview = (reviewId) => {
+    setLocalVotes(prev => {
+      const current = prev[reviewId] || { up: false, count: 0 };
+      if (current.up) {
+        return { ...prev, [reviewId]: { up: false, count: current.count - 1 } };
+      } else {
+        return { ...prev, [reviewId]: { up: true, count: current.count + 1 } };
+      }
+    });
+  };
+
+  const submitReply = async (mediaId) => {
+    if (!replyText.trim() || !user) return;
+    const { error } = await supabase.from('reviews').insert([{
+      media_id: String(mediaId),
+      review_text: `↩ ${replyText}`,
+      user_rating: rating,
+      user_id: user.id
+    }]);
+    if (!error) {
+      setReplyText('');
+      setReplyTo(null);
+      await fetchReviews(mediaId);
+      showToast('Reply sent!');
+    } else {
+      showToast('Error: ' + error.message, 'error');
+    }
   };
 
   const shareContent = (movie) => {
@@ -659,7 +695,43 @@ function App() {
     if (!user) loadBackground();
   }, [user, trending.length]);
 
-  if (authLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center font-black text-cyan-500 animate-pulse tracking-[1em]">INITIALIZING...</div>;
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (!e.target.closest('[data-dropdown]')) {
+        setShowNotifications(false);
+        setShowProfileMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Memoized background rows — before any early returns (Rules of Hooks)
+  const bgRow1 = React.useMemo(() => [...trending].sort(() => 0.5 - Math.random()), [trending.length]);
+  const bgRow2 = React.useMemo(() => [...trending].sort(() => 0.5 - Math.random()), [trending.length]);
+
+  if (authLoading) return (
+    <div className="min-h-screen bg-[#020617] flex flex-col items-center justify-center relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.1),rgba(2,6,23,1))] pointer-events-none" />
+      <div className="relative flex flex-col items-center">
+        <div className="relative mb-6">
+          <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-tr from-cyan-500/30 to-blue-600/30 blur-xl animate-pulse" />
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+            className="absolute -inset-3 rounded-[1.2rem] border-2 border-dashed border-cyan-500/40"
+          />
+          <div className="relative w-16 h-16 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-[0_0_40px_rgba(6,182,212,0.6)] z-10">
+            <Play size={28} className="text-white ml-1 fill-white" />
+          </div>
+        </div>
+        <h1 className="text-3xl font-black tracking-widest uppercase mt-4">
+          <span className="text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]">NOVA</span><span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(6,182,212,0.6)]">STREAM</span>
+        </h1>
+      </div>
+    </div>
+  );
 
   const userAverage = mediaReviews.length > 0 ? (mediaReviews.reduce((acc, rev) => acc + rev.user_rating, 0) / mediaReviews.length).toFixed(1) : "0.0";
 
@@ -676,10 +748,8 @@ function App() {
     }))
   ];
 
+
   if (!user) {
-    // Generate multiple rows of scrolling posters for the background
-    const bgRow1 = [...trending].sort(() => 0.5 - Math.random());
-    const bgRow2 = [...trending].sort(() => 0.5 - Math.random());
 
     return (
       <div className="min-h-screen bg-[#020617] flex items-center justify-center relative overflow-hidden">
@@ -712,11 +782,37 @@ function App() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="relative z-10 bg-slate-950/60 p-10 md:p-14 rounded-[3rem] border border-white/10 w-full max-w-[460px] text-center backdrop-blur-3xl shadow-[0_0_80px_rgba(6,182,212,0.15)]"
         >
-          <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.4)]">
-            <User size={32} className="text-white" />
+          {/* Futuristic Icon */}
+          <div className="relative mx-auto mb-6 w-fit">
+            <div className="absolute -inset-3 rounded-3xl bg-gradient-to-tr from-cyan-500/20 to-indigo-500/20 blur-lg animate-pulse" />
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+              className="absolute -inset-[6px] rounded-3xl border-2 border-dashed border-cyan-500/40"
+            />
+            <motion.div
+              animate={{ rotate: [0, -8, 8, -4, 0] }}
+              transition={{ duration: 3, repeat: Infinity, repeatDelay: 2, ease: 'easeInOut' }}
+              className="relative w-20 h-20 bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-[0_0_40px_rgba(6,182,212,0.7)]"
+            >
+              <Clapperboard size={38} className="text-white drop-shadow-lg" />
+            </motion.div>
           </div>
-          <h2 className="text-4xl font-black tracking-tighter italic uppercase mb-2 text-white">Nova<span className="text-cyan-500">Stream</span></h2>
-          <p className="text-slate-400 font-medium text-sm mb-10">
+          {/* Futuristic Logo Text */}
+          <h2 className="text-3xl font-black tracking-[0.04em] uppercase leading-none mb-3">
+            <span className="bg-gradient-to-br from-white via-white to-slate-300 bg-clip-text text-transparent">NOVA</span>
+            <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">STREAM</span>
+          </h2>
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <div className="h-px w-10 bg-gradient-to-r from-transparent to-slate-600" />
+            <div className="flex gap-1.5">
+              <div className="w-1 h-1 rounded-full bg-cyan-500" />
+              <div className="w-1 h-1 rounded-full bg-blue-500" />
+              <div className="w-1 h-1 rounded-full bg-indigo-500" />
+            </div>
+            <div className="h-px w-10 bg-gradient-to-l from-transparent to-slate-600" />
+          </div>
+          <p className="text-slate-400 font-medium text-sm mb-10 tracking-wide">
             {isLogin ? 'Sign in to continue to your account' : 'Create an account to get started'}
           </p>
 
@@ -790,8 +886,11 @@ function App() {
   if (profile?.role === 'Admin') return <AdminDashboard stats={stats} profile={profile} />;
   if (profile?.role === 'Staff') return <StaffDashboard />;
 
+  const uniqueWatchlistForResume = watchlist.filter((item, index, self) =>
+    index === self.findIndex(t => String(t.media_id) === String(item.media_id))
+  );
   const allSections = [
-    { title: "Continue Watching", data: watchlist.slice(0, 8), icon: <Clock size={20} />, type: 'resume', category: 'all', sub: 'all', condition: watchlist.length > 0 },
+    { title: "Continue Watching", data: uniqueWatchlistForResume.slice(0, 10), icon: <Clock size={20} />, type: 'resume', category: 'all', sub: 'all', condition: uniqueWatchlistForResume.length > 0 },
     { title: "Trending Movies", data: trending, icon: <Activity size={20} />, category: 'movie', sub: 'all', condition: true },
     { title: "Trending TV Series", data: trendingTV, icon: <MonitorPlay size={20} />, category: 'tv', sub: 'all', condition: true },
     { title: "Top Rated TV Series", data: topRatedTV, icon: <Award size={20} />, category: 'tv', sub: 'all', condition: true },
@@ -811,7 +910,7 @@ function App() {
 
   // --- CRITICAL FILTERING LOGIC ---
   const filteredSections = allSections.filter(s => {
-    if (s.type === 'resume') return true;
+    if (s.type === 'resume') return mainTab === 'home' && activeSub === 'all';
     if (mainTab === 'home') {
       if (activeSub === 'all') return true;
       return s.sub === activeSub;
@@ -839,68 +938,101 @@ function App() {
   const displayMedia = mediaDetail || selectedMedia;
 
   const renderWatchlistItem = (item) => (
-    <div key={item.id} className="group relative bg-slate-900 rounded-2xl overflow-hidden border border-white/10 hover:border-cyan-500/50 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-cyan-500/20 flex flex-col">
-      <div className="relative aspect-[2/3] w-full overflow-hidden cursor-pointer" onClick={() => setSelectedMedia({ id: item.media_id, title: item.title, poster_path: item.poster_path })}>
-        <img src={`https://image.tmdb.org/t/p/w500${item.poster_path}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={item.title} />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+    <div key={item.id} className="group relative rounded-2xl overflow-hidden cursor-pointer aspect-[2/3] bg-slate-900 border border-white/5 hover:border-cyan-500/40 transition-all duration-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.25)] hover:scale-[1.03]">
+      {/* Poster */}
+      <img
+        src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
+        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+        alt={item.title}
+      />
 
-        {/* Top badges: Rating & Status */}
-        <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-          <span className="bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg text-[11px] font-bold text-yellow-400 border border-white/10 flex items-center gap-1 shadow-lg">
-            <Star size={12} className="fill-yellow-400" /> {item.vote_average ? item.vote_average.toFixed(1) : 'N/A'}
-          </span>
-          <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border shadow-lg backdrop-blur-md ${item.status === 'watched' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : item.status === 'watching' ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'}`}>
-            {item.status === 'watched' ? 'Watched' : item.status === 'watching' ? 'Watching' : 'Plan'}
-          </span>
-        </div>
+      {/* Base gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
 
-        <div className="absolute bottom-3 left-3 right-3 pointer-events-none">
-          <h4 className="text-white font-bold text-sm line-clamp-2 drop-shadow-md">{item.title}</h4>
+      {/* Hover overlay — darkens everything */}
+      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+      {/* Top badges — always visible */}
+      <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between z-10">
+        <span className="bg-black/80 px-2 py-0.5 rounded-md text-[10px] font-bold text-yellow-400 flex items-center gap-1">
+          <Star size={10} className="fill-yellow-400" /> {item.vote_average ? item.vote_average.toFixed(1) : 'N/A'}
+        </span>
+        <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${item.status === 'watched' ? 'bg-emerald-900/80 text-emerald-300' :
+          item.status === 'watching' ? 'bg-blue-900/80 text-blue-300' :
+            'bg-cyan-900/80 text-cyan-300'
+          }`}>
+          {item.status === 'watched' ? 'Watched' : item.status === 'watching' ? 'Watching' : 'Plan'}
+        </span>
+      </div>
+
+      {/* Title — always visible at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
+        <h4 className="text-white font-bold text-xs line-clamp-2 drop-shadow-md mb-2">{item.title}</h4>
+
+        {/* Action buttons — visible only on hover */}
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+          <button onClick={(e) => { e.stopPropagation(); updateWatchlistStatus(item.id, 'to_watch'); }}
+            className={`flex-1 py-1.5 rounded-lg text-[9px] font-black uppercase flex items-center justify-center gap-0.5 transition-all ${item.status === 'to_watch' || !item.status ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/40' : 'bg-white/10 text-slate-300 hover:bg-cyan-500/80 hover:text-white'
+              }`}>
+            <Clock size={10} /> Plan
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); updateWatchlistStatus(item.id, 'watching'); }}
+            className={`flex-1 py-1.5 rounded-lg text-[9px] font-black uppercase flex items-center justify-center gap-0.5 transition-all ${item.status === 'watching' ? 'bg-blue-500 text-white shadow-md shadow-blue-500/40' : 'bg-white/10 text-slate-300 hover:bg-blue-500/80 hover:text-white'
+              }`}>
+            <Play size={10} /> Watch
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); updateWatchlistStatus(item.id, 'watched'); }}
+            className={`flex-1 py-1.5 rounded-lg text-[9px] font-black uppercase flex items-center justify-center gap-0.5 transition-all ${item.status === 'watched' ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/40' : 'bg-white/10 text-slate-300 hover:bg-emerald-500/80 hover:text-white'
+              }`}>
+            <Check size={10} /> Done
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); removeFromWatchlist(item.id); }}
+            className="p-1.5 bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white rounded-lg transition-all">
+            <X size={10} />
+          </button>
         </div>
       </div>
 
-      {/* Interactive bottom bar for Status and Delete */}
-      <div className="p-3 bg-slate-950/80 border-t border-white/5 flex items-center justify-between gap-1 z-10">
-        <div className="flex items-center gap-1.5 flex-1">
-          <button
-            onClick={() => updateWatchlistStatus(item.id, 'to_watch')}
-            className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-1 ${item.status === 'to_watch' || !item.status ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/20' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}
-            title="Plan to Watch"
-          >
-            <Clock size={12} /> <span className="hidden xl:inline">Plan</span>
-          </button>
-          <button
-            onClick={() => updateWatchlistStatus(item.id, 'watching')}
-            className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-1 ${item.status === 'watching' ? 'bg-blue-500 text-white shadow-md shadow-blue-500/20' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}
-            title="Watching"
-          >
-            <Play size={12} /> <span className="hidden xl:inline">Watch</span>
-          </button>
-          <button
-            onClick={() => updateWatchlistStatus(item.id, 'watched')}
-            className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-1 ${item.status === 'watched' ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}
-            title="Watched"
-          >
-            <Check size={12} /> <span className="hidden xl:inline">Done</span>
-          </button>
-        </div>
-
-        <button
-          onClick={() => removeFromWatchlist(item.id)}
-          className="p-1.5 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white rounded-lg transition-all border border-red-500/20 ml-1"
-          title="Remove from Watchlist"
-        >
-          <X size={14} />
-        </button>
-      </div>
+      {/* Click to open detail */}
+      <div className="absolute inset-0 z-0" onClick={() => setSelectedMedia({ id: item.media_id, title: item.title, poster_path: item.poster_path })} />
     </div>
   );
 
   return (
     <div className="relative min-h-screen bg-[#020617] text-slate-200 pb-40 selection:bg-cyan-500/20 selection:text-cyan-200 overflow-hidden">
-      {/* AMBIENT CINEMATIC GLOWS */}
-      <div className="absolute top-0 left-1/4 w-[700px] h-[700px] bg-cyan-500/[0.07] rounded-full blur-[160px] pointer-events-none -z-10" />
-      <div className="absolute top-1/3 right-10 w-[600px] h-[600px] bg-blue-600/[0.06] rounded-full blur-[150px] pointer-events-none -z-10" />
+      {/* MINIMAL & ELEGANT BACKGROUND */}
+      <div className="fixed inset-0 z-[-1] pointer-events-none bg-[#020617]" />
+
+      {/* GHOST CINEMATIC CHARACTERS (Optimized GPU Layers) */}
+      {trending.slice(0, 3).map((movie, i) => (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 0 }}
+          animate={{ opacity: 0.08, scale: 1.05, y: [0, -15, 0] }}
+          transition={{ duration: 20 + i * 5, repeat: Infinity, ease: 'linear', delay: i * 2 }}
+          key={`ghost-${movie.id}`}
+          className="fixed pointer-events-none z-[-1]"
+          style={{
+            top: i === 0 ? '-10%' : i === 1 ? '40%' : '10%',
+            left: i === 0 ? '-5%' : i === 1 ? '60%' : '75%',
+            width: i === 1 ? '80vw' : '60vw',
+            height: i === 1 ? '80vw' : '60vw',
+            backgroundImage: `url(https://image.tmdb.org/t/p/w1280${movie.backdrop_path || movie.poster_path})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            maskImage: 'radial-gradient(circle at center, black 15%, transparent 65%)',
+            WebkitMaskImage: 'radial-gradient(circle at center, black 15%, transparent 65%)',
+            filter: 'grayscale(100%) contrast(150%)',
+            willChange: 'transform, opacity'
+          }}
+        />
+      ))}
+
+      <div className="fixed inset-0 z-[-1] pointer-events-none opacity-[0.05]" style={{ backgroundImage: 'linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)', backgroundSize: '64px 64px', maskImage: 'linear-gradient(to bottom, black 20%, transparent 80%)' }} />
+      <div className="fixed inset-0 z-[-1] pointer-events-none bg-[radial-gradient(ellipse_100%_100%_at_50%_-20%,rgba(6,182,212,0.25),rgba(2,6,23,0))]" />
+      
+      {/* Optimized Ambient Lights (No CSS Blur) */}
+      <div className="fixed top-[-20%] left-[10%] w-[60vw] h-[60vw] pointer-events-none z-[-1] opacity-40" style={{ background: 'radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 70%)' }} />
+      <div className="fixed bottom-[-20%] right-[0%] w-[50vw] h-[50vw] pointer-events-none z-[-1] opacity-40" style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%)' }} />
 
       <AnimatePresence>{toast.message && (
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 30 }} className={`fixed bottom-8 right-8 z-[400] px-6 py-4 rounded-2xl border backdrop-blur-xl shadow-2xl flex items-center gap-3 ${toast.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'}`}>
@@ -910,19 +1042,28 @@ function App() {
       )}</AnimatePresence>
 
       <nav className="border-b border-white/5 bg-[#020617]/95 backdrop-blur-2xl sticky top-0 z-[100]">
-        <div className="px-8 md:px-12 py-5 flex justify-between items-center max-w-[2000px] mx-auto">
-          <div className="flex items-center gap-6 md:gap-12 overflow-x-auto no-scrollbar">
+        <div className="px-6 md:px-10 py-5 flex items-center gap-4 max-w-[2000px] mx-auto">
+          {/* LEFT: Logo + Nav Tabs */}
+          <div className="flex items-center gap-5 md:gap-8 min-w-0 flex-1">
             {/* FUTURISTIC LOGO */}
-            <div className="flex items-center gap-3.5 cursor-pointer group select-none shrink-0" onClick={() => { setMainTab('home'); setActiveSub('all'); setSearchQuery(''); setView('browse'); }}>
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.6)] group-hover:rotate-12 transition-all duration-300">
-                <Play size={18} className="text-white ml-0.5 fill-white" />
+            <div className="flex items-center gap-3 cursor-pointer group select-none shrink-0" onClick={() => { setMainTab('home'); setActiveSub('all'); setSearchQuery(''); setView('browse'); }}>
+              <div className="relative">
+                <div className="absolute -inset-[5px] rounded-[14px] bg-gradient-to-tr from-cyan-500/20 to-indigo-500/20 blur-sm group-hover:blur-md transition-all" />
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+                  className="absolute -inset-[4px] rounded-[14px] border border-dashed border-cyan-500/40"
+                />
+                <div className="relative w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.6)] z-10">
+                  <Play size={18} className="text-white ml-0.5 fill-white" />
+                </div>
               </div>
-              <h1 className="text-3xl font-black tracking-tight uppercase font-mono italic pr-2">
-                NOVA<span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">STREAM</span>
+              <h1 className="text-xl md:text-2xl font-black tracking-widest uppercase ml-2">
+                <span className="text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">NOVA</span><span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]">STREAM</span>
               </h1>
             </div>
 
-            <div className="flex items-center gap-6 md:gap-8">
+            <div className="flex items-center gap-4 md:gap-6 overflow-x-auto no-scrollbar">
               {[
                 { id: 'home', label: 'Home' },
                 { id: 'movie', label: 'Movies' },
@@ -933,7 +1074,7 @@ function App() {
                 <button
                   key={tab.id}
                   onClick={() => { setMainTab(tab.id); setActiveSub('all'); setView('browse'); }}
-                  className={`text-[12px] md:text-[13px] font-black uppercase tracking-[0.15em] transition-all relative py-2 whitespace-nowrap ${mainTab === tab.id ? 'text-white' : 'text-slate-500 hover:text-white'}`}
+                  className={`text-[12px] font-black uppercase tracking-[0.12em] transition-all relative py-2 whitespace-nowrap shrink-0 ${mainTab === tab.id ? 'text-white' : 'text-slate-500 hover:text-white'}`}
                 >
                   {tab.label}
                   {mainTab === tab.id && <motion.div layoutId="navTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 shadow-[0_0_10px_rgba(6,182,212,0.5)]" />}
@@ -942,14 +1083,15 @@ function App() {
             </div>
           </div>
 
-          <div className="flex items-center gap-6 md:gap-8 text-[12px] font-bold uppercase tracking-wider text-slate-400">
+          {/* RIGHT: Search + Actions */}
+          <div className="flex items-center gap-3 md:gap-5 text-[12px] font-bold uppercase tracking-wider text-slate-400 shrink-0">
             <div className="relative group hidden xl:block">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
               <input type="text" placeholder="Search titles..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-slate-900 border border-white/10 px-10 py-2.5 rounded-full text-white outline-none focus:border-cyan-500/50 w-64 focus:w-80 transition-all text-xs placeholder:text-slate-500" />
             </div>
 
             {/* NOTIFICATIONS */}
-            <div className="relative">
+            <div className="relative" data-dropdown="true">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
                 className={`relative hover:text-white transition-colors p-2 rounded-full ${showNotifications ? 'bg-white/10 text-white' : ''}`}
@@ -1016,7 +1158,7 @@ function App() {
             </button>
 
             {/* PROFILE DROPDOWN (PRIME STYLE) */}
-            <div className="relative">
+            <div className="relative" data-dropdown="true">
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all border ${showProfileMenu || view === 'profile'
@@ -1108,13 +1250,13 @@ function App() {
           <div className="space-y-6">
             <h3 className="text-2xl font-black text-white tracking-wide">Search Results: "{searchQuery}"</h3>
             {loading ? (
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8">
                 {[...Array(12)].map((_, i) => <div key={i} className="aspect-[2/3] bg-slate-900 animate-pulse rounded-2xl" />)}
               </div>
             ) : searchResults.length === 0 ? (
               <div className="text-center py-20 text-slate-500">No content found matching your criteria.</div>
             ) : (
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8">
                 {searchResults.map((m) => <MovieCard key={m.id} movie={m} onSelect={setSelectedMedia} onAdd={addToWatchlist} />)}
               </div>
             )}
@@ -1133,9 +1275,9 @@ function App() {
                       <h3 className="text-2xl font-black bg-gradient-to-r from-white via-purple-100 to-purple-400 bg-clip-text text-transparent tracking-tight">AI Recommended For You</h3>
                       <span className="text-[10px] font-bold bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/30 uppercase tracking-widest ml-2">Neural Engine v2.0</span>
                     </div>
-                    <div className="row-scroll no-scrollbar flex flex-nowrap gap-5 overflow-x-auto scroll-smooth snap-x pb-8 px-2 relative z-10">
+                    <div className="row-scroll no-scrollbar flex flex-nowrap gap-5 md:gap-6 overflow-x-auto scroll-smooth pb-8 px-2 relative z-10">
                       {getSophisticatedRecommendations(watchlist, [...trending, ...popular, ...topRated], []).slice(0, 10).map((movie) => (
-                        <div key={movie.id} className="snap-start shrink-0 w-[120px] md:w-[150px] lg:w-[180px] relative group">
+                        <div key={movie.id} className="shrink-0 w-[140px] md:w-[180px] lg:w-[220px] relative group">
                           <MovieCard movie={movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
                           <div className="absolute top-2 right-2 bg-purple-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
                             Score: {movie.recommendation_score.toFixed(1)}
@@ -1159,41 +1301,31 @@ function App() {
             )}
             {dedupedSections.map((section, idx) => {
               if (!section.condition || section.data.length === 0) return null;
-              const isGrid = section.title === "Trending Movies" || section.title === "Trending TV Series" || section.title.includes("Top Rated") || section.title === "Documentaries";
+              const isGrid = false; // All sections scroll horizontally
               return (
-                <section key={idx} className="relative px-6 group/row">
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-3.5">
-                      <div className="h-7 w-1.5 rounded-full bg-gradient-to-b from-cyan-400 to-blue-600 shadow-[0_0_12px_rgba(6,182,212,0.8)]" />
-                      <h3 className="text-2xl font-black bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent tracking-tight capitalize">{section.title.replace(/_/g, ' ')}</h3>
-                    </div>
-                    {!isGrid && (
-                      <div className="flex gap-2 opacity-0 group-hover/row:opacity-100 transition-all">
-                        <button onClick={(e) => { e.currentTarget.closest('section').querySelector('.row-scroll').scrollBy({ left: -800, behavior: 'smooth' }); }} className="p-2 bg-white/5 hover:bg-cyan-500 rounded-full text-white transition-all backdrop-blur-md"><ChevronLeft size={24} /></button>
-                        <button onClick={(e) => { e.currentTarget.closest('section').querySelector('.row-scroll').scrollBy({ left: 800, behavior: 'smooth' }); }} className="p-2 bg-white/5 hover:bg-cyan-500 rounded-full text-white transition-all backdrop-blur-md"><ChevronRight size={24} /></button>
-                      </div>
-                    )}
+                <section key={idx} className="relative group/row">
+                  <div className="flex items-center gap-3.5 mb-6 px-8">
+                    <div className="h-7 w-1.5 rounded-full bg-gradient-to-b from-cyan-400 to-blue-600 shadow-[0_0_12px_rgba(6,182,212,0.8)]" />
+                    <h3 className="text-2xl font-black bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent tracking-tight capitalize">{section.title.replace(/_/g, ' ')}</h3>
                   </div>
-
-                  {isGrid ? (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4 md:gap-6 pb-8">
+                  <div className="relative">
+                    <button
+                      onClick={(e) => { e.currentTarget.parentElement.querySelector('.row-scroll').scrollBy({ left: -700, behavior: 'smooth' }); }}
+                      className="absolute left-1 top-[45%] -translate-y-1/2 z-20 p-2.5 bg-black/70 hover:bg-cyan-500 rounded-full text-white transition-all shadow-xl opacity-0 group-hover/row:opacity-100"
+                    ><ChevronLeft size={20} /></button>
+                    <div className="row-scroll no-scrollbar flex flex-nowrap gap-4 md:gap-5 overflow-x-auto scroll-smooth pb-6 px-8">
                       {section.data.map((movie) => (
-                        <div key={movie.id} className="relative group w-full">
+                        <div key={movie.id} className="shrink-0 w-[140px] md:w-[170px] lg:w-[200px] relative group">
                           <MovieCard movie={section.type === 'resume' ? { ...movie, id: movie.media_id } : movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
                           {section.type === 'resume' && <div className="absolute bottom-0 left-0 h-1 bg-cyan-500 w-3/4 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.8)]" />}
                         </div>
                       ))}
                     </div>
-                  ) : (
-                    <div className="row-scroll no-scrollbar flex flex-nowrap gap-5 overflow-x-auto scroll-smooth snap-x pb-8 px-2 relative z-10">
-                      {section.data.map((movie) => (
-                        <div key={movie.id} className="snap-start shrink-0 w-[120px] md:w-[150px] lg:w-[180px] relative group">
-                          <MovieCard movie={section.type === 'resume' ? { ...movie, id: movie.media_id } : movie} onSelect={setSelectedMedia} onAdd={addToWatchlist} />
-                          {section.type === 'resume' && <div className="absolute bottom-0 left-0 h-1 bg-cyan-500 w-3/4 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.8)]" />}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                    <button
+                      onClick={(e) => { e.currentTarget.parentElement.querySelector('.row-scroll').scrollBy({ left: 700, behavior: 'smooth' }); }}
+                      className="absolute right-1 top-[45%] -translate-y-1/2 z-20 p-2.5 bg-black/70 hover:bg-cyan-500 rounded-full text-white transition-all shadow-xl opacity-0 group-hover/row:opacity-100"
+                    ><ChevronRight size={20} /></button>
+                  </div>
                 </section>
               );
             })}
@@ -1213,59 +1345,160 @@ function App() {
               </div>
             ) : (
               <div className="space-y-16">
-                {/* CURRENTLY WATCHING */}
-                <div>
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="h-6 w-1 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.8)]" />
-                    <h4 className="text-xl font-black text-white tracking-wide">Currently Watching <span className="text-xs font-bold bg-blue-500/20 text-blue-400 px-2.5 py-0.5 rounded-full border border-blue-500/30 ml-2">{watchlist.filter(i => i.status === 'watching').length}</span></h4>
-                  </div>
-                  {watchlist.filter(i => i.status === 'watching').length === 0 ? (
-                    <p className="text-sm text-slate-500 italic bg-slate-900/40 p-6 rounded-2xl border border-white/5">No movies or series currently in progress.</p>
-                  ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8">
-                      {watchlist.filter(i => i.status === 'watching').map(item => renderWatchlistItem(item))}
+                {(() => {
+                  // Deduplicate watchlist by media_id
+                  const seen = new Set();
+                  const uniqueWatchlist = watchlist.filter(item => {
+                    if (seen.has(String(item.media_id))) return false;
+                    seen.add(String(item.media_id));
+                    return true;
+                  });
+                  const watching = uniqueWatchlist.filter(i => i.status === 'watching');
+                  const toWatch = uniqueWatchlist.filter(i => i.status === 'to_watch' || !i.status);
+                  const watched = uniqueWatchlist.filter(i => i.status === 'watched');
+                  return (<>
+                    {/* CURRENTLY WATCHING */}
+                    <div>
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="h-6 w-1 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.8)]" />
+                        <h4 className="text-xl font-black text-white tracking-wide">Currently Watching <span className="text-xs font-bold bg-blue-500/20 text-blue-400 px-2.5 py-0.5 rounded-full border border-blue-500/30 ml-2">{watching.length}</span></h4>
+                      </div>
+                      {watching.length === 0 ? (
+                        <p className="text-sm text-slate-500 italic bg-slate-900/40 p-6 rounded-2xl border border-white/5">No movies or series currently in progress.</p>
+                      ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                          {watching.map(item => renderWatchlistItem(item))}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
 
-                {/* PLAN TO WATCH */}
-                <div>
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="h-6 w-1 rounded-full bg-cyan-500 shadow-[0_0_12px_rgba(6,182,212,0.8)]" />
-                    <h4 className="text-xl font-black text-white tracking-wide">Plan to Watch <span className="text-xs font-bold bg-cyan-500/20 text-cyan-400 px-2.5 py-0.5 rounded-full border border-cyan-500/30 ml-2">{watchlist.filter(i => i.status === 'to_watch' || !i.status).length}</span></h4>
-                  </div>
-                  {watchlist.filter(i => i.status === 'to_watch' || !i.status).length === 0 ? (
-                    <p className="text-sm text-slate-500 italic bg-slate-900/40 p-6 rounded-2xl border border-white/5">Your planned watchlist is empty.</p>
-                  ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8">
-                      {watchlist.filter(i => i.status === 'to_watch' || !i.status).map(item => renderWatchlistItem(item))}
+                    {/* PLAN TO WATCH */}
+                    <div>
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="h-6 w-1 rounded-full bg-cyan-500 shadow-[0_0_12px_rgba(6,182,212,0.8)]" />
+                        <h4 className="text-xl font-black text-white tracking-wide">Plan to Watch <span className="text-xs font-bold bg-cyan-500/20 text-cyan-400 px-2.5 py-0.5 rounded-full border border-cyan-500/30 ml-2">{toWatch.length}</span></h4>
+                      </div>
+                      {toWatch.length === 0 ? (
+                        <p className="text-sm text-slate-500 italic bg-slate-900/40 p-6 rounded-2xl border border-white/5">Your planned watchlist is empty.</p>
+                      ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                          {toWatch.map(item => renderWatchlistItem(item))}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
 
-                {/* ALREADY WATCHED */}
-                <div>
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="h-6 w-1 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]" />
-                    <h4 className="text-xl font-black text-white tracking-wide">Already Watched <span className="text-xs font-bold bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full border border-emerald-500/30 ml-2">{watchlist.filter(i => i.status === 'watched').length}</span></h4>
-                  </div>
-                  {watchlist.filter(i => i.status === 'watched').length === 0 ? (
-                    <p className="text-sm text-slate-500 italic bg-slate-900/40 p-6 rounded-2xl border border-white/5">No completed titles yet.</p>
-                  ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8">
-                      {watchlist.filter(i => i.status === 'watched').map(item => renderWatchlistItem(item))}
+                    {/* ALREADY WATCHED */}
+                    <div>
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="h-6 w-1 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]" />
+                        <h4 className="text-xl font-black text-white tracking-wide">Already Watched <span className="text-xs font-bold bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full border border-emerald-500/30 ml-2">{watched.length}</span></h4>
+                      </div>
+                      {watched.length === 0 ? (
+                        <p className="text-sm text-slate-500 italic bg-slate-900/40 p-6 rounded-2xl border border-white/5">No completed titles yet.</p>
+                      ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                          {watched.map(item => renderWatchlistItem(item))}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </>);
+                })()}
               </div>
             )}
           </div>
         ) : <ProfilePage profile={profile} user={user} initialTab={profileInitialTab} />}
       </main>
 
-      <AnimatePresence>{selectedMedia && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/95 flex items-center justify-center p-4 md:p-8 z-[300] backdrop-blur-3xl" onClick={() => { setSelectedMedia(null); setMediaDetail(null); }}>
-          <motion.div initial={{ scale: 0.92, y: 50 }} animate={{ scale: 1, y: 0 }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className="bg-[#0a0a0f] border border-white/10 max-w-[1500px] w-full flex flex-col lg:flex-row rounded-3xl overflow-hidden h-full max-h-[90vh] shadow-[0_0_80px_rgba(0,0,0,0.8)] relative" onClick={e => e.stopPropagation()}>
+      {/* FOOTER */}
+      <footer className="border-t border-white/5 bg-[#020617]/80 backdrop-blur-xl mt-8 py-10 px-8">
+        <div className="max-w-[900px] mx-auto flex flex-col items-center gap-5">
+          {/* Logo */}
+          <div className="flex items-center gap-2.5 select-none">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+              <Play size={13} className="text-white ml-0.5 fill-white" />
+            </div>
+            <span className="text-lg font-black tracking-widest uppercase ml-2">
+              <span className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">NOVA</span><span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(6,182,212,0.5)]">STREAM</span>
+            </span>
+          </div>
+
+          {/* Links */}
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12px] text-slate-500 font-medium">
+            {['Terms & Privacy', 'Cookie Notice', 'Help Center', 'Feedback', 'About NovaStream'].map(link => (
+              <button key={link} onClick={() => setFooterModal(link)} className="hover:text-cyan-400 transition-colors">{link}</button>
+            ))}
+          </div>
+
+          {/* Copyright */}
+          <p className="text-[11px] text-slate-600 tracking-wide text-center">
+            © {new Date().getFullYear()} NovaStream. All rights reserved. · Powered by{' '}
+            <a href="https://www.themoviedb.org" target="_blank" rel="noreferrer" className="text-slate-500 hover:text-cyan-500 transition-colors">TMDB</a>
+          </p>
+        </div>
+      </footer>
+
+      {/* FOOTER MODAL */}
+      <AnimatePresence>
+        {footerModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[400] flex items-center justify-center p-4"
+            onClick={() => setFooterModal(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-xl p-8 relative shadow-2xl"
+            >
+              <button onClick={() => setFooterModal(null)} className="absolute top-4 right-4 text-slate-500 hover:text-white bg-white/5 p-2 rounded-full">
+                <X size={16} />
+              </button>
+              <h2 className="text-2xl font-black text-white mb-6 flex items-center gap-3">
+                <Info className="text-cyan-500" /> {footerModal}
+              </h2>
+              <div className="text-slate-400 text-sm leading-relaxed space-y-4 max-h-[60vh] overflow-y-auto no-scrollbar">
+                {footerModal === 'About NovaStream' ? (
+                  <p>NovaStream is a next-generation streaming platform concept designed to provide an immersive, cinematic experience. It combines real TMDB data with a hyper-modern UI, intelligent categorizations, and social interaction features like watchlists and reviews.</p>
+                ) : footerModal === 'Help Center' ? (
+                  <p>Need assistance? Our support agents are currently offline. Please check your network connection, ensure you have an active TMDB API key, or contact your system administrator.</p>
+                ) : footerModal === 'Feedback' ? (
+                  <form className="space-y-4 mt-2" onSubmit={e => { e.preventDefault(); setFooterModal(null); setToast({ message: 'Feedback sent!', type: 'success' }); }}>
+                    <textarea placeholder="Tell us what you think..." className="w-full bg-slate-950 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-cyan-500 min-h-[120px]" required />
+                    <button type="submit" className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl transition-colors">Submit Feedback</button>
+                  </form>
+                ) : (
+                  <>
+                    <p>This is a legal placeholder for {footerModal}. By using this application, you agree to our comprehensive set of fictional rules designed to make this modal look sufficiently populated.</p>
+                    <p>We do not actually collect cookies, nor do we share your data, because this is a client-side portfolio application. All your data lives securely in your local Supabase instance.</p>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence mode="wait">{selectedMedia && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
+          className="fixed inset-0 bg-black/90 flex items-center justify-center p-4 md:p-8 z-[300] backdrop-blur-md"
+          onClick={() => { setSelectedMedia(null); setMediaDetail(null); }}
+        >
+          <motion.div
+            initial={{ scale: 0.95, y: 30, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            exit={{ scale: 0.95, y: 20, opacity: 0 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 400 }}
+            className="bg-[#0a0a0f] border border-white/10 max-w-[1500px] w-full flex flex-col lg:flex-row rounded-3xl overflow-hidden h-full max-h-[90vh] shadow-[0_0_80px_rgba(0,0,0,0.8)] relative"
+            onClick={e => e.stopPropagation()}
+          >
 
             {/* LEFT: Trailer + Movie Info */}
             <div className="w-full lg:w-[58%] relative bg-black flex flex-col border-r border-white/5 overflow-hidden">
@@ -1419,12 +1652,12 @@ function App() {
                     <div className="flex justify-between items-center mb-3">
                       <div className="flex items-center gap-3">
                         <div className={`w-8 h-8 rounded-lg bg-gradient-to-br flex items-center justify-center text-[11px] font-bold border ${rev.source === 'tmdb' ? 'from-purple-500/20 to-pink-500/20 text-purple-400 border-purple-500/20' : 'from-cyan-500/20 to-blue-500/20 text-cyan-400 border-cyan-500/20'}`}>
-                          {rev.user_id?.slice(0, 2)?.toUpperCase() || 'U'}
+                          {(rev._username || rev.user_id)?.slice(0, 2)?.toUpperCase() || 'U'}
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="text-[12px] font-bold text-white/80 flex items-center gap-2">
-                              {rev.source === 'tmdb' ? rev.user_id : `Agent ${rev.user_id?.slice(0, 6)}`}
+                              {rev.source === 'tmdb' ? rev.user_id : (rev._username || profile?.username || `User ${rev.user_id?.slice(0, 6)}`)}
                               {rev.source === 'tmdb' && <span className="bg-purple-500/20 text-purple-400 px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider border border-purple-500/30">TMDB</span>}
                             </span>
                             {(user?.id === rev.user_id || profile?.role === 'Admin') && rev.source !== 'tmdb' && (
@@ -1451,16 +1684,42 @@ function App() {
                       "{rev.review_text}"
                     </p>
                     {rev.source !== 'tmdb' && (
-                      <div className="flex items-center gap-4 pl-11">
-                        <button onClick={() => voteReview(rev.id, 'up', selectedMedia.id)} className="flex items-center gap-1 text-[10px] font-bold text-slate-500 hover:text-cyan-500 transition-colors">
-                          <TrendingUp size={12} /> {rev.upvotes || 0}
-                        </button>
-                        <button onClick={() => voteReview(rev.id, 'down', selectedMedia.id)} className="flex items-center gap-1 text-[10px] font-bold text-slate-500 hover:text-red-500 transition-colors">
-                          <TrendingUp size={12} className="rotate-180" /> {rev.downvotes || 0}
-                        </button>
-                        <button className="text-[10px] font-bold text-slate-500 hover:text-white transition-colors flex items-center gap-1">
-                          <MessageSquare size={12} /> Reply
-                        </button>
+                      <div className="pl-11">
+                        <div className="flex items-center gap-4 mb-2">
+                          <button
+                            onClick={() => voteReview(rev.id)}
+                            className={`flex items-center gap-1 text-[10px] font-bold transition-colors ${localVotes[rev.id]?.up ? 'text-cyan-400' : 'text-slate-500 hover:text-cyan-500'
+                              }`}
+                          >
+                            <TrendingUp size={12} /> {localVotes[rev.id]?.count || 0}
+                          </button>
+                          <button
+                            onClick={() => setReplyTo(replyTo === rev.id ? null : rev.id)}
+                            className={`text-[10px] font-bold transition-colors flex items-center gap-1 ${replyTo === rev.id ? 'text-cyan-400' : 'text-slate-500 hover:text-white'
+                              }`}
+                          >
+                            <MessageSquare size={12} /> {replyTo === rev.id ? 'Cancel' : 'Reply'}
+                          </button>
+                        </div>
+                        {replyTo === rev.id && (
+                          <div className="flex gap-2 mt-2">
+                            <input
+                              value={replyText}
+                              onChange={(e) => setReplyText(e.target.value)}
+                              onKeyDown={(e) => { if (e.key === 'Enter' && replyText.trim()) submitReply(selectedMedia.id); }}
+                              placeholder={`Replying to ${rev.user_id?.slice(0, 8) || 'user'}...`}
+                              autoFocus
+                              className="flex-1 bg-white/[0.04] border border-cyan-500/30 px-3 py-2 rounded-xl text-[12px] text-white outline-none focus:border-cyan-500/60 placeholder:text-slate-600"
+                            />
+                            <button
+                              onClick={() => submitReply(selectedMedia.id)}
+                              disabled={!replyText.trim()}
+                              className="px-3 py-2 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-800 disabled:text-slate-600 text-white rounded-xl text-[11px] font-bold transition-all"
+                            >
+                              Send
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
                   </motion.div>

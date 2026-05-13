@@ -41,7 +41,7 @@ export const getSophisticatedRecommendations = (watchlist, allMovies, ratings) =
   // 3. Score All Movies
   const scoredMovies = uniqueAllMovies.map(movie => {
     let score = movie.vote_average || 0;
-    
+
     // Add genre bonus
     if (movie.genre_ids) {
       movie.genre_ids.forEach(gid => {

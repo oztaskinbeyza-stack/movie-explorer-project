@@ -4,7 +4,7 @@ export const filterMovies = (movies, minRating = 0) => {
 
 export const searchMoviesByTitle = (movies, query) => {
   if (!query) return movies;
-  return movies.filter((movie) => 
+  return movies.filter((movie) =>
     movie.title.toLowerCase().includes(query.toLowerCase())
   );
 };

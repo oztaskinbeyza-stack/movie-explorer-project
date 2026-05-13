@@ -16,25 +16,26 @@ export default function MovieCard({ movie, onSelect, onAdd }) {
   return (
     <motion.div
       className="relative group rounded-xl overflow-hidden cursor-pointer w-full aspect-[2/3] bg-slate-900 border border-white/5"
-      whileHover={{ scale: 1.15, zIndex: 50 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      whileHover={{ scale: 1.20, zIndex: 100, y: -12, boxShadow: "0 30px 60px -15px rgba(6, 182, 212, 0.35)" }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       onClick={() => onSelect(movie)}
+      style={{ willChange: 'transform' }}
     >
       {/* Base Poster */}
       <img
         src={getPosterUrl(movie.poster_path)}
-        className="w-full h-full object-cover" 
+        className="w-full h-full object-cover"
         alt={movie.title || movie.name}
         loading="lazy"
       />
-      
+
       {/* Prime-style Hover Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-        
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-4">
+
         <h4 className="text-white font-bold text-sm leading-tight mb-1 line-clamp-2">
           {movie.title || movie.name}
         </h4>
-        
+
         <div className="flex items-center gap-1.5 mb-3 text-cyan-400">
           <ShieldCheck size={12} />
           <span className="text-[9px] font-bold uppercase tracking-wider">Included with Nova</span>
@@ -42,21 +43,21 @@ export default function MovieCard({ movie, onSelect, onAdd }) {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2 mb-3">
-          <button 
+          <button
             className="flex-1 bg-white hover:bg-gray-200 text-black py-1.5 rounded flex items-center justify-center gap-1.5 transition-colors"
             onClick={(e) => { e.stopPropagation(); onSelect(movie); }}
           >
             <Play size={12} className="fill-black" />
             <span className="text-[10px] font-bold">Play</span>
           </button>
-          <button 
+          <button
             className="w-8 h-8 rounded-full border-2 border-white/40 hover:border-white text-white flex items-center justify-center transition-colors bg-white/10 backdrop-blur-md shrink-0"
             onClick={(e) => { e.stopPropagation(); onSelect(movie); }}
             title="Details"
           >
             <Info size={14} />
           </button>
-          <button 
+          <button
             className="w-8 h-8 rounded-full border-2 border-white/40 hover:border-white text-white flex items-center justify-center transition-colors bg-white/10 backdrop-blur-md shrink-0"
             onClick={(e) => { e.stopPropagation(); onAdd(movie); }}
             title="Add to Watchlist"
@@ -69,7 +70,7 @@ export default function MovieCard({ movie, onSelect, onAdd }) {
         <div className="flex items-center gap-2 text-[10px] font-medium text-slate-300 mb-2">
           <span className="bg-white/10 px-1.5 py-0.5 rounded text-white">{movie.adult ? '18+' : '13+'}</span>
           <span>{getYear()}</span>
-          <span className="flex items-center gap-1 text-yellow-500"><Star size={10} className="fill-yellow-500"/> {movie.vote_average?.toFixed(1)}</span>
+          <span className="flex items-center gap-1 text-yellow-500"><Star size={10} className="fill-yellow-500" /> {movie.vote_average?.toFixed(1)}</span>
         </div>
 
         {/* Overview Snippet */}

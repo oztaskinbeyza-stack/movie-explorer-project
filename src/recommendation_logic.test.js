@@ -22,9 +22,9 @@ const mockRatings = [
 
 const testRecommendations = () => {
   console.log('--- STARTING UNIT TESTS: RECOMMENDATION_ENGINE ---');
-  
+
   const results = getSophisticatedRecommendations(mockWatchlist, mockMovies, mockRatings);
-  
+
   // Test 1: Should favor Sci-Fi (ID 878)
   const topPick = results[0];
   if (topPick.genre_ids.includes(878) && topPick.id === 4) {
