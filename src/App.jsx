@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 // =========================================================================
-// --- 1. COMPONENT: ADMIN_ROOT_STATION ---
+// --- 1. COMPONENT: ADMIN_ROOT_STATION (Full Detailed English UI) ---
 // =========================================================================
 
 const AdminDashboard = ({ stats, profile }) => {
@@ -31,16 +31,16 @@ const AdminDashboard = ({ stats, profile }) => {
               <span className="text-[12px] font-black uppercase tracking-[0.6em]">Protocol_ID: NOVA_ROOT_STATION</span>
             </div>
             <h2 className="text-7xl font-black text-white tracking-tighter uppercase italic leading-none drop-shadow-2xl">
-              Merkezi_<span className="text-red-600">Yönetim</span>_Paneli
+              Central_<span className="text-red-600">Admin</span>_Node
             </h2>
             <div className="flex items-center gap-10 mt-10">
               <div className="flex flex-col gap-1">
-                <span className="text-slate-600 text-[9px] uppercase tracking-widest text-left">Aktif_Operatör</span>
+                <span className="text-slate-600 text-[9px] uppercase tracking-widest text-left">Active_Operator</span>
                 <p className="text-slate-300 text-[11px] uppercase tracking-[0.4em]">{profile?.email}</p>
               </div>
               <div className="flex flex-col gap-1 border-l border-slate-800 pl-10">
-                <span className="text-slate-600 text-[9px] uppercase tracking-widest text-left">Sistem_Durumu</span>
-                <p className="text-green-500 text-[11px] uppercase tracking-[0.4em] animate-pulse">Stabil_Çalışıyor</p>
+                <span className="text-slate-600 text-[9px] uppercase tracking-widest text-left">Neural_Status</span>
+                <p className="text-green-500 text-[11px] uppercase tracking-[0.4em] animate-pulse">Running_Stable</p>
               </div>
             </div>
           </motion.div>
@@ -49,15 +49,15 @@ const AdminDashboard = ({ stats, profile }) => {
             onClick={() => supabase.auth.signOut()} 
             className="group relative overflow-hidden bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20 px-12 py-5 rounded-[2.5rem] text-[12px] font-black uppercase transition-all duration-500 shadow-2xl shadow-red-600/10 active:scale-95"
           >
-            <span className="relative z-10 flex items-center gap-4"><LogOut size={18} /> Tüm_Süreçleri_Durdur</span>
+            <span className="relative z-10 flex items-center gap-4"><LogOut size={18} /> Kill_All_Processes</span>
           </button>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {[
-            { label: 'Kayıtlı_Birimler', value: stats.users, icon: <User size={40} />, color: 'bg-red-600' },
-            { label: 'Nöral_Girişler', value: stats.reviews, icon: <MessageSquare size={40} />, color: 'bg-orange-600' },
-            { label: 'Arşiv_Düğümleri', value: stats.watchlist, icon: <Database size={40} />, color: 'bg-amber-600' }
+            { label: 'Registered_Units', value: stats.users, icon: <User size={40} />, color: 'bg-red-600' },
+            { label: 'Neural_Injections', value: stats.reviews, icon: <MessageSquare size={40} />, color: 'bg-orange-600' },
+            { label: 'Vault_Archive_Nodes', value: stats.watchlist, icon: <Database size={40} />, color: 'bg-amber-600' }
           ].map((item, idx) => (
             <motion.div 
               key={idx} 
@@ -83,18 +83,18 @@ const AdminDashboard = ({ stats, profile }) => {
 };
 
 // =========================================================================
-// --- 2. COMPONENTS: STAFF & PROFILE ---
+// --- 2. COMPONENTS: STAFF & PROFILE (Full Detail) ---
 // =========================================================================
 
 const StaffDashboard = () => (
-  <div className="min-h-screen bg-[#020617] flex items-center justify-center p-10 font-mono text-center">
-    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-slate-900 p-24 border border-blue-500/20 rounded-[5.5rem] w-full max-w-2xl backdrop-blur-3xl shadow-2xl">
-      <div className="w-32 h-32 bg-blue-500/10 rounded-[3.5rem] flex items-center justify-center text-blue-500 mx-auto mb-14 border border-blue-500/20">
+  <div className="min-h-screen bg-[#020617] flex items-center justify-center p-10 font-mono">
+    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-slate-900 p-24 border border-blue-500/20 rounded-[5.5rem] w-full max-w-2xl text-center backdrop-blur-3xl shadow-2xl">
+      <div className="w-32 h-32 bg-blue-500/10 rounded-[3.5rem] flex items-center justify-center text-blue-500 mx-auto mb-14 border border-blue-500/20 shadow-inner">
         <Activity size={64} className="animate-pulse" />
       </div>
-      <h2 className="text-5xl font-black text-blue-500 mb-6 tracking-tighter uppercase italic">Personel_Sektörü</h2>
-      <p className="text-slate-500 mb-16 text-[13px] font-medium uppercase tracking-[0.5em]">Nöral İçerik Moderasyonu Aktif</p>
-      <button onClick={() => supabase.auth.signOut()} className="w-full bg-blue-600 hover:bg-blue-500 text-white py-8 rounded-[2.5rem] font-black uppercase tracking-[0.4em] transition-all active:scale-95">Bağlantıyı_Kes</button>
+      <h2 className="text-5xl font-black text-blue-500 mb-6 tracking-tighter uppercase italic">Staff_Sector</h2>
+      <p className="text-slate-500 mb-16 text-[13px] font-medium uppercase tracking-[0.5em]">Neural_Content_Moderation_Active</p>
+      <button onClick={() => supabase.auth.signOut()} className="w-full bg-blue-600 hover:bg-blue-500 text-white py-8 rounded-[2.5rem] font-black uppercase tracking-[0.4em] transition-all active:scale-95 shadow-2xl">Disconnect_Link</button>
     </motion.div>
   </div>
 );
@@ -110,26 +110,27 @@ const ProfileView = ({ profile, watchlist }) => (
         <div className="text-center lg:text-left">
           <div className="flex items-center justify-center lg:justify-start gap-5 mb-6">
             <div className="w-3 h-3 rounded-full bg-cyan-500 animate-ping" />
-            <span className="text-[11px] font-black text-cyan-500 uppercase tracking-[0.7em]">Nöral_Birim_Doğrulandı</span>
+            <span className="text-[11px] font-black text-cyan-500 uppercase tracking-[0.7em]">Neural_Unit_Verified</span>
           </div>
-          <h2 className="text-7xl font-black tracking-tighter uppercase italic text-white mb-8 drop-shadow-lg">{profile?.email?.split('@')[0]}</h2>
+          <h2 className="text-7xl font-black tracking-tighter uppercase italic text-white mb-8 leading-none drop-shadow-lg">{profile?.email?.split('@')[0]}</h2>
           <div className="flex flex-wrap justify-center lg:justify-start gap-8">
-            <span className="bg-cyan-500/10 text-cyan-500 border border-cyan-500/20 px-10 py-4 rounded-[1.5rem] text-[12px] font-black uppercase tracking-[0.4em]">Yetki_Seviyesi: {profile?.role || 'User'}</span>
+            <span className="bg-cyan-500/10 text-cyan-500 border border-cyan-500/20 px-10 py-4 rounded-[1.5rem] text-[12px] font-black uppercase tracking-[0.4em]">Unit_Clearance: {profile?.role || 'User'}</span>
+            <span className="bg-slate-800/50 text-slate-400 border border-slate-700 px-10 py-4 rounded-[1.5rem] text-[12px] font-black uppercase tracking-[0.4em]">ID: NOVA-4-ALPHA</span>
           </div>
         </div>
       </div>
     </div>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
       {[ 
-        { label: 'Senkronize_Nesneler', value: watchlist.length, unit: 'Düğüm' }, 
-        { label: 'Sistem_Uptime', value: '99.9%', unit: 'Sinyal' }, 
-        { label: 'Nöral_Bütünlük', value: 'Prime', unit: 'Mantık' } 
+        { label: 'Synced_Objects', value: watchlist.length, unit: 'Nodes' }, 
+        { label: 'System_Uptime', value: '99.9%', unit: 'Signal' }, 
+        { label: 'Neural_Integrity', value: 'Prime', unit: 'Logic' } 
       ].map((stat, idx) => (
-        <motion.div key={idx} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="bg-slate-900/40 border border-slate-800 p-14 rounded-[4rem] hover:border-cyan-500/30 transition-all">
-          <h4 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.6em] mb-8">{stat.label}</h4>
-          <div className="flex items-baseline gap-5">
-            <span className="text-7xl font-black text-white tracking-tighter tabular-nums">{stat.value}</span>
-            <span className="text-[13px] font-bold text-cyan-500/40 uppercase italic">{stat.unit}</span>
+        <motion.div key={idx} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 + (idx * 0.1) }} className="bg-slate-900/40 border border-slate-800 p-14 rounded-[4rem] hover:border-cyan-500/30 transition-all duration-500 group relative overflow-hidden">
+          <h4 className="text-[11px] font-black text-slate-500 uppercase tracking-[0.6em] mb-8 group-hover:text-cyan-500 transition-colors">{stat.label}</h4>
+          <div className="flex items-baseline justify-center md:justify-start gap-5 mb-6">
+            <span className="text-7xl font-black text-white tracking-tighter tabular-nums leading-none">{stat.value}</span>
+            <span className="text-[13px] font-bold text-cyan-500/40 uppercase tracking-tighter italic">{stat.unit}</span>
           </div>
         </motion.div>
       ))}
@@ -138,7 +139,7 @@ const ProfileView = ({ profile, watchlist }) => (
 );
 
 // =========================================================================
-// --- 3. MASTER_APPLICATION_LOGIC (EXACT VERSION) ---
+// --- 3. MASTER_APPLICATION_LOGIC (FULL ENGLISH) ---
 // =========================================================================
 
 function App() {
@@ -149,7 +150,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('browse'); 
-  const [mainTab, setMainTab] = useState('home'); 
+  const [mainTab, setMainTab] = useState('home'); // home, movie, tv, sports, doc
   const [activeSub, setActiveSub] = useState('all'); 
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [review, setReview] = useState('');
@@ -160,7 +161,7 @@ function App() {
   const [trailerKey, setTrailerKey] = useState(null);
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
-  // Content States
+  // --- CONTENT STATES ---
   const [trending, setTrending] = useState([]);
   const [popular, setPopular] = useState([]);
   const [topRated, setTopRated] = useState([]);
@@ -187,8 +188,7 @@ function App() {
   const fetchMedia = async (endpoint) => {
     if (!API_KEY) return [];
     try {
-      // language=tr-TR: Özellikleri Türkçe çeker
-      const fullUrl = `${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${API_KEY}&language=tr-TR&include_adult=false`;
+      const fullUrl = `${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${API_KEY}&language=en-US&include_adult=false`;
       const res = await fetch(fullUrl);
       const data = await res.json();
       
@@ -231,7 +231,7 @@ function App() {
         setAnimation(an); setDocumentary(d); setDrama(dr); setMystery(m);
         setTrendingTV(ttv); setTopRatedTV(trtv); setPopularTV(ptv); setSports(sp);
         if (profile?.role === 'Admin') fetchStats();
-      } catch (err) { showToast("Nöral_Senkronizasyon_Hatası", "error"); } finally { setLoading(false); }
+      } catch (err) { showToast("Neural_Sync_Interrupt", "error"); } finally { setLoading(false); }
     };
     loadAllContent();
   }, [user, profile]);
@@ -277,48 +277,39 @@ function App() {
   const submitReview = async (mediaId) => {
     if (!review || !user) return;
     const { error } = await supabase.from('reviews').insert([{ media_id: String(mediaId), review_text: review, user_rating: rating, user_id: user.id }]);
-    if (!error) { setReview(''); await fetchReviews(mediaId); showToast('Nöral_Algı_Enjekte_Edildi'); }
+    if (!error) { setReview(''); await fetchReviews(mediaId); showToast('Perception_Data_Injected'); }
   };
 
   const addToWatchlist = async (m) => {
-    if (watchlist.some(item => String(item.media_id) === String(m.id))) return showToast('Zaten_Kasada_Mevcut', 'error');
+    if (watchlist.some(item => String(item.media_id) === String(m.id))) return showToast('Object_In_Vault', 'error');
     const { error } = await supabase.from('watchlists').insert([{ 
       media_id: m.id, title: m.title || m.name, poster_path: m.poster_path, 
       vote_average: m.vote_average, user_id: user?.id, status: 'to_watch'
     }]);
-    if (!error) { fetchWatchlist(); showToast('Nesne_Senkronize_Edildi'); }
+    if (!error) { fetchWatchlist(); showToast('Object_Synced'); }
   };
 
   const removeFromWatchlist = async (id) => {
     const { error } = await supabase.from('watchlists').delete().eq('id', id);
-    if (!error) { fetchWatchlist(); showToast('Nesne_Kayıttan_Silindi', 'error'); }
+    if (!error) { fetchWatchlist(); showToast('Object_Purged', 'error'); }
   };
 
   useEffect(() => { if (user) fetchWatchlist(); }, [user, fetchWatchlist]);
   useEffect(() => { if (selectedMedia) { fetchReviews(selectedMedia.id); fetchTrailer(selectedMedia.id); } }, [selectedMedia]);
 
-  if (authLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center font-black text-cyan-500 animate-pulse tracking-[1em]">BAŞLATILIYOR...</div>;
+  if (authLoading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center font-black text-cyan-500 animate-pulse tracking-[1em]">INITIALIZING...</div>;
 
   const userAverage = mediaReviews.length > 0 ? (mediaReviews.reduce((acc, rev) => acc + rev.user_rating, 0) / mediaReviews.length).toFixed(1) : "0.0";
 
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-8 relative overflow-hidden">
-        <div className="absolute inset-0 z-0 flex gap-8 opacity-[0.2] pointer-events-none skew-y-12 scale-150">
-          {[1, 2, 3, 4, 5].map((col) => (
-            <div key={col} className="flex-1 flex flex-col gap-8 animate-infinite-scroll">
-              {fallbackMedia.map((movie, idx) => (
-                <img key={idx} src={`https://image.tmdb.org/t/p/w400${movie.poster_path}`} className="w-full rounded-[3rem] shadow-2xl" />
-              ))}
-            </div>
-          ))}
-        </div>
         <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 bg-slate-900/90 p-20 rounded-[6rem] border border-slate-800 w-full max-w-lg text-center backdrop-blur-3xl shadow-2xl">
           <h2 className="text-8xl font-black tracking-tighter italic uppercase mb-20 text-white">Nova<span className="text-cyan-500">Stream</span></h2>
           <div className="space-y-8">
-            <input type="email" placeholder="Kimlik..." value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none focus:border-cyan-500" />
-            <input type="password" placeholder="Şifre..." value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none focus:border-cyan-500" />
-            <button onClick={async () => { const {error} = await supabase.auth.signInWithPassword({email, password}); if(error) showToast("Kimlik_Doğrulanamadı", "error"); }} className="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-8 rounded-[2.5rem] font-black uppercase shadow-3xl transition-all">Oturum_Aç</button>
+            <input type="email" placeholder="Identifier..." value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none focus:border-cyan-500" />
+            <input type="password" placeholder="Passkey..." value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-black/40 border border-slate-800 p-8 rounded-[2.5rem] text-white outline-none focus:border-cyan-500" />
+            <button onClick={async () => { const {error} = await supabase.auth.signInWithPassword({email, password}); if(error) showToast("Access_Denied", "error"); }} className="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-8 rounded-[2.5rem] font-black uppercase shadow-3xl transition-all">Establish_Session</button>
           </div>
         </motion.div>
       </div>
@@ -329,20 +320,20 @@ function App() {
   if (profile?.role === 'Staff') return <StaffDashboard />;
 
   const allSections = [
-    { title: "İzlemeye_Devam_Et", data: watchlist.slice(0, 8), icon: <Clock size={20}/>, type: 'resume', category: 'all', sub: 'all', condition: watchlist.length > 0 },
-    { title: "Haftalık_Popüler_Filmler", data: trending, icon: <Activity size={20}/>, category: 'movie', sub: 'all', condition: true },
-    { title: "Popüler_Diziler", data: trendingTV, icon: <MonitorPlay size={20}/>, category: 'tv', sub: 'all', condition: true },
-    { title: "Aksiyon_Sektörü", data: action, icon: <Sword size={20}/>, category: 'movie', sub: 'action', condition: true },
-    { title: "Korku_Enjeksiyonları", data: horror, icon: <Skull size={20}/>, category: 'movie', sub: 'horror', condition: true },
-    { title: "Dram_Sektörleri", data: drama, icon: <Heart size={20}/>, category: 'movie', sub: 'drama', condition: true },
-    { title: "Belgesel_Dosyaları", data: documentary, icon: <BookOpen size={20}/>, category: 'doc', sub: 'all', condition: true },
-    { title: "Canlı_Spor_Matrisi", data: sports, icon: <Trophy size={20}/>, category: 'sports', sub: 'all', condition: true },
-    { title: "Bilim_Kurgu_Düğümleri", data: scifi, icon: <Cpu size={20}/>, category: 'movie', sub: 'scifi', condition: true },
-    { title: "Komedi_Protokolleri", data: comedy, icon: <Laugh size={20}/>, category: 'movie', sub: 'comedy', condition: true },
-    { title: "En_Yüksek_Puanlı_Diziler", data: topRatedTV, icon: <Award size={20}/>, category: 'tv', sub: 'all', condition: true }
+    { title: "Resume_Neural_Stream", data: watchlist.slice(0, 8), icon: <Clock size={20}/>, type: 'resume', category: 'all', sub: 'all', condition: watchlist.length > 0 },
+    { title: "Weekly_Trending_Nodes", data: trending, icon: <Activity size={20}/>, category: 'movie', sub: 'all', condition: true },
+    { title: "Trending_Series_Link", data: trendingTV, icon: <MonitorPlay size={20}/>, category: 'tv', sub: 'all', condition: true },
+    { title: "Action_Combat_Sectors", data: action, icon: <Sword size={20}/>, category: 'movie', sub: 'action', condition: true },
+    { title: "Dark_Horror_Injections", data: horror, icon: <Skull size={20}/>, category: 'movie', sub: 'horror', condition: true },
+    { title: "Emotional_Drama_Matrix", data: drama, icon: <Heart size={20}/>, category: 'movie', sub: 'drama', condition: true },
+    { title: "Documentary_Data_Files", data: documentary, icon: <BookOpen size={20}/>, category: 'doc', sub: 'all', condition: true },
+    { title: "Sports_Live_Signals", data: sports, icon: <Trophy size={20}/>, category: 'sports', sub: 'all', condition: true },
+    { title: "Cybernetic_Sci-Fi_Düğüm", data: scifi, icon: <Cpu size={20}/>, category: 'movie', sub: 'scifi', condition: true },
+    { title: "Light_Comedy_Protocol", data: comedy, icon: <Laugh size={20}/>, category: 'movie', sub: 'comedy', condition: true },
+    { title: "Elite_Series_Archive", data: topRatedTV, icon: <Award size={20}/>, category: 'tv', sub: 'all', condition: true }
   ];
 
-  // Prime Filter Logic:
+  // --- CRITICAL FILTERING LOGIC ---
   const filteredSections = allSections.filter(s => {
     if (s.type === 'resume') return true;
     if (mainTab === 'home') {
@@ -360,7 +351,7 @@ function App() {
     <div className="min-h-screen bg-[#020617] text-slate-200 pb-40 selection:bg-cyan-500/20 selection:text-cyan-200">
       <AnimatePresence>{toast.message && (
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 30 }} className="fixed bottom-12 right-12 z-[400] px-12 py-7 rounded-[2.5rem] border backdrop-blur-3xl shadow-3xl flex items-center gap-8 bg-cyan-500/10 border-cyan-500/20 text-cyan-400">
-          <div className="w-3 h-3 rounded-full animate-ping bg-cyan-500" />
+          <div className="w-3 h-3 rounded-full animate-ping bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.6)]" />
           <span className="text-[12px] font-black uppercase tracking-[0.4em] font-mono">{toast.message}</span>
         </motion.div>
       )}</AnimatePresence>
@@ -368,24 +359,25 @@ function App() {
       <nav className="border-b border-white/5 bg-slate-950/80 backdrop-blur-3xl sticky top-0 z-[100]">
         <div className="px-16 py-8 flex justify-between items-center">
           <div className="flex items-center gap-16">
-            <h1 className="text-5xl font-black italic tracking-tighter cursor-pointer group" onClick={() => {setMainTab('home'); setActiveSub('all'); setSearchQuery('');}}>
+            <h1 className="text-5xl font-black italic tracking-tighter cursor-pointer group" onClick={() => {setMainTab('home'); setActiveSub('all'); setSearchQuery(''); setView('browse');}}>
               Nova<span className="text-cyan-500">Stream</span>
             </h1>
             
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-10">
               {[
-                { id: 'home', label: 'Anasayfa' },
-                { id: 'movie', label: 'Filmler' },
-                { id: 'tv', label: 'Diziler' },
-                { id: 'sports', label: 'Spor' },
-                { id: 'doc', label: 'Belgesel' }
+                { id: 'home', label: 'Home' },
+                { id: 'movie', label: 'Movies' },
+                { id: 'tv', label: 'TV Series' },
+                { id: 'sports', label: 'Sports' },
+                { id: 'doc', label: 'Documentary' }
               ].map((tab) => (
                 <button 
                   key={tab.id}
-                  onClick={() => {setMainTab(tab.id); setActiveSub('all');}}
-                  className={`text-[13px] font-black uppercase tracking-[0.2em] transition-all ${mainTab === tab.id ? 'text-white border-b-2 border-cyan-500 pb-2' : 'text-slate-600 hover:text-white'}`}
+                  onClick={() => {setMainTab(tab.id); setActiveSub('all'); setView('browse');}}
+                  className={`text-[13px] font-black uppercase tracking-[0.2em] transition-all relative ${mainTab === tab.id ? 'text-white' : 'text-slate-600 hover:text-white'}`}
                 >
                   {tab.label}
+                  {mainTab === tab.id && <motion.div layoutId="underline" className="absolute -bottom-2 left-0 right-0 h-[2px] bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.8)]" />}
                 </button>
               ))}
             </div>
@@ -394,30 +386,30 @@ function App() {
           <div className="flex items-center gap-14 text-[12px] font-black uppercase tracking-[0.4em] text-slate-600 font-mono">
             <div className="relative group hidden xl:block">
               <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-800" size={18} />
-              <input type="text" placeholder="Sistemde Ara..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-slate-900/50 border border-white/5 pl-14 pr-8 py-3 rounded-[1.5rem] text-[12px] outline-none focus:border-cyan-500 w-[250px] transition-all" />
+              <input type="text" placeholder="Inject_Query..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-slate-900/50 border border-white/5 pl-14 pr-8 py-3 rounded-[1.5rem] text-[12px] outline-none focus:border-cyan-500 w-[200px] transition-all" />
             </div>
-            <button onClick={() => setView('watchlist')} className={`hover:text-white flex items-center gap-4 ${view === 'watchlist' ? 'text-cyan-500' : ''}`}><Bookmark size={20} /> Kasa</button>
-            <button onClick={() => setView('profile')} className={`hover:text-white flex items-center gap-4 ${view === 'profile' ? 'text-cyan-500' : ''}`}><User size={20} /> Profil</button>
+            <button onClick={() => setView('watchlist')} className={`hover:text-white flex items-center gap-4 ${view === 'watchlist' ? 'text-cyan-500' : ''}`}><Bookmark size={20} /> Vault</button>
+            <button onClick={() => setView('profile')} className={`hover:text-white flex items-center gap-4 ${view === 'profile' ? 'text-cyan-500' : ''}`}><User size={20} /> Profile</button>
             <button onClick={() => supabase.auth.signOut()} className="bg-slate-900 p-3 rounded-xl border border-white/5 hover:text-red-500"><LogOut size={20} /></button>
           </div>
         </div>
 
-        {/* SUB-CATEGORY PILLS (Functional) */}
+        {/* SUB-CATEGORY SECTOR JUMP (Functional) */}
         {(mainTab === 'home' || mainTab === 'movie' || mainTab === 'tv') && (
           <div className="px-16 py-4 bg-black/20 flex items-center gap-4 overflow-x-auto no-scrollbar border-t border-white/[0.02]">
-            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest mr-4">Tür_Seç:</span>
+            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest mr-4">Sector_Jump:</span>
             {[
-              { id: 'all', label: 'Tümü' },
-              { id: 'action', label: 'Aksiyon' },
-              { id: 'horror', label: 'Korku' },
-              { id: 'drama', label: 'Dram' },
-              { id: 'scifi', label: 'Bilim Kurgu' },
-              { id: 'comedy', label: 'Komedi' }
+              { id: 'all', label: 'All Content' },
+              { id: 'action', label: 'Action' },
+              { id: 'horror', label: 'Horror' },
+              { id: 'drama', label: 'Drama' },
+              { id: 'scifi', label: 'Sci-Fi' },
+              { id: 'comedy', label: 'Comedy' }
             ].map(sub => (
               <button
                 key={sub.id}
                 onClick={() => setActiveSub(sub.id)}
-                className={`px-6 py-2 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all ${activeSub === sub.id ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400' : 'bg-transparent border-white/5 text-slate-500 hover:border-white/20'}`}
+                className={`px-5 py-2 rounded-full border text-[9px] font-bold uppercase tracking-widest transition-all ${activeSub === sub.id ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400' : 'bg-transparent border-white/5 text-slate-500 hover:border-white/20'}`}
               >
                 {sub.label}
               </button>
@@ -429,7 +421,7 @@ function App() {
       <main className="p-16 max-w-[1900px] mx-auto">
         {searchQuery ? (
           <section className="animate-in fade-in duration-700">
-            <h3 className="text-xl font-black italic text-white/90 mb-10 uppercase tracking-tighter">Arama_Sonuçları: <span className="text-cyan-500">"{searchQuery}"</span></h3>
+            <h3 className="text-xl font-black italic text-white/90 mb-10 uppercase tracking-tighter">Results_For: <span className="text-cyan-500">"{searchQuery}"</span></h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-12">
               {searchResults.map((m) => (<div key={m.id} className="w-full"><MovieCard movie={m} onSelect={setSelectedMedia} onAdd={addToWatchlist} /></div>))}
             </div>
@@ -461,7 +453,7 @@ function App() {
           </div>
         ) : view === 'watchlist' ? (
           <div className="px-6 animate-in fade-in slide-in-from-bottom-12 duration-1000">
-            <h3 className="text-7xl font-black italic uppercase tracking-tighter text-white mb-24">Birim_Kasası</h3>
+            <h3 className="text-7xl font-black italic uppercase tracking-tighter text-white mb-24">Identifier_Vault</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-16">
               {watchlist.map((item) => (
                 <div key={item.id} className="relative group bg-slate-900/40 rounded-[3rem] overflow-hidden border border-slate-800 hover:border-cyan-500/50 transition-all shadow-3xl">
@@ -494,14 +486,14 @@ function App() {
               </div>
             </div>
             <div className="flex-1 flex flex-col bg-[#050505] overflow-hidden">
-              <div className="p-8 md:p-10 border-b border-white/5 flex justify-between items-center bg-black/40 backdrop-blur-2xl">
+              <div className="p-8 md:p-10 border-b border-white/5 flex justify-between items-center bg-black/40 backdrop-blur-2xl shadow-xl">
                  <div className="flex flex-col gap-1">
-                    <h4 className="text-[11px] font-black text-white/40 uppercase tracking-[0.4em] flex items-center gap-3"><MessageSquare size={16} className="text-cyan-500" /> Nöral_Feed</h4>
-                    <p className="text-[9px] text-cyan-500/50 font-mono animate-pulse">Senkronizasyon_Tamamlandı</p>
+                    <h4 className="text-[11px] font-black text-white/40 uppercase tracking-[0.4em] flex items-center gap-3"><MessageSquare size={16} className="text-cyan-500" /> Neural_Feed</h4>
+                    <p className="text-[9px] text-cyan-500/50 font-mono animate-pulse">Sync_Established</p>
                  </div>
                  <div className="text-right">
                     <span className="text-4xl font-black text-white tabular-nums">{userAverage}</span>
-                    <p className="text-[9px] font-bold text-cyan-500/40 uppercase tracking-[0.3em]">Küresel_Ort</p>
+                    <p className="text-[9px] font-bold text-cyan-500/40 uppercase tracking-[0.3em]">Global_Avg</p>
                  </div>
               </div>
               <div className="flex-1 overflow-y-auto p-8 md:p-10 space-y-6 no-scrollbar">
@@ -513,11 +505,11 @@ function App() {
                     </div>
                     <p className="text-white/80 text-[14px]">"{rev.review_text}"</p>
                   </motion.div>
-                )) : <div className="h-full flex flex-col items-center justify-center opacity-20 gap-6"><Activity size={60} className="animate-pulse text-cyan-500" /><span className="text-xs font-black uppercase tracking-[0.5em]">Sinyal_Kaydedilmedi</span></div>}
+                )) : <div className="h-full flex flex-col items-center justify-center opacity-20 gap-6"><Activity size={60} className="animate-pulse text-cyan-500" /><span className="text-xs font-black uppercase tracking-[0.5em]">No_Signals_Logged</span></div>}
               </div>
               <div className="p-8 md:p-10 bg-slate-950/95 border-t border-white/5">
                 <div className="flex items-center justify-between mb-6">
-                  <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">Etki_Atayın:</span>
+                  <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">Assign_Impact:</span>
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <button key={n} onClick={() => setRating(n)} className={`w-10 h-10 rounded-xl border text-[14px] font-black transition-all ${rating >= n ? 'bg-cyan-600 border-cyan-500 text-white shadow-3xl' : 'bg-transparent border-white/10 text-slate-500'}`}>{n}</button>
@@ -525,8 +517,8 @@ function App() {
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="Algı verisi girin..." className="flex-1 bg-white/[0.03] border border-white/10 px-6 py-4 rounded-[1.5rem] text-[13px] text-white outline-none focus:border-cyan-500/50 transition-all font-mono" />
-                  <button onClick={() => submitReview(selectedMedia.id)} className="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-[1.5rem] text-[11px] font-black uppercase transition-all">İlet</button>
+                  <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="Inject perception data..." className="flex-1 bg-white/[0.03] border border-white/10 px-6 py-4 rounded-[1.5rem] text-[13px] text-white outline-none focus:border-cyan-500/50 transition-all font-mono" />
+                  <button onClick={() => submitReview(selectedMedia.id)} className="bg-cyan-600 hover:bg-cyan-500 text-white px-8 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)]">Transmit</button>
                 </div>
               </div>
             </div>
